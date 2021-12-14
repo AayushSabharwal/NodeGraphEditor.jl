@@ -1,3 +1,16 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
+
 .Stage {
     background: beige;
+}
+
+.ContentText {
+    fill: white;
+    font-family: 'Roboto';
+    font-size: 10;
+}
+
+.Connector {
+    fill:green;
+    r: 7.5;
 }

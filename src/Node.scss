@@ -1,20 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
 
 .Node {
-    background-color: #3b3a3a;
-    position: absolute;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-evenly;
-    border-radius: 20px;
-    min-width: 150px;
-    min-height: 2em;
-    width: fit-content;
-    height: fit-content;
-    font-family: 'Roboto', sans-serif;
-    color: white;
-    font-size: 20px;
+    fill: rgb(58, 58, 58);
+    rx: 10;
+    ry: 10;
 }
 
 %Connector {
