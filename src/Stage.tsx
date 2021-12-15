@@ -1,5 +1,6 @@
 import React from "react";
-import { Node, NodeProps, Vec2, calculateNodeSize, ConnectorType } from './Node'
+import { Node, NodeData, Vec2, calculateNodeSize, ConnectorType, calculateConnectorX, calculateConnectorY } from './Node'
+import { Connection } from "./Connection";
 import "./Stage.scss"
 
 interface StageProps {
@@ -14,11 +15,6 @@ type Edge = {
     to: number,
     to_type: ConnectorType,
     to_conn: number,
-}
-
-interface NodeData extends NodeProps {
-    inputs: number,
-    outputs: number,
 }
 
 interface StageState {
@@ -43,23 +39,12 @@ const DefaultNodeData = {
     edges: [],
 };
 
-function calculateConnectorX(parent: NodeData, type: ConnectorType) {
-    if (type === "input")
-        return parent.pos.x + 12.5;
-    else
-        return parent.pos.x + parent.size.x - 12.5;
+function calculateContentX(parent_pos: Vec2) {
+    return parent_pos.x + 20;
 }
 
-function calculateConnectorY(parent: NodeData, index: number) {
-    return parent.pos.y + (index - 1) * 20 + 12.5;
-}
-
-function calculateContentX(parent: NodeData) {
-    return parent.pos.x + 20;
-}
-
-function calculateContentY(parent: NodeData) {
-    return parent.pos.y + parent.size.y / 2;
+function calculateContentY(parent_pos: Vec2, parent_size: Vec2) {
+    return parent_pos.y + parent_size.y / 2;
 }
 
 function getEdgeKey(edge: Edge) {
@@ -202,6 +187,10 @@ export class Stage extends React.Component<StageProps, StageState> {
                 from: parent_id,
                 type: type,
                 conn: conn,
+            },
+            rel: {
+                x: e.pageX,
+                y: e.pageY,
             }
         });
         e.stopPropagation();
@@ -284,20 +273,19 @@ export class Stage extends React.Component<StageProps, StageState> {
     render() {
         let connline = null;
         if (this.state.isconnecting) {
-            console.log("H");
-            connline = <line
-                x1={calculateConnectorX(
-                    this.state.nodes[this.state.nodes.findIndex(n => n.node_id === this.state.connection.from)],
-                    this.state.connection.type,
-                )}
-                y1={calculateConnectorY(
-                    this.state.nodes[this.state.nodes.findIndex(n => n.node_id === this.state.connection.from)],
-                    this.state.connection.conn,
-                )}
-                x2={this.state.rel.x}
-                y2={this.state.rel.y}
-                stroke="rgb(0,255,0)"
-                strokeWidth={2}
+            connline = <Connection
+                from={{
+                    x: calculateConnectorX(
+                        this.state.nodes[this.state.nodes.findIndex(n => n.node_id === this.state.connection.from)].pos,
+                        this.state.nodes[this.state.nodes.findIndex(n => n.node_id === this.state.connection.from)].size,
+                        this.state.connection.type,
+                    ),
+                    y: calculateConnectorY(
+                        this.state.nodes[this.state.nodes.findIndex(n => n.node_id === this.state.connection.from)].pos,
+                        this.state.connection.conn,
+                    )
+                }}
+                to={this.state.rel}
             />
         }
         return (
@@ -309,58 +297,21 @@ export class Stage extends React.Component<StageProps, StageState> {
                 {this.state.nodes.map(node => (
                     <Node
                         key={node.node_id}
-                        {...(node as NodeProps)}
+                        {...node}
                         onMouseDown={(e: React.MouseEvent) =>
                             this.onNodeMouseDown(node.node_id, e)
                         }
+                        onConnectorMouseDown={this.onConnectorMouseDown}
+                        onConnectorMouseUp={this.onConnectorMouseUp}
                     >
                         <text
-                            x={calculateContentX(node)}
-                            y={calculateContentY(node)}
+                            x={calculateContentX(node.pos)}
+                            y={calculateContentY(node.pos, node.size)}
                             className="ContentText"
                         >
                             TEXT
                         </text>
-                        {Array(node.inputs).fill(1).map((_, i) =>
-                            <circle
-                                className="Connector"
-                                key={i}
-                                cx={calculateConnectorX(node, "input")}
-                                cy={calculateConnectorY(node, i + 1)}
-                                onMouseDown={e => this.onConnectorMouseDown(
-                                    node.node_id,
-                                    "input",
-                                    i + 1,
-                                    e,
-                                )}
-                                onMouseUp={e => this.onConnectorMouseUp(
-                                    node.node_id,
-                                    "input",
-                                    i + 1,
-                                    e,
-                                )}
-                            />
-                        )}
-                        {Array(node.outputs).fill(1).map((_, i) =>
-                            <circle
-                                key={i}
-                                className="Connector"
-                                cx={calculateConnectorX(node, "output")}
-                                cy={calculateConnectorY(node, i + 1)}
-                                onMouseDown={e => this.onConnectorMouseDown(
-                                    node.node_id,
-                                    "output",
-                                    i + 1,
-                                    e,
-                                )}
-                                onMouseUp={e => this.onConnectorMouseUp(
-                                    node.node_id,
-                                    "output",
-                                    i + 1,
-                                    e,
-                                )}
-                            />
-                        )}
+
                     </Node>
                 ))}
                 {this.state.edges.map(edge => {
@@ -368,14 +319,16 @@ export class Stage extends React.Component<StageProps, StageState> {
                     if (!node_from) return <g key={getEdgeKey(edge)}></g>
                     const node_to = this.state.nodes.find(n => n.node_id === edge.to);
                     if (!node_to) return <g key={getEdgeKey(edge)}></g>
-                    return <line
+                    return <Connection
                         key={getEdgeKey(edge)}
-                        x1={calculateConnectorX(node_from, edge.from_type)}
-                        y1={calculateConnectorY(node_from, edge.from_conn)}
-                        x2={calculateConnectorX(node_to, edge.to_type)}
-                        y2={calculateConnectorY(node_to, edge.to_conn)}
-                        stroke="rgb(0,255,0)"
-                        strokeWidth={2}
+                        from={{
+                            x: calculateConnectorX(node_from.pos, node_from.size, edge.from_type),
+                            y: calculateConnectorY(node_from.pos, edge.from_conn),
+                        }}
+                        to={{
+                            x: calculateConnectorX(node_to.pos, node_to.size, edge.to_type),
+                            y: calculateConnectorY(node_to.pos, edge.to_conn),
+                        }}
                     />;
                 })}
                 {connline}
