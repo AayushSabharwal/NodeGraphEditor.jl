@@ -27,7 +27,12 @@ interface StageState {
         type: ConnectorType,
         conn: number,
     },
-    edges: Edge[]
+    edges: Edge[],
+    ispanning: boolean,
+    viewport: {
+        pos: Vec2,
+        size: Vec2,
+    }
     rel: Vec2,
 }
 
@@ -82,6 +87,16 @@ export class Stage extends React.Component<StageProps, StageState> {
             to_type: "input",
             to_conn: 1,
         }],
+        ispanning: false,
+        viewport: {
+            pos: {
+                x: 0, y: 0,
+            },
+            size: {
+                x: this.props.width,
+                y: this.props.height,
+            }
+        },
         rel: { x: 0, y: 0 },
     }
 
@@ -100,7 +115,13 @@ export class Stage extends React.Component<StageProps, StageState> {
         this.onConnectorMouseDown = this.onConnectorMouseDown.bind(this);
         this.onConnectorMouseUp = this.onConnectorMouseUp.bind(this);
         this.onConnectorMouseMove = this.onConnectorMouseMove.bind(this);
-        this.onAnywhereMouseUp = this.onAnywhereMouseUp.bind(this);
+        this.onNotConnectorMouseUp = this.onNotConnectorMouseUp.bind(this);
+        this.getViewportString = this.getViewportString.bind(this);
+        this.onPanMouseDown = this.onPanMouseDown.bind(this);
+        this.onPanMouseMove = this.onPanMouseMove.bind(this);
+        this.onPanMouseUp = this.onPanMouseUp.bind(this);
+
+        document.addEventListener('mousedown', this.onPanMouseDown);
     }
 
     componentDidUpdate(_: StageProps, prestate: StageState) {
@@ -115,11 +136,11 @@ export class Stage extends React.Component<StageProps, StageState> {
 
         if (this.state.isconnecting && !prestate.isconnecting) {
             document.addEventListener('mousemove', this.onConnectorMouseMove);
-            document.addEventListener('mouseup', this.onAnywhereMouseUp);
+            document.addEventListener('mouseup', this.onNotConnectorMouseUp);
         }
         else if (!this.state.isconnecting && prestate.isconnecting) {
             document.removeEventListener('mousemove', this.onConnectorMouseMove);
-            document.removeEventListener('mouseup', this.onAnywhereMouseUp);
+            document.removeEventListener('mouseup', this.onNotConnectorMouseUp);
         }
     }
 
@@ -141,14 +162,7 @@ export class Stage extends React.Component<StageProps, StageState> {
                     x: e.pageX - this.state.rel.x,
                     y: e.pageY - this.state.rel.y,
                 }
-                if (node.size.x >= this.props.width || node.size.y >= this.props.height)
-                    return node;
-                if (newpos.x < 0) newpos.x = 0;
-                if (newpos.x > this.props.width - node.size.x)
-                    newpos.x = this.props.width - node.size.x;
-                if (newpos.y < 0) newpos.y = 0;
-                if (newpos.y > this.props.height - node.size.y)
-                    newpos.y = this.props.height - node.size.y;
+
                 return {
                     ...node,
                     pos: newpos,
@@ -258,7 +272,7 @@ export class Stage extends React.Component<StageProps, StageState> {
         e.preventDefault();
     }
 
-    onAnywhereMouseUp(e: MouseEvent) {
+    onNotConnectorMouseUp(e: MouseEvent) {
         if (e.button !== 0)
             return;
         this.setState({
@@ -269,6 +283,57 @@ export class Stage extends React.Component<StageProps, StageState> {
         e.preventDefault();
     }
 
+    onPanMouseDown(e: MouseEvent) {
+        if (e.button !== 1)
+            return;
+        this.setState({
+            ispanning: true,
+        });
+
+        document.addEventListener('mousemove', this.onPanMouseMove);
+        document.addEventListener('mouseup', this.onPanMouseUp);
+
+        e.stopPropagation();
+        e.preventDefault();
+    }
+
+    onPanMouseMove(e: MouseEvent) {
+        if (!this.state.ispanning)
+            return;
+        const vp = this.state.viewport;
+        this.setState({
+            viewport: {
+                pos: {
+                    x: vp.pos.x - e.movementX,
+                    y: vp.pos.y - e.movementY,
+                },
+                size: vp.size,
+            }
+        });
+
+        e.stopPropagation();
+        e.preventDefault();
+    }
+
+    onPanMouseUp(e: MouseEvent) {
+        if (e.button !== 1)
+            return;
+
+        document.removeEventListener('mousemove', this.onPanMouseMove);
+        document.removeEventListener('mouseup', this.onPanMouseUp);
+
+        this.setState({
+            ispanning: false,
+        });
+
+        e.stopPropagation();
+        e.preventDefault();
+    }
+
+    getViewportString() {
+        const vp = this.state.viewport;
+        return `${vp.pos.x} ${vp.pos.y} ${vp.size.x} ${vp.size.y}`;
+    }
 
     render() {
         let connline = null;
@@ -288,11 +353,13 @@ export class Stage extends React.Component<StageProps, StageState> {
                 to={this.state.rel}
             />
         }
+
         return (
             <svg
                 className="Stage"
                 width={this.props.width}
                 height={this.props.height}
+                viewBox={this.getViewportString()}
             >
                 {this.state.nodes.map(node => (
                     <Node
