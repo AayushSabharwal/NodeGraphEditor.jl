@@ -13,11 +13,6 @@ export interface NodeData {
     outputs: number,
 }
 
-export interface NodeProps extends NodeData, React.SVGAttributes<SVGGElement> {
-    onConnectorMouseUp: (id: number, type: ConnectorType, conn: number, e: React.MouseEvent) => void,
-    onConnectorMouseDown: (id: number, type: ConnectorType, conn: number, e: React.MouseEvent) => void,
-}
-
 export type Edge = {
     from: number,
     from_type: ConnectorType,
@@ -25,6 +20,12 @@ export type Edge = {
     to: number,
     to_type: ConnectorType,
     to_conn: number,
+}
+
+export interface NodeProps extends NodeData, React.SVGAttributes<SVGGElement> {
+    selected: boolean,
+    onConnectorMouseUp: (id: number, type: ConnectorType, conn: number, e: React.MouseEvent) => void,
+    onConnectorMouseDown: (id: number, type: ConnectorType, conn: number, e: React.MouseEvent) => void,
 }
 
 export interface StageProps {
@@ -35,7 +36,6 @@ export interface StageProps {
     updateNode: (ind: number, node: NodeData) => void,
     addEdge: (edge: Edge) => void,
 }
-
 
 export interface StageState {
     isdragging: boolean,
@@ -55,4 +55,11 @@ export interface StageState {
         pos: Vec2,
         zoom: number,
     }
+    selected: number,
+}
+
+export interface EditorState {
+    nodes: NodeData[],
+    edges: Edge[],
+    stagewidth: number,
 }

@@ -1,0 +1,11 @@
+.Editor {
+    height: 100%;
+    width: 100%;
+}
+.Menu {
+    position: absolute;
+    top: 0;
+    background-color: grey;
+    display: flex;
+    flex-direction: column;
+}

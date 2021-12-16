@@ -31,7 +31,7 @@ export class Node extends React.Component<NodeProps, {}> {
         const { node_id, pos, size } = this.props;
         return (
             <g id={"node_" + node_id} {...(this.props as React.SVGAttributes<SVGGElement>)}>
-                <rect width={size.x} height={size.y} x={pos.x} y={pos.y} className="Node" fill="red" />
+                <rect width={size.x} height={size.y} x={pos.x} y={pos.y} className="Node" fill="red" strokeWidth={this.props.selected ? 1 : 0} stroke="rgb(0,0,255)" />
                 {this.props.children}
                 {Array(this.props.inputs).fill(1).map((_, i) =>
                     <circle

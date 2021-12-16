@@ -38,6 +38,7 @@ export class Stage extends React.Component<StageProps, StageState> {
         },
         dragstart: { x: 0, y: 0 },
         node_dragstart: { x: 0, y: 0 },
+        selected: -1,
     }
 
     constructor(props: StageProps) {
@@ -83,11 +84,24 @@ export class Stage extends React.Component<StageProps, StageState> {
         }
     }
 
-    onNodeMouseUp(e: MouseEvent): void {
-        if (e.button !== DRAG_BUTTON || !this.state.isdragging)
+    onNodeMouseDown(id: number, e: React.MouseEvent) {
+        if (e.button !== DRAG_BUTTON)
             return;
-
-        this.setState({ isdragging: false, dragging_ind: -1 });
+        const ind = this.props.nodes.findIndex(n => n.node_id === id);
+        const node = this.props.nodes[ind];
+        this.setState({
+            isdragging: true,
+            dragging_ind: ind,
+            dragstart: {
+                x: e.pageX,
+                y: e.pageY,
+            },
+            node_dragstart: {
+                x: node.pos.x,
+                y: node.pos.y,
+            },
+            selected: id,
+        });
         e.stopPropagation();
         e.preventDefault();
     }
@@ -105,23 +119,11 @@ export class Stage extends React.Component<StageProps, StageState> {
         e.preventDefault();
     }
 
-    onNodeMouseDown(id: number, e: React.MouseEvent) {
-        if (e.button !== DRAG_BUTTON)
+    onNodeMouseUp(e: MouseEvent): void {
+        if (e.button !== DRAG_BUTTON || !this.state.isdragging)
             return;
-        const ind = this.props.nodes.findIndex(n => n.node_id === id);
-        const node = this.props.nodes[ind];
-        this.setState({
-            isdragging: true,
-            dragging_ind: ind,
-            dragstart: {
-                x: e.pageX,
-                y: e.pageY,
-            },
-            node_dragstart: {
-                x: node.pos.x,
-                y: node.pos.y,
-            }
-        });
+
+        this.setState({ isdragging: false, dragging_ind: -1 });
         e.stopPropagation();
         e.preventDefault();
     }
@@ -306,8 +308,19 @@ export class Stage extends React.Component<StageProps, StageState> {
                 viewBox={this.getViewportString()}
                 onWheel={this.onZoomWheel}
             >
+                <defs>
+                    <pattern id="smallGrid" width="8" height="8" patternUnits="userSpaceOnUse">
+                        <path d="M 8 0 L 0 0 0 8" fill="none" stroke="gray" strokeWidth="0.5" />
+                    </pattern>
+                    <pattern id="grid" width="80" height="80" patternUnits="userSpaceOnUse">
+                        <rect width="80" height="80" fill="url(#smallGrid)" />
+                        <path d="M 80 0 L 0 0 0 80" fill="none" stroke="gray" strokeWidth="1" />
+                    </pattern>
+                </defs>
+                <rect width="5000%" height="5000%" fill="url(#grid)" x="-2500%" y="-2500%" />
                 {this.props.nodes.map(node => (
                     <Node
+                        selected={this.state.selected === node.node_id}
                         key={node.node_id}
                         {...node}
                         onMouseDown={(e: React.MouseEvent) =>

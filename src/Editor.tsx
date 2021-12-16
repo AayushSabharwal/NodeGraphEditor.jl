@@ -1,13 +1,9 @@
 import React from "react";
-import { DefaultNodeData } from "./constants";
+import { DefaultNodeData, DIVIDER_WIDTH, DRAG_BUTTON } from "./constants";
 import { calculateNodeSize } from "./Node";
 import { Stage } from "./Stage";
-import { Edge, NodeData } from "./types";
-
-interface EditorState {
-    nodes: NodeData[],
-    edges: Edge[],
-}
+import { Edge, EditorState, NodeData } from "./types";
+import './Editor.scss';
 
 export class Editor extends React.Component<{}, EditorState> {
     state: EditorState = {
@@ -32,6 +28,7 @@ export class Editor extends React.Component<{}, EditorState> {
             to_type: "input",
             to_conn: 1,
         }],
+        stagewidth: 500,
     }
 
     constructor(props: {}) {
@@ -43,6 +40,9 @@ export class Editor extends React.Component<{}, EditorState> {
 
         this.updateNode = this.updateNode.bind(this);
         this.addEdge = this.addEdge.bind(this);
+        this.onResizerMouseDown = this.onResizerMouseDown.bind(this);
+        this.onResizerMouseMove = this.onResizerMouseMove.bind(this);
+        this.onResizerMouseUp = this.onResizerMouseUp.bind(this);
     }
 
     updateNode(ind: number, node: NodeData) {
@@ -68,16 +68,58 @@ export class Editor extends React.Component<{}, EditorState> {
         })
     }
 
+    onResizerMouseDown(e: React.MouseEvent) {
+        if (e.button !== DRAG_BUTTON)
+            return;
+        document.addEventListener('mousemove', this.onResizerMouseMove);
+        document.addEventListener('mouseup', this.onResizerMouseUp);
+    }
+
+    onResizerMouseMove(e: MouseEvent) {
+        this.setState({
+            stagewidth: Math.max(0, Math.min(window.innerWidth - DIVIDER_WIDTH, e.pageX))
+        });
+    }
+
+    onResizerMouseUp(_: MouseEvent) {
+        document.removeEventListener('mousemove', this.onResizerMouseMove);
+        document.removeEventListener('mouseup', this.onResizerMouseUp);
+    }
+
     render() {
         return (
-            <Stage
-                width={window.innerWidth / 2}
-                height={749.9999}
-                nodes={this.state.nodes}
-                edges={this.state.edges}
-                updateNode={this.updateNode}
-                addEdge={this.addEdge}
-            />
+            <div className="Editor">
+                <Stage
+                    width={this.state.stagewidth}
+                    height={749.9999}
+                    nodes={this.state.nodes}
+                    edges={this.state.edges}
+                    updateNode={this.updateNode}
+                    addEdge={this.addEdge}
+                />
+                <div
+                    onMouseDown={this.onResizerMouseDown}
+                    style={{
+                        position: "absolute",
+                        left: this.state.stagewidth,
+                        top: 0,
+                        background: "black",
+                        width: DIVIDER_WIDTH,
+                        height: 753
+                    }}
+                >
+                </div>
+                <div
+                    className="Menu"
+                    style={{
+                        left: this.state.stagewidth + DIVIDER_WIDTH,
+                        width: window.innerWidth - this.state.stagewidth - DIVIDER_WIDTH,
+                        height: 753
+                    }}
+                >
+                    aushdqd
+                </div>
+            </div>
         );
     }
 }
