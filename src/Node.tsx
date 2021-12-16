@@ -1,5 +1,6 @@
 import React from 'react';
 import './Node.scss'
+import { CONN_RADIUS, CONN_SIDE_MARGIN, CONN_Y_SPACING } from './constants';
 
 export type Vec2 = {
     x: number,
@@ -23,19 +24,19 @@ export interface NodeProps extends NodeData, React.SVGAttributes<SVGGElement> {
 
 export function calculateConnectorX(parent_pos: Vec2, parent_size: Vec2, type: ConnectorType) {
     if (type === "input")
-        return parent_pos.x + 12.5;
+        return parent_pos.x + CONN_RADIUS + CONN_SIDE_MARGIN;
     else
-        return parent_pos.x + parent_size.x - 12.5;
+        return parent_pos.x + parent_size.x - (CONN_RADIUS + CONN_SIDE_MARGIN);
 }
 
 export function calculateConnectorY(parent_pos: Vec2, index: number) {
-    return parent_pos.y + (index - 1) * 20 + 12.5;
+    return parent_pos.y + (index - 1) * (2 * CONN_RADIUS + CONN_Y_SPACING) + CONN_RADIUS + CONN_Y_SPACING;
 }
 
 export function calculateNodeSize(max_conn: number, content_size: Vec2 = { x: 50, y: 50 }): Vec2 {
     return {
-        x: content_size.x + 40,
-        y: Math.max(content_size.y, max_conn * 20 + 5),
+        x: content_size.x + 4 * (CONN_SIDE_MARGIN + CONN_RADIUS),
+        y: Math.max(content_size.y, max_conn * (2 * CONN_RADIUS + CONN_Y_SPACING) + CONN_Y_SPACING),
     }
 }
 

@@ -1,6 +1,7 @@
 import React from "react";
 import { Node, NodeData, Vec2, calculateNodeSize, ConnectorType, calculateConnectorX, calculateConnectorY } from './Node'
 import { Connection } from "./Connection";
+import { CONN_RADIUS, CONN_SIDE_MARGIN, DRAG_BUTTON, MAX_ZOOM, MIN_ZOOM, PAN_BUTTON, ZOOM_SPEED } from "./constants";
 import "./Stage.scss"
 
 interface StageProps {
@@ -21,6 +22,8 @@ interface StageState {
     nodes: NodeData[],
     isdragging: boolean,
     dragging_ind: number,
+    dragstart: Vec2,
+    node_dragstart: Vec2,
     isconnecting: boolean,
     connection: {
         from: number,
@@ -29,11 +32,12 @@ interface StageState {
     },
     edges: Edge[],
     ispanning: boolean,
+    panstart: Vec2,
+    vp_panstart: Vec2,
     viewport: {
         pos: Vec2,
-        size: Vec2,
+        zoom: number,
     }
-    rel: Vec2,
 }
 
 const DefaultNodeData = {
@@ -45,7 +49,7 @@ const DefaultNodeData = {
 };
 
 function calculateContentX(parent_pos: Vec2) {
-    return parent_pos.x + 20;
+    return parent_pos.x + 2 * (CONN_SIDE_MARGIN + CONN_RADIUS);
 }
 
 function calculateContentY(parent_pos: Vec2, parent_size: Vec2) {
@@ -88,27 +92,26 @@ export class Stage extends React.Component<StageProps, StageState> {
             to_conn: 1,
         }],
         ispanning: false,
+        panstart: { x: 0, y: 0 },
+        vp_panstart: { x: 0, y: 0 },
         viewport: {
             pos: {
                 x: 0, y: 0,
             },
-            size: {
-                x: this.props.width,
-                y: this.props.height,
-            }
+            zoom: 1,
         },
-        rel: { x: 0, y: 0 },
+        dragstart: { x: 0, y: 0 },
+        node_dragstart: { x: 0, y: 0 },
     }
 
     constructor(props: StageProps) {
         super(props);
 
-        this.setState({
-            nodes: this.state.nodes.map(node => ({
-                ...node,
-                size: calculateNodeSize(Math.max(node.inputs, node.outputs))
-            }))
-        })
+        this.state.nodes = this.state.nodes.map(node => ({
+            ...node,
+            size: calculateNodeSize(Math.max(node.inputs, node.outputs))
+        }));
+
         this.onNodeMouseDown = this.onNodeMouseDown.bind(this);
         this.onNodeMouseUp = this.onNodeMouseUp.bind(this);
         this.onNodeMouseMove = this.onNodeMouseMove.bind(this);
@@ -120,8 +123,13 @@ export class Stage extends React.Component<StageProps, StageState> {
         this.onPanMouseDown = this.onPanMouseDown.bind(this);
         this.onPanMouseMove = this.onPanMouseMove.bind(this);
         this.onPanMouseUp = this.onPanMouseUp.bind(this);
+        this.onZoomWheel = this.onZoomWheel.bind(this);
+    }
 
+    componentDidMount() {
         document.addEventListener('mousedown', this.onPanMouseDown);
+        document.oncontextmenu = (e) => { e.preventDefault(); return false; }
+
     }
 
     componentDidUpdate(_: StageProps, prestate: StageState) {
@@ -145,7 +153,7 @@ export class Stage extends React.Component<StageProps, StageState> {
     }
 
     onNodeMouseUp(e: MouseEvent): void {
-        if (e.button !== 0 || !this.state.isdragging)
+        if (e.button !== DRAG_BUTTON || !this.state.isdragging)
             return;
 
         this.setState({ isdragging: false, dragging_ind: -1 });
@@ -158,14 +166,13 @@ export class Stage extends React.Component<StageProps, StageState> {
             nodes: this.state.nodes.map(node => {
                 if (node.node_id !== this.state.dragging_ind)
                     return node;
-                let newpos = {
-                    x: e.pageX - this.state.rel.x,
-                    y: e.pageY - this.state.rel.y,
-                }
 
                 return {
                     ...node,
-                    pos: newpos,
+                    pos: {
+                        x: this.state.node_dragstart.x + (e.pageX - this.state.dragstart.x) * this.state.viewport.zoom,
+                        y: this.state.node_dragstart.y + (e.pageY - this.state.dragstart.y) * this.state.viewport.zoom,
+                    }
                 }
             }),
         });
@@ -175,16 +182,20 @@ export class Stage extends React.Component<StageProps, StageState> {
     }
 
     onNodeMouseDown(id: number, e: React.MouseEvent) {
-        if (e.button !== 0)
+        if (e.button !== DRAG_BUTTON)
             return;
         const ind = this.state.nodes.findIndex(n => n.node_id === id);
         const node = this.state.nodes[ind];
         this.setState({
             isdragging: true,
             dragging_ind: ind,
-            rel: {
-                x: e.pageX - node.pos.x,
-                y: e.pageY - node.pos.y,
+            dragstart: {
+                x: e.pageX,
+                y: e.pageY,
+            },
+            node_dragstart: {
+                x: node.pos.x,
+                y: node.pos.y,
             }
         });
         e.stopPropagation();
@@ -192,7 +203,7 @@ export class Stage extends React.Component<StageProps, StageState> {
     }
 
     onConnectorMouseDown(parent_id: number, type: ConnectorType, conn: number, e: React.MouseEvent) {
-        if (e.button !== 0)
+        if (e.button !== DRAG_BUTTON)
             return;
 
         this.setState({
@@ -202,7 +213,7 @@ export class Stage extends React.Component<StageProps, StageState> {
                 type: type,
                 conn: conn,
             },
-            rel: {
+            dragstart: {
                 x: e.pageX,
                 y: e.pageY,
             }
@@ -212,17 +223,17 @@ export class Stage extends React.Component<StageProps, StageState> {
     }
 
     onConnectorMouseMove(e: MouseEvent) {
-        let rel = {
+        let dragstart = {
             x: e.pageX,
             y: e.pageY,
         }
-        if (rel.x < 0) rel.x = 0;
-        if (rel.x > this.props.width) rel.x = this.props.width;
-        if (rel.y < 0) rel.y = 0;
-        if (rel.y > this.props.height) rel.y = this.props.height;
+        if (dragstart.x < 0) dragstart.x = 0;
+        if (dragstart.x > this.props.width) dragstart.x = this.props.width;
+        if (dragstart.y < 0) dragstart.y = 0;
+        if (dragstart.y > this.props.height) dragstart.y = this.props.height;
 
         this.setState({
-            rel,
+            dragstart,
         });
 
         e.stopPropagation();
@@ -230,9 +241,8 @@ export class Stage extends React.Component<StageProps, StageState> {
     }
 
     onConnectorMouseUp(parent_id: number, type: ConnectorType, conn: number, e: React.MouseEvent) {
-        if (e.button !== 0 || !this.state.isconnecting || parent_id === this.state.connection.from) {
+        if (e.button !== DRAG_BUTTON || !this.state.isconnecting || parent_id === this.state.connection.from) {
             this.setState({ isconnecting: false });
-            e.stopPropagation();
             e.preventDefault();
             return;
         }
@@ -268,12 +278,11 @@ export class Stage extends React.Component<StageProps, StageState> {
             ],
         });
 
-        e.stopPropagation();
         e.preventDefault();
     }
 
     onNotConnectorMouseUp(e: MouseEvent) {
-        if (e.button !== 0)
+        if (e.button !== DRAG_BUTTON)
             return;
         this.setState({
             isconnecting: false,
@@ -284,10 +293,18 @@ export class Stage extends React.Component<StageProps, StageState> {
     }
 
     onPanMouseDown(e: MouseEvent) {
-        if (e.button !== 1)
+        if (e.button !== PAN_BUTTON)
             return;
         this.setState({
             ispanning: true,
+            panstart: {
+                x: e.pageX,
+                y: e.pageY,
+            },
+            vp_panstart: {
+                x: this.state.viewport.pos.x,
+                y: this.state.viewport.pos.y,
+            }
         });
 
         document.addEventListener('mousemove', this.onPanMouseMove);
@@ -304,10 +321,10 @@ export class Stage extends React.Component<StageProps, StageState> {
         this.setState({
             viewport: {
                 pos: {
-                    x: vp.pos.x - e.movementX,
-                    y: vp.pos.y - e.movementY,
+                    x: this.state.vp_panstart.x - (e.pageX - this.state.panstart.x) * vp.zoom,
+                    y: this.state.vp_panstart.y - (e.pageY - this.state.panstart.y) * vp.zoom,
                 },
-                size: vp.size,
+                zoom: vp.zoom,
             }
         });
 
@@ -316,7 +333,7 @@ export class Stage extends React.Component<StageProps, StageState> {
     }
 
     onPanMouseUp(e: MouseEvent) {
-        if (e.button !== 1)
+        if (e.button !== PAN_BUTTON)
             return;
 
         document.removeEventListener('mousemove', this.onPanMouseMove);
@@ -330,9 +347,23 @@ export class Stage extends React.Component<StageProps, StageState> {
         e.preventDefault();
     }
 
+    onZoomWheel(e: React.WheelEvent<SVGSVGElement>) {
+        this.setState({
+            viewport: {
+                ...this.state.viewport,
+                zoom: Math.max(
+                    MIN_ZOOM,
+                    Math.min(MAX_ZOOM, this.state.viewport.zoom + e.deltaY * ZOOM_SPEED)
+                ),
+            }
+        });
+
+        e.stopPropagation();
+    }
+
     getViewportString() {
         const vp = this.state.viewport;
-        return `${vp.pos.x} ${vp.pos.y} ${vp.size.x} ${vp.size.y}`;
+        return `${vp.pos.x} ${vp.pos.y} ${this.props.width * vp.zoom} ${this.props.height * vp.zoom}`;
     }
 
     render() {
@@ -348,9 +379,12 @@ export class Stage extends React.Component<StageProps, StageState> {
                     y: calculateConnectorY(
                         this.state.nodes[this.state.nodes.findIndex(n => n.node_id === this.state.connection.from)].pos,
                         this.state.connection.conn,
-                    )
+                    ),
                 }}
-                to={this.state.rel}
+                to={{
+                    x: this.state.dragstart.x * this.state.viewport.zoom + this.state.viewport.pos.x,
+                    y: this.state.dragstart.y * this.state.viewport.zoom + this.state.viewport.pos.y,
+                }}
             />
         }
 
@@ -360,6 +394,7 @@ export class Stage extends React.Component<StageProps, StageState> {
                 width={this.props.width}
                 height={this.props.height}
                 viewBox={this.getViewportString()}
+                onWheel={this.onZoomWheel}
             >
                 {this.state.nodes.map(node => (
                     <Node
