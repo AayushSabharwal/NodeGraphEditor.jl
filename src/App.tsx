@@ -1,10 +1,10 @@
 import React from 'react';
 import './App.css';
-import { Stage } from './Stage'
+import { Editor } from './Editor';
 function App() {
   return (
     <div className="App">
-      <Stage width={500} height={500} />
+      <Editor />
     </div>
   );
 }

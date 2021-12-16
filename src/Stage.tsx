@@ -1,52 +1,9 @@
 import React from "react";
-import { Node, NodeData, Vec2, calculateNodeSize, ConnectorType, calculateConnectorX, calculateConnectorY } from './Node'
+import { Node, calculateConnectorX, calculateConnectorY } from './Node'
 import { Connection } from "./Connection";
 import { CONN_RADIUS, CONN_SIDE_MARGIN, DRAG_BUTTON, MAX_ZOOM, MIN_ZOOM, PAN_BUTTON, ZOOM_SPEED } from "./constants";
+import { ConnectorType, Vec2, StageProps, Edge, StageState } from "./types";
 import "./Stage.scss"
-
-interface StageProps {
-    width: number,
-    height: number,
-}
-
-type Edge = {
-    from: number,
-    from_type: ConnectorType,
-    from_conn: number,
-    to: number,
-    to_type: ConnectorType,
-    to_conn: number,
-}
-
-interface StageState {
-    nodes: NodeData[],
-    isdragging: boolean,
-    dragging_ind: number,
-    dragstart: Vec2,
-    node_dragstart: Vec2,
-    isconnecting: boolean,
-    connection: {
-        from: number,
-        type: ConnectorType,
-        conn: number,
-    },
-    edges: Edge[],
-    ispanning: boolean,
-    panstart: Vec2,
-    vp_panstart: Vec2,
-    viewport: {
-        pos: Vec2,
-        zoom: number,
-    }
-}
-
-const DefaultNodeData = {
-    pos: { x: 0, y: 0 },
-    size: { x: 150, y: 75 },
-    inputs: 1,
-    outputs: 1,
-    edges: [],
-};
 
 function calculateContentX(parent_pos: Vec2) {
     return parent_pos.x + 2 * (CONN_SIDE_MARGIN + CONN_RADIUS);
@@ -62,19 +19,6 @@ function getEdgeKey(edge: Edge) {
 
 export class Stage extends React.Component<StageProps, StageState> {
     state: StageState = {
-        nodes: [
-            {
-                ...DefaultNodeData,
-                node_id: 0,
-            } as NodeData,
-            {
-                ...DefaultNodeData,
-                node_id: 1,
-                pos: { x: 50, y: 50 },
-                inputs: 2,
-                outputs: 1,
-            } as NodeData
-        ],
         isdragging: false,
         dragging_ind: -1,
         isconnecting: false,
@@ -83,14 +27,6 @@ export class Stage extends React.Component<StageProps, StageState> {
             conn: -1,
             type: "input",
         },
-        edges: [{
-            from: 0,
-            from_type: "output",
-            from_conn: 1,
-            to: 1,
-            to_type: "input",
-            to_conn: 1,
-        }],
         ispanning: false,
         panstart: { x: 0, y: 0 },
         vp_panstart: { x: 0, y: 0 },
@@ -106,11 +42,6 @@ export class Stage extends React.Component<StageProps, StageState> {
 
     constructor(props: StageProps) {
         super(props);
-
-        this.state.nodes = this.state.nodes.map(node => ({
-            ...node,
-            size: calculateNodeSize(Math.max(node.inputs, node.outputs))
-        }));
 
         this.onNodeMouseDown = this.onNodeMouseDown.bind(this);
         this.onNodeMouseUp = this.onNodeMouseUp.bind(this);
@@ -162,19 +93,12 @@ export class Stage extends React.Component<StageProps, StageState> {
     }
 
     onNodeMouseMove(e: MouseEvent): void {
-        this.setState({
-            nodes: this.state.nodes.map(node => {
-                if (node.node_id !== this.state.dragging_ind)
-                    return node;
-
-                return {
-                    ...node,
-                    pos: {
-                        x: this.state.node_dragstart.x + (e.pageX - this.state.dragstart.x) * this.state.viewport.zoom,
-                        y: this.state.node_dragstart.y + (e.pageY - this.state.dragstart.y) * this.state.viewport.zoom,
-                    }
-                }
-            }),
+        this.props.updateNode(this.state.dragging_ind, {
+            ...this.props.nodes[this.state.dragging_ind],
+            pos: {
+                x: this.state.node_dragstart.x + (e.pageX - this.state.dragstart.x) * this.state.viewport.zoom,
+                y: this.state.node_dragstart.y + (e.pageY - this.state.dragstart.y) * this.state.viewport.zoom,
+            }
         });
 
         e.stopPropagation();
@@ -184,8 +108,8 @@ export class Stage extends React.Component<StageProps, StageState> {
     onNodeMouseDown(id: number, e: React.MouseEvent) {
         if (e.button !== DRAG_BUTTON)
             return;
-        const ind = this.state.nodes.findIndex(n => n.node_id === id);
-        const node = this.state.nodes[ind];
+        const ind = this.props.nodes.findIndex(n => n.node_id === id);
+        const node = this.props.nodes[ind];
         this.setState({
             isdragging: true,
             dragging_ind: ind,
@@ -246,18 +170,15 @@ export class Stage extends React.Component<StageProps, StageState> {
             e.preventDefault();
             return;
         }
-        if (this.state.edges.find(ed =>
-            ed.from_conn === this.state.connection.conn &&
-            ed.from_type === this.state.connection.type &&
-            ed.to === parent_id &&
-            ed.to_conn === conn &&
-            ed.to_type === type
-        )) {
-            this.setState({ isconnecting: false });
-            e.stopPropagation();
-            e.preventDefault();
-            return;
-        }
+        this.props.addEdge({
+            from: this.state.connection.from,
+            from_type: this.state.connection.type,
+            from_conn: this.state.connection.conn,
+            to: parent_id,
+            to_type: type,
+            to_conn: conn,
+        });
+
         this.setState({
             isconnecting: false,
             connection: {
@@ -265,17 +186,6 @@ export class Stage extends React.Component<StageProps, StageState> {
                 type: "input",
                 conn: -1,
             },
-            edges: [
-                ...this.state.edges,
-                {
-                    from: this.state.connection.from,
-                    from_type: this.state.connection.type,
-                    from_conn: this.state.connection.conn,
-                    to: parent_id,
-                    to_type: type,
-                    to_conn: conn,
-                }
-            ],
         });
 
         e.preventDefault();
@@ -372,12 +282,12 @@ export class Stage extends React.Component<StageProps, StageState> {
             connline = <Connection
                 from={{
                     x: calculateConnectorX(
-                        this.state.nodes[this.state.nodes.findIndex(n => n.node_id === this.state.connection.from)].pos,
-                        this.state.nodes[this.state.nodes.findIndex(n => n.node_id === this.state.connection.from)].size,
+                        this.props.nodes[this.props.nodes.findIndex(n => n.node_id === this.state.connection.from)].pos,
+                        this.props.nodes[this.props.nodes.findIndex(n => n.node_id === this.state.connection.from)].size,
                         this.state.connection.type,
                     ),
                     y: calculateConnectorY(
-                        this.state.nodes[this.state.nodes.findIndex(n => n.node_id === this.state.connection.from)].pos,
+                        this.props.nodes[this.props.nodes.findIndex(n => n.node_id === this.state.connection.from)].pos,
                         this.state.connection.conn,
                     ),
                 }}
@@ -396,7 +306,7 @@ export class Stage extends React.Component<StageProps, StageState> {
                 viewBox={this.getViewportString()}
                 onWheel={this.onZoomWheel}
             >
-                {this.state.nodes.map(node => (
+                {this.props.nodes.map(node => (
                     <Node
                         key={node.node_id}
                         {...node}
@@ -416,10 +326,10 @@ export class Stage extends React.Component<StageProps, StageState> {
 
                     </Node>
                 ))}
-                {this.state.edges.map(edge => {
-                    const node_from = this.state.nodes.find(n => n.node_id === edge.from);
+                {this.props.edges.map(edge => {
+                    const node_from = this.props.nodes.find(n => n.node_id === edge.from);
                     if (!node_from) return <g key={getEdgeKey(edge)}></g>
-                    const node_to = this.state.nodes.find(n => n.node_id === edge.to);
+                    const node_to = this.props.nodes.find(n => n.node_id === edge.to);
                     if (!node_to) return <g key={getEdgeKey(edge)}></g>
                     return <Connection
                         key={getEdgeKey(edge)}

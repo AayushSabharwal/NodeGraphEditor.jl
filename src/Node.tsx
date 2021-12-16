@@ -1,26 +1,7 @@
 import React from 'react';
 import './Node.scss'
 import { CONN_RADIUS, CONN_SIDE_MARGIN, CONN_Y_SPACING } from './constants';
-
-export type Vec2 = {
-    x: number,
-    y: number,
-}
-
-export type ConnectorType = "input" | "output"
-
-export interface NodeData {
-    node_id: number,
-    pos: Vec2,
-    size: Vec2,
-    inputs: number,
-    outputs: number,
-}
-
-export interface NodeProps extends NodeData, React.SVGAttributes<SVGGElement> {
-    onConnectorMouseUp: (id: number, type: ConnectorType, conn: number, e: React.MouseEvent) => void,
-    onConnectorMouseDown: (id: number, type: ConnectorType, conn: number, e: React.MouseEvent) => void,
-}
+import { Vec2, ConnectorType, NodeProps } from './types';
 
 export function calculateConnectorX(parent_pos: Vec2, parent_size: Vec2, type: ConnectorType) {
     if (type === "input")
