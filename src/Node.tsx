@@ -21,6 +21,15 @@ export function calculateNodeSize(max_conn: number, content_size: Vec2 = { x: 50
     }
 }
 
+export function calculateContentX(parent_pos: Vec2) {
+    return parent_pos.x + 2 * (CONN_SIDE_MARGIN + CONN_RADIUS);
+}
+
+export function calculateContentY(parent_pos: Vec2, parent_size: Vec2) {
+    return parent_pos.y + parent_size.y / 2;
+}
+
+
 export class Node extends React.Component<NodeProps, {}> {
     public static defaultProps = {
         pos: { x: 0, y: 0 },
@@ -33,7 +42,7 @@ export class Node extends React.Component<NodeProps, {}> {
             <g id={"node_" + node_id} {...(this.props as React.SVGAttributes<SVGGElement>)}>
                 <rect width={size.x} height={size.y} x={pos.x} y={pos.y} className="Node" fill="red" strokeWidth={this.props.selected ? 1 : 0} stroke="rgb(0,0,255)" />
                 {this.props.children}
-                {Array(this.props.inputs).fill(1).map((_, i) =>
+                {Array(this.props.params.inputs).fill(1).map((_, i) =>
                     <circle
                         className="Connector"
                         key={i}
@@ -53,7 +62,14 @@ export class Node extends React.Component<NodeProps, {}> {
                         )}
                     />
                 )}
-                {Array(this.props.outputs).fill(1).map((_, i) =>
+                <text
+                    x={calculateContentX(pos)}
+                    y={calculateContentY(pos, size)}
+                    className="ContentText"
+                >
+                    {this.props.params.type}
+                </text>
+                {Array(this.props.params.outputs).fill(1).map((_, i) =>
                     <circle
                         key={i}
                         className="Connector"

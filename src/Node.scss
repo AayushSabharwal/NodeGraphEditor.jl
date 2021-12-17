@@ -6,32 +6,8 @@
     ry: 10;
 }
 
-%Connector {
-    background-color: darkcyan;
-    margin: 5px;
-    width: 15px;
-    height: 15px;
-    border-radius: 7.5px;
-    font-size: 50%;
-    text-align: center;
-    font-family: 'Roboto', sans-serif;
-}
-
-.Connectorin {
-    @extend %Connector;
-    left: 10px;
-}
-
-.Connectorout {
-    @extend %Connector;
-    right: 10px;
-}
-
-.ConnectorContainer {
-    height: 100%;
-    width: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+.ContentText {
+    fill: white;
+    font-family: 'Roboto';
+    font-size: 10;
 }

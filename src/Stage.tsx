@@ -1,17 +1,10 @@
 import React from "react";
 import { Node, calculateConnectorX, calculateConnectorY } from './Node'
 import { Connection } from "./Connection";
-import { CONN_RADIUS, CONN_SIDE_MARGIN, DRAG_BUTTON, MAX_ZOOM, MIN_ZOOM, PAN_BUTTON, ZOOM_SPEED } from "./constants";
-import { ConnectorType, Vec2, StageProps, Edge, StageState } from "./types";
+import { DRAG_BUTTON, MAX_ZOOM, MIN_ZOOM, PAN_BUTTON, ZOOM_SPEED } from "./constants";
+import { ConnectorType, StageProps, Edge, StageState } from "./types";
 import "./Stage.scss"
 
-function calculateContentX(parent_pos: Vec2) {
-    return parent_pos.x + 2 * (CONN_SIDE_MARGIN + CONN_RADIUS);
-}
-
-function calculateContentY(parent_pos: Vec2, parent_size: Vec2) {
-    return parent_pos.y + parent_size.y / 2;
-}
 
 function getEdgeKey(edge: Edge) {
     return `${edge.from}${edge.from_type}${edge.from_conn}_${edge.to}${edge.to_type}${edge.to_conn}`;
@@ -38,7 +31,6 @@ export class Stage extends React.Component<StageProps, StageState> {
         },
         dragstart: { x: 0, y: 0 },
         node_dragstart: { x: 0, y: 0 },
-        selected: -1,
     }
 
     constructor(props: StageProps) {
@@ -89,6 +81,7 @@ export class Stage extends React.Component<StageProps, StageState> {
             return;
         const ind = this.props.nodes.findIndex(n => n.node_id === id);
         const node = this.props.nodes[ind];
+        this.props.selectNode(ind);
         this.setState({
             isdragging: true,
             dragging_ind: ind,
@@ -100,7 +93,6 @@ export class Stage extends React.Component<StageProps, StageState> {
                 x: node.pos.x,
                 y: node.pos.y,
             },
-            selected: id,
         });
         e.stopPropagation();
         e.preventDefault();
@@ -320,7 +312,6 @@ export class Stage extends React.Component<StageProps, StageState> {
                 <rect width="5000%" height="5000%" fill="url(#grid)" x="-2500%" y="-2500%" />
                 {this.props.nodes.map(node => (
                     <Node
-                        selected={this.state.selected === node.node_id}
                         key={node.node_id}
                         {...node}
                         onMouseDown={(e: React.MouseEvent) =>
@@ -328,16 +319,7 @@ export class Stage extends React.Component<StageProps, StageState> {
                         }
                         onConnectorMouseDown={this.onConnectorMouseDown}
                         onConnectorMouseUp={this.onConnectorMouseUp}
-                    >
-                        <text
-                            x={calculateContentX(node.pos)}
-                            y={calculateContentY(node.pos, node.size)}
-                            className="ContentText"
-                        >
-                            TEXT
-                        </text>
-
-                    </Node>
+                    />
                 ))}
                 {this.props.edges.map(edge => {
                     const node_from = this.props.nodes.find(n => n.node_id === edge.from);

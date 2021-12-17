@@ -1,5 +1,5 @@
 import React from "react";
-import { DefaultNodeData, DIVIDER_WIDTH, DRAG_BUTTON } from "./constants";
+import { DefaultNodeData, DefaultResistor, DefaultVoltageSource, DIVIDER_WIDTH, DRAG_BUTTON } from "./constants";
 import { calculateNodeSize } from "./Node";
 import { Stage } from "./Stage";
 import { Edge, EditorState, NodeData } from "./types";
@@ -11,13 +11,13 @@ export class Editor extends React.Component<{}, EditorState> {
             {
                 ...DefaultNodeData,
                 node_id: 0,
+                params: { ...DefaultVoltageSource }
             } as NodeData,
             {
                 ...DefaultNodeData,
                 node_id: 1,
                 pos: { x: 50, y: 50 },
-                inputs: 2,
-                outputs: 1,
+                params: { ...DefaultResistor }
             } as NodeData
         ],
         edges: [{
@@ -29,13 +29,14 @@ export class Editor extends React.Component<{}, EditorState> {
             to_conn: 1,
         }],
         stagewidth: 500,
+        selected: -1,
     }
 
     constructor(props: {}) {
         super(props);
         this.state.nodes = this.state.nodes.map(node => ({
             ...node,
-            size: calculateNodeSize(Math.max(node.inputs, node.outputs))
+            size: calculateNodeSize(Math.max(node.params.inputs, node.params.outputs))
         }));
 
         this.updateNode = this.updateNode.bind(this);
@@ -43,6 +44,7 @@ export class Editor extends React.Component<{}, EditorState> {
         this.onResizerMouseDown = this.onResizerMouseDown.bind(this);
         this.onResizerMouseMove = this.onResizerMouseMove.bind(this);
         this.onResizerMouseUp = this.onResizerMouseUp.bind(this);
+        this.selectNode = this.selectNode.bind(this);
     }
 
     updateNode(ind: number, node: NodeData) {
@@ -66,6 +68,21 @@ export class Editor extends React.Component<{}, EditorState> {
                 edge,
             ]
         })
+    }
+
+    selectNode(ind: number) {
+        let nodes = this.state.nodes;
+
+        if (this.state.selected !== -1) {
+            const previous_node = nodes[this.state.selected];
+            nodes.splice(this.state.selected, 1, { ...previous_node, selected: false });
+        }
+        const selected_node = nodes[ind];
+        nodes.splice(ind, 1, { ...selected_node, selected: true });
+        this.setState({
+            selected: ind,
+            nodes,
+        });
     }
 
     onResizerMouseDown(e: React.MouseEvent) {
@@ -96,6 +113,7 @@ export class Editor extends React.Component<{}, EditorState> {
                     edges={this.state.edges}
                     updateNode={this.updateNode}
                     addEdge={this.addEdge}
+                    selectNode={this.selectNode}
                 />
                 <div
                     onMouseDown={this.onResizerMouseDown}
@@ -117,7 +135,7 @@ export class Editor extends React.Component<{}, EditorState> {
                         height: 753
                     }}
                 >
-                    aushdqd
+
                 </div>
             </div>
         );

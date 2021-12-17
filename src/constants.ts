@@ -1,3 +1,5 @@
+import { Resistor, VoltageSource } from "./types";
+
 export const DRAG_BUTTON = 0;
 export const PAN_BUTTON = 2;
 export const CONN_SIDE_MARGIN = 5;
@@ -10,7 +12,18 @@ export const DIVIDER_WIDTH = 10;
 export const DefaultNodeData = {
     pos: { x: 0, y: 0 },
     size: { x: 150, y: 75 },
+    edges: [],
+    selected: false,
+};
+export const DefaultVoltageSource: VoltageSource = {
+    type: "VoltageSource",
     inputs: 1,
     outputs: 1,
-    edges: [],
-};
+    voltage: 1,
+}
+export const DefaultResistor: Resistor = {
+    type: "Resistor",
+    inputs: 1,
+    outputs: 1,
+    resistance: 1,
+}

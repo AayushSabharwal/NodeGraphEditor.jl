@@ -1,3 +1,5 @@
+import React from "react"
+
 export type Vec2 = {
     x: number,
     y: number,
@@ -9,8 +11,8 @@ export interface NodeData {
     node_id: number,
     pos: Vec2,
     size: Vec2,
-    inputs: number,
-    outputs: number,
+    selected: boolean,
+    params: NodeType,
 }
 
 export type Edge = {
@@ -23,7 +25,6 @@ export type Edge = {
 }
 
 export interface NodeProps extends NodeData, React.SVGAttributes<SVGGElement> {
-    selected: boolean,
     onConnectorMouseUp: (id: number, type: ConnectorType, conn: number, e: React.MouseEvent) => void,
     onConnectorMouseDown: (id: number, type: ConnectorType, conn: number, e: React.MouseEvent) => void,
 }
@@ -35,6 +36,7 @@ export interface StageProps {
     edges: Edge[],
     updateNode: (ind: number, node: NodeData) => void,
     addEdge: (edge: Edge) => void,
+    selectNode: (ind: number) => void,
 }
 
 export interface StageState {
@@ -54,12 +56,28 @@ export interface StageState {
     viewport: {
         pos: Vec2,
         zoom: number,
-    }
-    selected: number,
+    },
 }
 
 export interface EditorState {
     nodes: NodeData[],
     edges: Edge[],
     stagewidth: number,
+    selected: number,
 }
+
+export type VoltageSource = {
+    type: "VoltageSource",
+    inputs: 1,
+    outputs: 1,
+    voltage: number,
+}
+
+export type Resistor = {
+    type: "Resistor",
+    inputs: 1,
+    outputs: 1,
+    resistance: number,
+}
+
+export type NodeType = VoltageSource | Resistor;
