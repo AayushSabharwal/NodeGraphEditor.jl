@@ -1,5 +1,5 @@
 import React from 'react';
-import { Vec2 } from './types';
+import { Vec2 } from 'lib/types';
 
 export interface ConnectionProps {
     from: Vec2,

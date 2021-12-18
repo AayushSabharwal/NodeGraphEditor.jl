@@ -1,8 +1,8 @@
 import React from "react";
-import { DefaultNodeData, DefaultResistor, DefaultVoltageSource, DIVIDER_WIDTH, DRAG_BUTTON } from "./constants";
-import { calculateNodeSize } from "./Node";
-import { Stage } from "./Stage";
-import { Edge, EditorState, NodeData } from "./types";
+import { DefaultNodeData, DefaultResistor, DefaultVoltageSource, DIVIDER_WIDTH, DRAG_BUTTON } from "lib/constants";
+import { calculateNodeSize } from "NodeGraph/Node";
+import { Stage } from "NodeGraph/Stage";
+import { Edge, EditorState, NodeData } from "lib/types";
 import './Editor.scss';
 
 export class Editor extends React.Component<{}, EditorState> {

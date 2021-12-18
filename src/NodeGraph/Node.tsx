@@ -1,7 +1,7 @@
 import React from 'react';
 import './Node.scss'
-import { CONN_RADIUS, CONN_SIDE_MARGIN, CONN_Y_SPACING } from './constants';
-import { Vec2, ConnectorType, NodeProps } from './types';
+import { CONN_RADIUS, CONN_SIDE_MARGIN, CONN_Y_SPACING } from 'lib/constants';
+import { Vec2, ConnectorType, NodeProps } from 'lib/types';
 
 export function calculateConnectorX(parent_size: Vec2, type: ConnectorType) {
     if (type === "input")
