@@ -53,7 +53,6 @@ export class Stage extends React.Component<StageProps, StageState> {
     componentDidMount() {
         document.addEventListener('mousedown', this.onPanMouseDown);
         document.oncontextmenu = (e) => { e.preventDefault(); return false; }
-
     }
 
     componentDidUpdate(_: StageProps, prestate: StageState) {
@@ -273,15 +272,14 @@ export class Stage extends React.Component<StageProps, StageState> {
     render() {
         let connline = null;
         if (this.state.isconnecting) {
+            const node = this.props.nodes[this.props.nodes.findIndex(n => n.node_id === this.state.connection.from)];
             connline = <Connection
                 from={{
-                    x: calculateConnectorX(
-                        this.props.nodes[this.props.nodes.findIndex(n => n.node_id === this.state.connection.from)].pos,
-                        this.props.nodes[this.props.nodes.findIndex(n => n.node_id === this.state.connection.from)].size,
+                    x: node.pos.x + calculateConnectorX(
+                        node.size,
                         this.state.connection.type,
                     ),
-                    y: calculateConnectorY(
-                        this.props.nodes[this.props.nodes.findIndex(n => n.node_id === this.state.connection.from)].pos,
+                    y: node.pos.y + calculateConnectorY(
                         this.state.connection.conn,
                     ),
                 }}
@@ -329,12 +327,12 @@ export class Stage extends React.Component<StageProps, StageState> {
                     return <Connection
                         key={getEdgeKey(edge)}
                         from={{
-                            x: calculateConnectorX(node_from.pos, node_from.size, edge.from_type),
-                            y: calculateConnectorY(node_from.pos, edge.from_conn),
+                            x: node_from.pos.x + calculateConnectorX(node_from.size, edge.from_type),
+                            y: node_from.pos.y + calculateConnectorY(edge.from_conn),
                         }}
                         to={{
-                            x: calculateConnectorX(node_to.pos, node_to.size, edge.to_type),
-                            y: calculateConnectorY(node_to.pos, edge.to_conn),
+                            x: node_to.pos.x + calculateConnectorX(node_to.size, edge.to_type),
+                            y: node_to.pos.y + calculateConnectorY(edge.to_conn),
                         }}
                     />;
                 })}

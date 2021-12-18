@@ -36,7 +36,13 @@ export class Editor extends React.Component<{}, EditorState> {
         super(props);
         this.state.nodes = this.state.nodes.map(node => ({
             ...node,
-            size: calculateNodeSize(Math.max(node.params.inputs, node.params.outputs))
+            size: calculateNodeSize(
+                Math.max(node.params.inputs, node.params.outputs),
+                {
+                    x: 10 * node.params.type.length,
+                    y: 16
+                }
+            )
         }));
 
         this.updateNode = this.updateNode.bind(this);
