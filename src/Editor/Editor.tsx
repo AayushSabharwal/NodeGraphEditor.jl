@@ -1,9 +1,11 @@
 import React from "react";
-import { DefaultNodeData, DefaultResistor, DefaultVoltageSource, DIVIDER_WIDTH, DRAG_BUTTON } from "lib/constants";
+import { DefaultNodeData, DefaultResistance, DefaultVoltageSource, DIVIDER_WIDTH, DRAG_BUTTON } from "lib/constants";
 import { calculateNodeSize } from "NodeGraph/Node";
 import { Stage } from "NodeGraph/Stage";
-import { Edge, EditorState, NodeData } from "lib/types";
+import { Edge, EditorState, NodeData, NodeType } from "lib/types";
 import './Editor.scss';
+import { VoltageSourceMenu } from "./NodeMenuRenderers/VoltageSourceMenu";
+import { ResistorMenu } from "./NodeMenuRenderers/ResistorMenu";
 
 export class Editor extends React.Component<{}, EditorState> {
     state: EditorState = {
@@ -17,7 +19,7 @@ export class Editor extends React.Component<{}, EditorState> {
                 ...DefaultNodeData,
                 node_id: 1,
                 pos: { x: 50, y: 50 },
-                params: { ...DefaultResistor }
+                params: { ...DefaultResistance }
             } as NodeData
         ],
         edges: [{
@@ -30,6 +32,7 @@ export class Editor extends React.Component<{}, EditorState> {
         }],
         stagewidth: 500,
         selected: -1,
+        foo: 32,
     }
 
     constructor(props: {}) {
@@ -51,6 +54,18 @@ export class Editor extends React.Component<{}, EditorState> {
         this.onResizerMouseMove = this.onResizerMouseMove.bind(this);
         this.onResizerMouseUp = this.onResizerMouseUp.bind(this);
         this.selectNode = this.selectNode.bind(this);
+        this.updateNodeParams = this.updateNodeParams.bind(this);
+    }
+
+    updateNodeParams<T extends NodeType>(id: number, params: T) {
+        const ind = this.state.nodes.findIndex(n => n.node_id === id);
+        const nodes = this.state.nodes;
+        const node = nodes[ind];
+        nodes.splice(ind, 1, {
+            ...node,
+            params,
+        });
+        this.setState({ nodes });
     }
 
     updateNode(ind: number, node: NodeData) {
@@ -89,6 +104,27 @@ export class Editor extends React.Component<{}, EditorState> {
             selected: ind,
             nodes,
         });
+    }
+
+    chooseNodeMenu() {
+        if (this.state.selected === -1)
+            return null;
+        else {
+            const node = this.state.nodes[this.state.selected];
+            switch (node.params.type) {
+                case "VoltageSource": return <VoltageSourceMenu
+                    params={node.params}
+                    node_id={node.node_id}
+                    onChangeParams={this.updateNodeParams}
+                />;
+                case "Resistance": return <ResistorMenu
+                    params={node.params}
+                    node_id={node.node_id}
+                    onChangeParams={this.updateNodeParams}
+                />;
+                default: return null;
+            }
+        }
     }
 
     onResizerMouseDown(e: React.MouseEvent) {
@@ -141,7 +177,7 @@ export class Editor extends React.Component<{}, EditorState> {
                         height: 753
                     }}
                 >
-
+                    {this.chooseNodeMenu()}
                 </div>
             </div>
         );

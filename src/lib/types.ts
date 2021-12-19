@@ -1,12 +1,15 @@
 import React from "react"
 
+// #region Utilities
 export type Vec2 = {
     x: number,
     y: number,
 }
 
 export type ConnectorType = "input" | "output"
+// #endregion
 
+// #region Nodes and Edges
 export interface NodeData {
     node_id: number,
     pos: Vec2,
@@ -23,7 +26,9 @@ export type Edge = {
     to_type: ConnectorType,
     to_conn: number,
 }
+// #endregion
 
+// #region NodeGraph Props and States
 export interface NodeProps extends NodeData, React.SVGAttributes<SVGGElement> {
     onConnectorMouseUp: (id: number, type: ConnectorType, conn: number, e: React.MouseEvent) => void,
     onConnectorMouseDown: (id: number, type: ConnectorType, conn: number, e: React.MouseEvent) => void,
@@ -58,14 +63,35 @@ export interface StageState {
         zoom: number,
     },
 }
+// #endregion
 
+// #region Editor Menu
 export interface EditorState {
     nodes: NodeData[],
     edges: Edge[],
     stagewidth: number,
     selected: number,
+    foo: number,
 }
 
+export interface NodeMenuRendererProps<T extends NodeType> {
+    params: T,
+    node_id: number,
+    onChangeParams: (id: number, params: T) => void,
+}
+
+export interface KVPProps {
+    keyname: string,
+    value: number,
+    submitChange: (value: number) => void,
+}
+
+export interface KVPState {
+    temp_value: string,
+}
+// #endregion
+
+// #region Component types
 export type VoltageSource = {
     type: "VoltageSource",
     inputs: 1,
@@ -73,11 +99,26 @@ export type VoltageSource = {
     voltage: number,
 }
 
-export type Resistor = {
-    type: "Resistor",
+export type Resistance = {
+    type: "Resistance",
     inputs: 1,
     outputs: 1,
     resistance: number,
 }
 
-export type NodeType = VoltageSource | Resistor;
+export type Inductance = {
+    type: "Inductance",
+    inputs: 1,
+    outputs: 1,
+    inductance: number,
+}
+
+export type Capacitance = {
+    type: "Capacitance",
+    inputs: 1,
+    outputs: 1,
+    capacitance: number,
+}
+
+export type NodeType = VoltageSource | Resistance | Capacitance | Inductance;
+// #endregion
