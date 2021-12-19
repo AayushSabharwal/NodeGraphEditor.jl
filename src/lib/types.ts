@@ -71,7 +71,7 @@ export interface EditorState {
     edges: Edge[],
     stagewidth: number,
     selected: number,
-    foo: number,
+    newnode_id: number,
 }
 
 export interface NodeMenuRendererProps<T extends NodeType> {
@@ -88,6 +88,17 @@ export interface KVPProps {
 
 export interface KVPState {
     temp_value: string,
+}
+
+export interface DropdownButtonProps {
+    width?: number,
+    button_name: string,
+    options: string[],
+    onSelect: (opt: string) => void,
+}
+
+export interface DropdownButtonState {
+    isopen: boolean,
 }
 // #endregion
 

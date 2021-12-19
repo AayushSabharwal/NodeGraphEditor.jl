@@ -1,5 +1,5 @@
 import React from "react";
-import { DefaultNodeData, DefaultResistance, DefaultVoltageSource, DIVIDER_WIDTH, DRAG_BUTTON } from "lib/constants";
+import { DefaultCapacitance, DefaultInductance, DefaultNodeData, DefaultResistance, DefaultVoltageSource, DIVIDER_WIDTH, DRAG_BUTTON } from "lib/constants";
 import { calculateNodeSize } from "NodeGraph/Node";
 import { Stage } from "NodeGraph/Stage";
 import { Edge, EditorState, NodeData, NodeType } from "lib/types";
@@ -8,6 +8,7 @@ import { VoltageSourceMenu } from "./NodeMenuRenderers/VoltageSourceMenu";
 import { ResistanceMenu } from "./NodeMenuRenderers/ResistanceMenu";
 import { InductanceMenu } from "./NodeMenuRenderers/InductanceMenu";
 import { CapacitanceMenu } from "./NodeMenuRenderers/CapacitanceMenu";
+import { DropdownButton } from "./DropdownButton";
 
 export class Editor extends React.Component<{}, EditorState> {
     state: EditorState = {
@@ -34,7 +35,7 @@ export class Editor extends React.Component<{}, EditorState> {
         }],
         stagewidth: 500,
         selected: -1,
-        foo: 32,
+        newnode_id: 2,
     }
 
     constructor(props: {}) {
@@ -58,6 +59,7 @@ export class Editor extends React.Component<{}, EditorState> {
         this.selectNode = this.selectNode.bind(this);
         this.updateNodeParams = this.updateNodeParams.bind(this);
         this.chooseNodeMenu = this.chooseNodeMenu.bind(this);
+        this.addNode = this.addNode.bind(this);
     }
 
     updateNodeParams<T extends NodeType>(id: number, params: T) {
@@ -91,6 +93,42 @@ export class Editor extends React.Component<{}, EditorState> {
                 ...this.state.edges,
                 edge,
             ]
+        })
+    }
+
+    addNode(type: string) {
+        let newnode: NodeData = {
+            ...DefaultNodeData,
+            node_id: this.state.newnode_id,
+            params: { ...DefaultVoltageSource },
+        };
+        switch (type) {
+            case "VoltageSource":
+                newnode.params = { ...DefaultVoltageSource }
+                break;
+            case "Resistance":
+                newnode.params = { ...DefaultResistance };
+                break;
+            case "Capacitance":
+                newnode.params = { ...DefaultCapacitance };
+                break;
+            case "Inductance":
+                newnode.params = { ...DefaultInductance };
+                break;
+            default:
+                console.error("Unhandled Add Node type");
+                return;
+        }
+        newnode.size = calculateNodeSize(
+            Math.max(newnode.params.inputs, newnode.params.outputs),
+            {
+                x: 10 * newnode.params.type.length,
+                y: 16
+            }
+        )
+        this.setState({
+            nodes: [...this.state.nodes, newnode],
+            newnode_id: this.state.newnode_id + 1,
         })
     }
 
@@ -135,7 +173,8 @@ export class Editor extends React.Component<{}, EditorState> {
                     node_id={node.node_id}
                     onChangeParams={this.updateNodeParams}
                 />;
-                default: return null;
+                default: console.error("Unhandled NodeType Menu");
+                    return null;
             }
         }
     }
@@ -190,6 +229,12 @@ export class Editor extends React.Component<{}, EditorState> {
                         height: 753
                     }}
                 >
+                    <DropdownButton
+                        button_name="Add Node"
+                        options={["VoltageSource", "Resistance", "Inductance", "Capacitance"]}
+                        width={100}
+                        onSelect={this.addNode}
+                    />
                     {this.chooseNodeMenu()}
                 </div>
             </div>
