@@ -12,7 +12,8 @@ export class VoltageSourceMenu extends React.Component<NodeMenuRendererProps<Vol
                     submitChange={v => this.props.onChangeParams(this.props.node_id, {
                         ...this.props.params,
                         voltage: v
-                    })} />
+                    })}
+                />
             </div>
         );
     }

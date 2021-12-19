@@ -2,7 +2,7 @@ import { KVP } from "Editor/KVP";
 import { NodeMenuRendererProps, Resistance } from "lib/types";
 import React from "react";
 
-export class ResistorMenu extends React.Component<NodeMenuRendererProps<Resistance>> {
+export class ResistanceMenu extends React.Component<NodeMenuRendererProps<Resistance>> {
     render() {
         return (
             <div>

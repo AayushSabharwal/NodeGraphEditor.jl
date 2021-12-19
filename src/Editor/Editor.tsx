@@ -5,7 +5,9 @@ import { Stage } from "NodeGraph/Stage";
 import { Edge, EditorState, NodeData, NodeType } from "lib/types";
 import './Editor.scss';
 import { VoltageSourceMenu } from "./NodeMenuRenderers/VoltageSourceMenu";
-import { ResistorMenu } from "./NodeMenuRenderers/ResistorMenu";
+import { ResistanceMenu } from "./NodeMenuRenderers/ResistanceMenu";
+import { InductanceMenu } from "./NodeMenuRenderers/InductanceMenu";
+import { CapacitanceMenu } from "./NodeMenuRenderers/CapacitanceMenu";
 
 export class Editor extends React.Component<{}, EditorState> {
     state: EditorState = {
@@ -55,6 +57,7 @@ export class Editor extends React.Component<{}, EditorState> {
         this.onResizerMouseUp = this.onResizerMouseUp.bind(this);
         this.selectNode = this.selectNode.bind(this);
         this.updateNodeParams = this.updateNodeParams.bind(this);
+        this.chooseNodeMenu = this.chooseNodeMenu.bind(this);
     }
 
     updateNodeParams<T extends NodeType>(id: number, params: T) {
@@ -117,7 +120,17 @@ export class Editor extends React.Component<{}, EditorState> {
                     node_id={node.node_id}
                     onChangeParams={this.updateNodeParams}
                 />;
-                case "Resistance": return <ResistorMenu
+                case "Resistance": return <ResistanceMenu
+                    params={node.params}
+                    node_id={node.node_id}
+                    onChangeParams={this.updateNodeParams}
+                />;
+                case "Inductance": return <InductanceMenu
+                    params={node.params}
+                    node_id={node.node_id}
+                    onChangeParams={this.updateNodeParams}
+                />;
+                case "Capacitance": return <CapacitanceMenu
                     params={node.params}
                     node_id={node.node_id}
                     onChangeParams={this.updateNodeParams}
