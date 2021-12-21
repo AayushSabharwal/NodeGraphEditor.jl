@@ -1,0 +1,37 @@
+.field {
+    border-radius: 4px;
+    position: relative;
+    background-color: transparent;
+    transition: 0.3s all;
+
+    &:hover {
+        background-color: rgba(255, 255, 255, 0.3);
+        box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.05);
+    }
+
+    &.focused {
+        background-color: white;
+        box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.2);
+
+        input {
+            // padding: 12px 8px 4px 8px;
+        }
+    }
+
+    input {
+        position: relative;
+        padding: 7px;
+        border: none;
+        border-radius: 4px;
+        // font-family: "Gotham SSm A", "Gotham SSm B", sans-serif;
+        font-size: 16px;
+        font-weight: 400;
+        line-height: normal;
+        background-color: transparent;
+        color: #282828;
+        outline: none;
+        box-shadow: 0px 2px 10px 0px transparent;
+        transition: 0.3s all;
+        -webkit-appearance: none;
+    }
+}

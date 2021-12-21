@@ -1,11 +1,12 @@
 import { KVP } from "Editor/KVP";
 import { NodeMenuRendererProps, VoltageSource } from "lib/types";
 import React from "react";
+import { CollapsibleMenu } from "./CollapsibleMenu";
 
 export class VoltageSourceMenu extends React.Component<NodeMenuRendererProps<VoltageSource>> {
     render() {
         return (
-            <div>
+            <CollapsibleMenu label={this.props.node_name} changeLabel={this.props.onChangeName}>
                 <KVP
                     keyname="Voltage"
                     value={this.props.params.voltage}
@@ -14,7 +15,7 @@ export class VoltageSourceMenu extends React.Component<NodeMenuRendererProps<Vol
                         voltage: v
                     })}
                 />
-            </div>
+            </CollapsibleMenu >
         );
     }
 }

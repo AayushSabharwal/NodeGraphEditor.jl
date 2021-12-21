@@ -15,11 +15,13 @@ export class Editor extends React.Component<{}, EditorState> {
         nodes: [
             {
                 ...DefaultNodeData,
+                node_name: "VS",
                 node_id: 0,
                 params: { ...DefaultVoltageSource }
             } as NodeData,
             {
                 ...DefaultNodeData,
+                node_name: "Res",
                 node_id: 1,
                 pos: { x: 50, y: 50 },
                 params: { ...DefaultResistance }
@@ -99,6 +101,7 @@ export class Editor extends React.Component<{}, EditorState> {
     addNode(type: string) {
         let newnode: NodeData = {
             ...DefaultNodeData,
+            node_name: type,
             node_id: this.state.newnode_id,
             params: { ...DefaultVoltageSource },
         };
@@ -147,35 +150,39 @@ export class Editor extends React.Component<{}, EditorState> {
         });
     }
 
-    chooseNodeMenu() {
-        if (this.state.selected === -1)
-            return null;
-        else {
-            const node = this.state.nodes[this.state.selected];
-            switch (node.params.type) {
-                case "VoltageSource": return <VoltageSourceMenu
-                    params={node.params}
-                    node_id={node.node_id}
-                    onChangeParams={this.updateNodeParams}
-                />;
-                case "Resistance": return <ResistanceMenu
-                    params={node.params}
-                    node_id={node.node_id}
-                    onChangeParams={this.updateNodeParams}
-                />;
-                case "Inductance": return <InductanceMenu
-                    params={node.params}
-                    node_id={node.node_id}
-                    onChangeParams={this.updateNodeParams}
-                />;
-                case "Capacitance": return <CapacitanceMenu
-                    params={node.params}
-                    node_id={node.node_id}
-                    onChangeParams={this.updateNodeParams}
-                />;
-                default: console.error("Unhandled NodeType Menu");
-                    return null;
-            }
+    chooseNodeMenu(ind: number) {
+        const node = this.state.nodes[ind];
+        switch (node.params.type) {
+            case "VoltageSource": return <VoltageSourceMenu
+                params={node.params}
+                node_id={node.node_id}
+                node_name={node.node_name}
+                onChangeName={n => this.updateNode(ind, { ...node, node_name: n })}
+                onChangeParams={this.updateNodeParams}
+            />;
+            case "Resistance": return <ResistanceMenu
+                params={node.params}
+                node_id={node.node_id}
+                node_name={node.node_name}
+                onChangeName={n => this.updateNode(ind, { ...node, node_name: n })}
+                onChangeParams={this.updateNodeParams}
+            />;
+            case "Inductance": return <InductanceMenu
+                params={node.params}
+                node_id={node.node_id}
+                node_name={node.node_name}
+                onChangeName={n => this.updateNode(ind, { ...node, node_name: n })}
+                onChangeParams={this.updateNodeParams}
+            />;
+            case "Capacitance": return <CapacitanceMenu
+                params={node.params}
+                node_id={node.node_id}
+                node_name={node.node_name}
+                onChangeName={n => this.updateNode(ind, { ...node, node_name: n })}
+                onChangeParams={this.updateNodeParams}
+            />;
+            default: console.error("Unhandled NodeType Menu");
+                return null;
         }
     }
 
@@ -235,7 +242,7 @@ export class Editor extends React.Component<{}, EditorState> {
                         width={100}
                         onSelect={this.addNode}
                     />
-                    {this.chooseNodeMenu()}
+                    {this.state.nodes.map((_, i) => this.chooseNodeMenu(i))}
                 </div>
             </div>
         );

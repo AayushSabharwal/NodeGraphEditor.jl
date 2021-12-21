@@ -76,7 +76,7 @@ export class Node extends React.Component<NodeProps, {}> {
                     textAnchor="middle"
                     className="ContentText"
                 >
-                    {this.props.params.type}
+                    {this.props.node_name}
                 </text>
                 {Array(this.props.params.outputs).fill(1).map((_, i) =>
                     <circle

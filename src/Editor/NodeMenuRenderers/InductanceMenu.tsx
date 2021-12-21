@@ -1,11 +1,12 @@
 import { KVP } from "Editor/KVP";
 import { Inductance, NodeMenuRendererProps } from "lib/types";
 import React from "react";
+import { CollapsibleMenu } from "./CollapsibleMenu";
 
 export class InductanceMenu extends React.Component<NodeMenuRendererProps<Inductance>> {
     render() {
         return (
-            <div>
+            <CollapsibleMenu label={this.props.node_name} changeLabel={this.props.onChangeName}>
                 <KVP
                     keyname="Inductance"
                     value={this.props.params.inductance}
@@ -14,7 +15,7 @@ export class InductanceMenu extends React.Component<NodeMenuRendererProps<Induct
                         inductance: i
                     })}
                 />
-            </div>
+            </CollapsibleMenu>
         );
     }
 }

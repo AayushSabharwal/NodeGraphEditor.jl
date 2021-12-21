@@ -1,0 +1,14 @@
+.menuitem {
+    background-color: #888;
+    border-radius: 5px;
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+    margin: 10px;
+}
+
+.menuitem .header {
+    display: flex;
+    flex-direction: row;
+}

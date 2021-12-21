@@ -251,13 +251,18 @@ export class Stage extends React.Component<StageProps, StageState> {
     }
 
     onZoomWheel(e: React.WheelEvent<SVGSVGElement>) {
+        const vp = this.state.viewport;
+        const zoom = Math.max(
+            MIN_ZOOM,
+            Math.min(MAX_ZOOM, this.state.viewport.zoom + e.deltaY * ZOOM_SPEED)
+        );
         this.setState({
             viewport: {
-                ...this.state.viewport,
-                zoom: Math.max(
-                    MIN_ZOOM,
-                    Math.min(MAX_ZOOM, this.state.viewport.zoom + e.deltaY * ZOOM_SPEED)
-                ),
+                pos: {
+                    x: vp.pos.x + e.pageX * (vp.zoom - zoom),
+                    y: vp.pos.y + e.pageY * (vp.zoom - zoom),
+                },
+                zoom,
             }
         });
 

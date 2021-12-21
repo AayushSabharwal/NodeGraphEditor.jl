@@ -1,11 +1,12 @@
 import { KVP } from "Editor/KVP";
 import { Capacitance, NodeMenuRendererProps } from "lib/types";
 import React from "react";
+import { CollapsibleMenu } from "./CollapsibleMenu";
 
 export class CapacitanceMenu extends React.Component<NodeMenuRendererProps<Capacitance>> {
     render() {
         return (
-            <div>
+            <CollapsibleMenu label={this.props.node_name} changeLabel={this.props.onChangeName}>
                 <KVP
                     keyname="Capacitance"
                     value={this.props.params.capacitance}
@@ -14,7 +15,7 @@ export class CapacitanceMenu extends React.Component<NodeMenuRendererProps<Capac
                         capacitance: c
                     })}
                 />
-            </div>
+            </CollapsibleMenu>
         );
     }
 }

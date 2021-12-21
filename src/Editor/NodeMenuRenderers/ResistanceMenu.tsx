@@ -1,11 +1,12 @@
 import { KVP } from "Editor/KVP";
 import { NodeMenuRendererProps, Resistance } from "lib/types";
 import React from "react";
+import { CollapsibleMenu } from "./CollapsibleMenu";
 
 export class ResistanceMenu extends React.Component<NodeMenuRendererProps<Resistance>> {
     render() {
         return (
-            <div>
+            <CollapsibleMenu label={this.props.node_name} changeLabel={this.props.onChangeName}>
                 <KVP
                     keyname="Resistance"
                     value={this.props.params.resistance}
@@ -14,7 +15,7 @@ export class ResistanceMenu extends React.Component<NodeMenuRendererProps<Resist
                         resistance: r
                     })}
                 />
-            </div>
+            </CollapsibleMenu>
         );
     }
 }

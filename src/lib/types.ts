@@ -12,6 +12,7 @@ export type ConnectorType = "input" | "output"
 // #region Nodes and Edges
 export interface NodeData {
     node_id: number,
+    node_name: string,
     pos: Vec2,
     size: Vec2,
     selected: boolean,
@@ -77,6 +78,8 @@ export interface EditorState {
 export interface NodeMenuRendererProps<T extends NodeType> {
     params: T,
     node_id: number,
+    node_name: string,
+    onChangeName: (nm: string) => void,
     onChangeParams: (id: number, params: T) => void,
 }
 
@@ -99,6 +102,26 @@ export interface DropdownButtonProps {
 
 export interface DropdownButtonState {
     isopen: boolean,
+}
+
+export interface ControlledTextFieldProps {
+    label: string,
+    submitChange: (value: string) => void,
+    width?: string,
+    height?: string,
+}
+
+export interface ControlledTextFieldState {
+    focused: boolean,
+}
+
+export interface CollapsibleMenuProps {
+    label: string,
+    changeLabel: (value: string) => void,
+}
+
+export interface CollapsibleMenuState {
+    collapsed: boolean,
 }
 // #endregion
 
