@@ -17,6 +17,8 @@ export class CollapsibleMenu extends React.Component<CollapsibleMenuProps, Colla
                         label={this.props.label}
                         submitChange={this.props.changeLabel}
                     />
+                    <div className="deletebutton" onClick={() => this.props.deleteNode()}>
+                    </div>
                 </div>
                 {this.state.collapsed || this.props.children}
             </div>

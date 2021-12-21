@@ -62,6 +62,7 @@ export class Editor extends React.Component<{}, EditorState> {
         this.updateNodeParams = this.updateNodeParams.bind(this);
         this.chooseNodeMenu = this.chooseNodeMenu.bind(this);
         this.addNode = this.addNode.bind(this);
+        this.deleteNode = this.deleteNode.bind(this);
     }
 
     updateNodeParams<T extends NodeType>(id: number, params: T) {
@@ -150,36 +151,52 @@ export class Editor extends React.Component<{}, EditorState> {
         });
     }
 
+    deleteNode(id: number) {
+        let nodes = this.state.nodes;
+        nodes = nodes.filter(node => node.node_id !== id);
+        let edges = this.state.edges;
+        edges = edges.filter(e => e.from !== id && e.to !== id);
+        this.setState({ nodes, edges });
+    }
+
     chooseNodeMenu(ind: number) {
         const node = this.state.nodes[ind];
         switch (node.params.type) {
             case "VoltageSource": return <VoltageSourceMenu
+                key={node.node_id}
                 params={node.params}
                 node_id={node.node_id}
                 node_name={node.node_name}
                 onChangeName={n => this.updateNode(ind, { ...node, node_name: n })}
                 onChangeParams={this.updateNodeParams}
+                onDelete={this.deleteNode}
             />;
             case "Resistance": return <ResistanceMenu
+                key={node.node_id}
                 params={node.params}
                 node_id={node.node_id}
                 node_name={node.node_name}
                 onChangeName={n => this.updateNode(ind, { ...node, node_name: n })}
                 onChangeParams={this.updateNodeParams}
+                onDelete={this.deleteNode}
             />;
             case "Inductance": return <InductanceMenu
+                key={node.node_id}
                 params={node.params}
                 node_id={node.node_id}
                 node_name={node.node_name}
                 onChangeName={n => this.updateNode(ind, { ...node, node_name: n })}
                 onChangeParams={this.updateNodeParams}
+                onDelete={this.deleteNode}
             />;
             case "Capacitance": return <CapacitanceMenu
+                key={node.node_id}
                 params={node.params}
                 node_id={node.node_id}
                 node_name={node.node_name}
                 onChangeName={n => this.updateNode(ind, { ...node, node_name: n })}
                 onChangeParams={this.updateNodeParams}
+                onDelete={this.deleteNode}
             />;
             default: console.error("Unhandled NodeType Menu");
                 return null;
@@ -242,7 +259,9 @@ export class Editor extends React.Component<{}, EditorState> {
                         width={100}
                         onSelect={this.addNode}
                     />
-                    {this.state.nodes.map((_, i) => this.chooseNodeMenu(i))}
+                    <div className="NodeData">
+                        {this.state.nodes.map((_, i) => this.chooseNodeMenu(i))}
+                    </div>
                 </div>
             </div>
         );

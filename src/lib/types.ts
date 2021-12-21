@@ -81,6 +81,7 @@ export interface NodeMenuRendererProps<T extends NodeType> {
     node_name: string,
     onChangeName: (nm: string) => void,
     onChangeParams: (id: number, params: T) => void,
+    onDelete: (id: number) => void,
 }
 
 export interface KVPProps {
@@ -118,6 +119,7 @@ export interface ControlledTextFieldState {
 export interface CollapsibleMenuProps {
     label: string,
     changeLabel: (value: string) => void,
+    deleteNode: () => void,
 }
 
 export interface CollapsibleMenuState {

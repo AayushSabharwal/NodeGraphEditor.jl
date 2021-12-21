@@ -6,7 +6,11 @@ import { CollapsibleMenu } from "./CollapsibleMenu";
 export class ResistanceMenu extends React.Component<NodeMenuRendererProps<Resistance>> {
     render() {
         return (
-            <CollapsibleMenu label={this.props.node_name} changeLabel={this.props.onChangeName}>
+            <CollapsibleMenu
+                label={this.props.node_name}
+                changeLabel={this.props.onChangeName}
+                deleteNode={() => this.props.onDelete(this.props.node_id)}
+            >
                 <KVP
                     keyname="Resistance"
                     value={this.props.params.resistance}
