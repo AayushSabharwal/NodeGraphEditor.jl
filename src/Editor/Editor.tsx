@@ -44,13 +44,7 @@ export class Editor extends React.Component<{}, EditorState> {
         super(props);
         this.state.nodes = this.state.nodes.map(node => ({
             ...node,
-            size: calculateNodeSize(
-                Math.max(node.params.inputs, node.params.outputs),
-                {
-                    x: 10 * node.params.type.length,
-                    y: 16
-                }
-            )
+            size: calculateNodeSize(node)
         }));
 
         this.updateNode = this.updateNode.bind(this);
@@ -77,6 +71,7 @@ export class Editor extends React.Component<{}, EditorState> {
     }
 
     updateNode(ind: number, node: NodeData) {
+        node.size = calculateNodeSize(node);
         let nodes = this.state.nodes;
         nodes.splice(ind, 1, node);
         this.setState({ nodes });
@@ -123,13 +118,7 @@ export class Editor extends React.Component<{}, EditorState> {
                 console.error("Unhandled Add Node type");
                 return;
         }
-        newnode.size = calculateNodeSize(
-            Math.max(newnode.params.inputs, newnode.params.outputs),
-            {
-                x: 10 * newnode.params.type.length,
-                y: 16
-            }
-        )
+        newnode.size = calculateNodeSize(newnode);
         this.setState({
             nodes: [...this.state.nodes, newnode],
             newnode_id: this.state.newnode_id + 1,

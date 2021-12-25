@@ -95,7 +95,7 @@ export interface KVPState {
 }
 
 export interface DropdownButtonProps {
-    width?: number,
+    width?: string | number,
     button_name: string,
     options: string[],
     onSelect: (opt: string) => void,
@@ -125,14 +125,34 @@ export interface CollapsibleMenuProps {
 export interface CollapsibleMenuState {
     collapsed: boolean,
 }
+
+export interface DropdownSelectorProps {
+    width?: string | number,
+    selected: number,
+    options: string[],
+    onSelect: (ind: number) => void,
+}
 // #endregion
 
 // #region Component types
+export enum SourceType {
+    Constant = 0,
+    Sine = 1,
+    Cosine = 2,
+    DampedSine = 3,
+}
+
 export type VoltageSource = {
     type: "VoltageSource",
     inputs: 1,
     outputs: 1,
     voltage: number,
+    source_type: SourceType,
+    offset: number,
+    frequency: number,
+    starttime: number,
+    phase: number,
+    damping_coef: number,
 }
 
 export type Resistance = {

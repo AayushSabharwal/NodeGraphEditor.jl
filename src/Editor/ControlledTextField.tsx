@@ -14,6 +14,7 @@ export class ControlledTextField extends React.Component<ControlledTextFieldProp
         return (
             <div className={className} style={{ height, width }}>
                 <input
+                    style={{ height, width }}
                     type="text"
                     value={this.props.label}
                     onChange={e => this.props.submitChange(e.target.value)}
