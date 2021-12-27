@@ -1,6 +1,6 @@
 import React from 'react';
 import './Node.scss'
-import { CONN_RADIUS, CONN_SIDE_MARGIN, CONN_Y_SPACING, NODE_CHAR_WIDTH, NODE_LINE_HEIGHT, NODE_MAX_WIDTH, NODE_MIN_WIDTH } from 'lib/constants';
+import { CONN_RADIUS, CONN_SIDE_MARGIN, CONN_Y_SPACING, IMAGE_ASPECT_RATIOS, IMAGE_SIZE, NODE_CHAR_WIDTH, NODE_LINE_HEIGHT, NODE_MAX_WIDTH, NODE_MIN_WIDTH } from 'lib/constants';
 import { Vec2, ConnectorType, NodeProps, NodeData } from 'lib/types';
 
 export function calculateConnectorX(parent_size: Vec2, type: ConnectorType) {
@@ -32,12 +32,12 @@ export function wrappedContentStringLines(content: string): number {
     return Math.ceil(content.length / maxchars);
 }
 
-export function calculateNodeSize(node: NodeData, extraContentSize: Vec2 = { x: 0, y: 0 }): Vec2 {
+export function calculateNodeSize(node: NodeData): Vec2 {
     const conn = Math.max(node.params.inputs, node.params.outputs);
     return {
         x: Math.min(
             Math.max(
-                extraContentSize.x,
+                IMAGE_SIZE.x,
                 node.node_name.length * NODE_CHAR_WIDTH,
                 NODE_MIN_WIDTH
             ),
@@ -45,7 +45,8 @@ export function calculateNodeSize(node: NodeData, extraContentSize: Vec2 = { x: 
         ) + 2 * (2 * CONN_RADIUS + CONN_Y_SPACING),
         y: Math.max(
             conn * (2 * CONN_RADIUS + CONN_Y_SPACING) - CONN_Y_SPACING,
-            extraContentSize.y + NODE_LINE_HEIGHT * wrappedContentStringLines(node.node_name),
+            IMAGE_SIZE.y / IMAGE_ASPECT_RATIOS[node.params.type]
+            + NODE_LINE_HEIGHT * wrappedContentStringLines(node.node_name),
         ) + 2 * CONN_Y_SPACING,
     }
 }
@@ -66,6 +67,7 @@ export class Node extends React.Component<NodeProps, {}> {
                 x={pos.x}
                 y={pos.y}
                 {...(this.props as React.SVGAttributes<SVGGElement>)}
+                xmlns="http://www.w3.org/2000/svg"
             >
                 <rect
                     width="100%"
@@ -98,15 +100,21 @@ export class Node extends React.Component<NodeProps, {}> {
                         )}
                     />
                 )}
+                <image
+                    filter="invert(1)"
+                    href={`/assets/${this.props.params.type}.svg`}
+                    x={(size.x - IMAGE_SIZE.x) / 2}
+                    width={IMAGE_SIZE.x}
+                />
                 <text
                     x="50%"
-                    y="0%"
+                    y={IMAGE_SIZE.y / IMAGE_ASPECT_RATIOS[this.props.params.type]}
                     dominantBaseline="middle"
                     textAnchor="middle"
                     className="ContentText"
                 >
-                    {wrappedContentString(this.props.node_name).map(s =>
-                        <tspan x="50%" dy={NODE_LINE_HEIGHT}>{s}</tspan>
+                    {wrappedContentString(this.props.node_name).map((s, i) =>
+                        <tspan key={i} x="50%" dy={NODE_LINE_HEIGHT}>{s}</tspan>
                     )}
                 </text>
                 {Array(this.props.params.outputs).fill(1).map((_, i) =>

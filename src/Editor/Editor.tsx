@@ -23,7 +23,7 @@ export class Editor extends React.Component<{}, EditorState> {
                 ...DefaultNodeData,
                 node_name: "Res",
                 node_id: 1,
-                pos: { x: 50, y: 50 },
+                pos: { x: 200, y: 200 },
                 params: { ...DefaultResistance }
             } as NodeData
         ],

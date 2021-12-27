@@ -13,6 +13,13 @@ export const NODE_MIN_WIDTH = 150;
 export const NODE_MAX_WIDTH = 300;
 export const NODE_CHAR_WIDTH = 10;
 export const NODE_LINE_HEIGHT = 19;
+export const IMAGE_SIZE = { x: 100, y: 100 };
+export const IMAGE_ASPECT_RATIOS = {
+    VoltageSource: 1,
+    Resistance: 6.8 / 2.8,
+    Capacitance: 35 / 16,
+    Inductance: 2,
+}
 export const DefaultNodeData = {
     pos: { x: 0, y: 0 },
     size: { x: 150, y: 75 },

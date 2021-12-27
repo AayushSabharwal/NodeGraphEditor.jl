@@ -302,6 +302,7 @@ export class Stage extends React.Component<StageProps, StageState> {
                 height={this.props.height}
                 viewBox={this.getViewportString()}
                 onWheel={this.onZoomWheel}
+                xmlns="http://www.w3.org/2000/svg"
             >
                 <defs>
                     <pattern id="smallGrid" width="8" height="8" patternUnits="userSpaceOnUse">
