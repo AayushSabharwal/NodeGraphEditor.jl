@@ -4,11 +4,10 @@ import { calculateNodeSize } from "NodeGraph/Node";
 import { Stage } from "NodeGraph/Stage";
 import { Edge, EditorState, NodeData, NodeType } from "lib/types";
 import './Editor.scss';
-import { VoltageSourceMenu } from "./NodeMenuRenderers/VoltageSourceMenu";
-import { ResistanceMenu } from "./NodeMenuRenderers/ResistanceMenu";
-import { InductanceMenu } from "./NodeMenuRenderers/InductanceMenu";
-import { CapacitanceMenu } from "./NodeMenuRenderers/CapacitanceMenu";
-import { DropdownButton } from "./DropdownButton";
+import { Button, Dropdown, Menu, Space } from "antd";
+import { DownOutlined } from '@ant-design/icons';
+import 'antd/dist/antd.dark.css';
+import { NodeMenu } from "./NodeMenu";
 
 export class Editor extends React.Component<{}, EditorState> {
     state: EditorState = {
@@ -54,7 +53,6 @@ export class Editor extends React.Component<{}, EditorState> {
         this.onResizerMouseUp = this.onResizerMouseUp.bind(this);
         this.selectNode = this.selectNode.bind(this);
         this.updateNodeParams = this.updateNodeParams.bind(this);
-        this.chooseNodeMenu = this.chooseNodeMenu.bind(this);
         this.addNode = this.addNode.bind(this);
         this.deleteNode = this.deleteNode.bind(this);
     }
@@ -148,50 +146,6 @@ export class Editor extends React.Component<{}, EditorState> {
         this.setState({ nodes, edges });
     }
 
-    chooseNodeMenu(ind: number) {
-        const node = this.state.nodes[ind];
-        switch (node.params.type) {
-            case "VoltageSource": return <VoltageSourceMenu
-                key={node.node_id}
-                params={node.params}
-                node_id={node.node_id}
-                node_name={node.node_name}
-                onChangeName={n => this.updateNode(ind, { ...node, node_name: n })}
-                onChangeParams={this.updateNodeParams}
-                onDelete={this.deleteNode}
-            />;
-            case "Resistance": return <ResistanceMenu
-                key={node.node_id}
-                params={node.params}
-                node_id={node.node_id}
-                node_name={node.node_name}
-                onChangeName={n => this.updateNode(ind, { ...node, node_name: n })}
-                onChangeParams={this.updateNodeParams}
-                onDelete={this.deleteNode}
-            />;
-            case "Inductance": return <InductanceMenu
-                key={node.node_id}
-                params={node.params}
-                node_id={node.node_id}
-                node_name={node.node_name}
-                onChangeName={n => this.updateNode(ind, { ...node, node_name: n })}
-                onChangeParams={this.updateNodeParams}
-                onDelete={this.deleteNode}
-            />;
-            case "Capacitance": return <CapacitanceMenu
-                key={node.node_id}
-                params={node.params}
-                node_id={node.node_id}
-                node_name={node.node_name}
-                onChangeName={n => this.updateNode(ind, { ...node, node_name: n })}
-                onChangeParams={this.updateNodeParams}
-                onDelete={this.deleteNode}
-            />;
-            default: console.error("Unhandled NodeType Menu");
-                return null;
-        }
-    }
-
     onResizerMouseDown(e: React.MouseEvent) {
         if (e.button !== DRAG_BUTTON)
             return;
@@ -211,11 +165,18 @@ export class Editor extends React.Component<{}, EditorState> {
     }
 
     render() {
+        const AddNodeMenu = (
+            <Menu onClick={n => this.addNode(n.key)}>
+                {["VoltageSource", "Resistance", "Inductance", "Capacitance"].map(s =>
+                    <Menu.Item key={s}>{s}</Menu.Item>
+                )}
+            </Menu>
+        );
         return (
             <div className="Editor">
                 <Stage
                     width={this.state.stagewidth}
-                    height={749.9999}
+                    height={748}
                     nodes={this.state.nodes}
                     edges={this.state.edges}
                     updateNode={this.updateNode}
@@ -230,7 +191,7 @@ export class Editor extends React.Component<{}, EditorState> {
                         top: 0,
                         background: "black",
                         width: DIVIDER_WIDTH,
-                        height: 753
+                        height: 748
                     }}
                 >
                 </div>
@@ -239,20 +200,24 @@ export class Editor extends React.Component<{}, EditorState> {
                     style={{
                         left: this.state.stagewidth + DIVIDER_WIDTH,
                         width: window.innerWidth - this.state.stagewidth - DIVIDER_WIDTH,
-                        height: 753
+                        height: 748
                     }}
                 >
-                    <DropdownButton
-                        button_name="Add Node"
-                        options={["VoltageSource", "Resistance", "Inductance", "Capacitance"]}
-                        width={100}
-                        onSelect={this.addNode}
-                    />
-                    <div className="NodeData">
-                        {this.state.nodes.map((_, i) => this.chooseNodeMenu(i))}
-                    </div>
+                    <Space direction="vertical">
+                        <Dropdown overlay={AddNodeMenu} trigger={['click']} arrow placement="bottomCenter">
+                            <Button>
+                                Add Node <DownOutlined />
+                            </Button>
+                        </Dropdown>
+                        <NodeMenu
+                            nodes={this.state.nodes}
+                            updateNode={this.updateNode}
+                            updateNodeParams={this.updateNodeParams}
+                            deleteNode={this.deleteNode}
+                        />
+                    </Space>
                 </div>
-            </div>
+            </div >
         );
     }
 }

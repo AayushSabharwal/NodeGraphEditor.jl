@@ -1,4 +1,5 @@
-import { ControlledTextField } from "Editor/ControlledTextField";
+import { DeleteFilled } from "@ant-design/icons";
+import { Button, Collapse, Input } from "antd";
 import { CollapsibleMenuProps, CollapsibleMenuState } from "lib/types";
 import React from "react";
 import './CollapsibleMenu.scss';
@@ -9,19 +10,16 @@ export class CollapsibleMenu extends React.Component<CollapsibleMenuProps, Colla
     };
 
     render() {
-        return (
-            <div className="menuitem">
-                <div className="header">
-                    <input type="checkbox" onClick={() => this.setState({ collapsed: !this.state.collapsed })} />
-                    <ControlledTextField
-                        label={this.props.label}
-                        submitChange={this.props.changeLabel}
-                    />
-                    <div className="deletebutton" onClick={() => this.props.deleteNode()}>
-                    </div>
-                </div>
-                {this.state.collapsed || this.props.children}
+        const header = (
+            <div>
+                <Input defaultValue={this.props.label} onChange={e => this.props.changeLabel(e.target.value)} />
+                <Button type="primary" shape="round" icon={<DeleteFilled />} />
             </div>
+        );
+        return (
+            <Collapse.Panel key={this.props.node_id} header={header}>
+                <p>CONTENT</p>
+            </Collapse.Panel>
         );
     }
 }

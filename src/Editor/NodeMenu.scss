@@ -1,0 +1,29 @@
+.header {
+    display: flex;
+    width: 100%;
+    align-items: stretch;
+}
+
+.input {
+    flex: 1 1 auto;
+    overflow: auto;
+}
+
+.headeritem {
+    margin: 0px 5px;
+}
+
+.collapse {
+    background-color: rgb(75, 75, 75);
+    overflow-y: auto;
+    &::-webkit-scrollbar{
+        width: 5px;
+    }
+    &::-webkit-scrollbar-track {
+        background-color: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+        background-color: rgba(80, 80, 80, 0.8);
+        border-radius: 5px;
+    }
+}

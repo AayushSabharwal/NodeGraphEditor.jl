@@ -1,65 +1,71 @@
-import { DropdownSelector } from "Editor/DropdownSelector";
+import { Select, Space } from "antd";
 import { KVP } from "Editor/KVP";
 import { NodeMenuRendererProps, SourceType, VoltageSource } from "lib/types";
 import React from "react";
-import { CollapsibleMenu } from "./CollapsibleMenu";
 
 export class VoltageSourceMenu extends React.Component<NodeMenuRendererProps<VoltageSource>> {
     changeParams(o: {}) {
         this.props.onChangeParams(this.props.node_id, { ...this.props.params, ...o });
     }
 
-    getKVPs() {
+    getOptions() {
         switch (this.props.params.source_type) {
             case SourceType.Constant:
-                return [<KVP
-                    key="Voltage"
-                    keyname="Voltage"
-                    value={this.props.params.voltage}
-                    submitChange={v => this.changeParams({ voltage: v })}
-                />];
+                return [
+                    <KVP
+                        label="Voltage"
+                        key="Voltage"
+                        unit="V"
+                        value={this.props.params.voltage}
+                        onChange={v => this.changeParams({ voltage: v })}
+                    />];
 
             case SourceType.Sine:
             case SourceType.Cosine:
             case SourceType.DampedSine:
                 let nodes = [
                     <KVP
+                        label="Amplitude"
                         key="Amplitude"
-                        keyname="Amplitude"
+                        unit="V"
                         value={this.props.params.voltage}
-                        submitChange={v => this.changeParams({ voltage: v })}
+                        onChange={v => this.changeParams({ voltage: v })}
                     />,
                     <KVP
+                        label="Offset"
                         key="Offset"
-                        keyname="Offset"
+                        unit="V"
                         value={this.props.params.offset}
-                        submitChange={v => this.changeParams({ offset: v })}
+                        onChange={v => this.changeParams({ offset: v })}
                     />,
                     <KVP
+                        label="Frequency"
                         key="Frequency"
-                        keyname="Frequency"
+                        unit="Hz"
                         value={this.props.params.frequency}
-                        submitChange={v => this.changeParams({ frequency: v })}
+                        onChange={v => this.changeParams({ frequency: v })}
                     />,
                     <KVP
+                        label="Start Time"
                         key="Start Time"
-                        keyname="Start Time"
+                        unit="s"
                         value={this.props.params.starttime}
-                        submitChange={v => this.changeParams({ starttime: v })}
+                        onChange={v => this.changeParams({ starttime: v })}
                     />,
                     <KVP
+                        label="Phase"
                         key="Phase"
-                        keyname="Phase"
+                        unit="rad"
                         value={this.props.params.phase}
-                        submitChange={v => this.changeParams({ phase: v })}
+                        onChange={v => this.changeParams({ phase: v })}
                     />,
                 ];
                 if (this.props.params.source_type === SourceType.DampedSine)
                     nodes.push(<KVP
+                        label="Damping Coefficient"
                         key="Damping Coefficient"
-                        keyname="Damping Coefficient"
                         value={this.props.params.damping_coef}
-                        submitChange={v => this.changeParams({ damping_coef: v })}
+                        onChange={v => this.changeParams({ damping_coef: v })}
                     />);
                 return nodes;
 
@@ -71,19 +77,19 @@ export class VoltageSourceMenu extends React.Component<NodeMenuRendererProps<Vol
 
     render() {
         return (
-            <CollapsibleMenu
-                label={this.props.node_name}
-                changeLabel={this.props.onChangeName}
-                deleteNode={() => this.props.onDelete(this.props.node_id)}
-            >
-                <DropdownSelector
-                    width="100px"
-                    options={Array(Object.keys(SourceType).length / 2).fill(0).map((_, i) => SourceType[i])}
-                    selected={this.props.params.source_type}
-                    onSelect={v => this.changeParams({ source_type: v })}
-                />
-                {this.getKVPs()}
-            </CollapsibleMenu >
+            <Space direction="vertical">
+                <Select
+                    defaultValue={SourceType[0]}
+                    onChange={v => this.changeParams({ source_type: v })}
+                    style={{ width: "200px" }}
+                    showArrow
+                >
+                    {Array(Object.keys(SourceType).length / 2).fill(0).map((_, i) =>
+                        <Select.Option key={SourceType[i]} value={i}> {SourceType[i]} </Select.Option>
+                    )}
+                </Select>
+                {this.getOptions()}
+            </Space>
         );
     }
 }

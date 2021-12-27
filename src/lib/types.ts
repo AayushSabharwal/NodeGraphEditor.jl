@@ -1,4 +1,4 @@
-import React from "react"
+import React, { ReactNode } from "react"
 
 // #region Utilities
 export type Vec2 = {
@@ -75,19 +75,24 @@ export interface EditorState {
     newnode_id: number,
 }
 
+export interface NodeMenuProps {
+    nodes: NodeData[],
+    updateNode: (ind: number, node: NodeData) => void,
+    updateNodeParams: (ind: number, params: NodeType) => void,
+    deleteNode: (id: number) => void,
+}
+
 export interface NodeMenuRendererProps<T extends NodeType> {
     params: T,
     node_id: number,
-    node_name: string,
-    onChangeName: (nm: string) => void,
     onChangeParams: (id: number, params: T) => void,
-    onDelete: (id: number) => void,
 }
 
 export interface KVPProps {
-    keyname: string,
+    label: string,
     value: number,
-    submitChange: (value: number) => void,
+    unit?: ReactNode,
+    onChange: (value: number) => void,
 }
 
 export interface KVPState {
@@ -117,6 +122,7 @@ export interface ControlledTextFieldState {
 }
 
 export interface CollapsibleMenuProps {
+    node_id: number,
     label: string,
     changeLabel: (value: string) => void,
     deleteNode: () => void,
