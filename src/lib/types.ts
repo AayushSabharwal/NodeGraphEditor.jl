@@ -121,15 +121,14 @@ export interface ControlledTextFieldState {
     focused: boolean,
 }
 
-export interface CollapsibleMenuProps {
-    node_id: number,
+export interface NodeCardProps {
     label: string,
     changeLabel: (value: string) => void,
     deleteNode: () => void,
 }
 
-export interface CollapsibleMenuState {
-    collapsed: boolean,
+export interface NodeCardState {
+    isOpen: boolean,
 }
 
 export interface DropdownSelectorProps {

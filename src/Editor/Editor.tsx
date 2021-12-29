@@ -4,10 +4,12 @@ import { calculateNodeSize } from "NodeGraph/Node";
 import { Stage } from "NodeGraph/Stage";
 import { Edge, EditorState, NodeData, NodeType } from "lib/types";
 import './Editor.scss';
-import { Button, Dropdown, Menu, Space } from "antd";
-import { DownOutlined } from '@ant-design/icons';
-import 'antd/dist/antd.dark.css';
 import { NodeMenu } from "./NodeMenu";
+import { Button, Menu, MenuItem } from "@blueprintjs/core";
+import { Popover2 } from "@blueprintjs/popover2";
+import "normalize.css";
+import "@blueprintjs/core/lib/css/blueprint.css";
+import "@blueprintjs/icons/lib/css/blueprint-icons.css";
 
 export class Editor extends React.Component<{}, EditorState> {
     state: EditorState = {
@@ -166,9 +168,9 @@ export class Editor extends React.Component<{}, EditorState> {
 
     render() {
         const AddNodeMenu = (
-            <Menu onClick={n => this.addNode(n.key)}>
+            <Menu >
                 {["VoltageSource", "Resistance", "Inductance", "Capacitance"].map(s =>
-                    <Menu.Item key={s}>{s}</Menu.Item>
+                    <MenuItem key={s} text={s} onClick={() => this.addNode(s)} />
                 )}
             </Menu>
         );
@@ -196,26 +198,26 @@ export class Editor extends React.Component<{}, EditorState> {
                 >
                 </div>
                 <div
-                    className="Menu"
+                    className="Menu bp3-dark"
                     style={{
                         left: this.state.stagewidth + DIVIDER_WIDTH,
                         width: window.innerWidth - this.state.stagewidth - DIVIDER_WIDTH,
                         height: 748
                     }}
                 >
-                    <Space direction="vertical">
-                        <Dropdown overlay={AddNodeMenu} trigger={['click']} arrow placement="bottomCenter">
-                            <Button>
-                                Add Node <DownOutlined />
-                            </Button>
-                        </Dropdown>
-                        <NodeMenu
-                            nodes={this.state.nodes}
-                            updateNode={this.updateNode}
-                            updateNodeParams={this.updateNodeParams}
-                            deleteNode={this.deleteNode}
-                        />
-                    </Space>
+                    {/* <Space direction="vertical"> */}
+                    <Popover2 content={AddNodeMenu} placement="right-end">
+                        <Button>
+                            Add Node
+                        </Button>
+                    </Popover2>
+                    <NodeMenu
+                        nodes={this.state.nodes}
+                        updateNode={this.updateNode}
+                        updateNodeParams={this.updateNodeParams}
+                        deleteNode={this.deleteNode}
+                    />
+                    {/* </Space> */}
                 </div>
             </div >
         );

@@ -1,23 +1,28 @@
-import { InputNumber } from "antd";
-import { INPUT_WIDTH, LABEL_WIDTH, UNIT_WIDTH } from "lib/constants";
+import { FormGroup, NumericInput, Tag } from "@blueprintjs/core";
+import { INPUT_WIDTH } from "lib/constants";
 import { KVPProps } from "lib/types";
 import React from "react";
-
+import "normalize.css";
+import "@blueprintjs/core/lib/css/blueprint.css";
+import "@blueprintjs/icons/lib/css/blueprint-icons.css";
 export class KVP extends React.Component<KVPProps> {
     render() {
         const addonAfter = this.props.unit ? {
-            addonAfter: <div style={{ width: UNIT_WIDTH }}>{this.props.unit}</div>
+            rightElement: <Tag>{this.props.unit}</Tag>
         }
             : {};
         return (
-            <InputNumber
-                width={INPUT_WIDTH}
-                addonBefore={<div style={{ width: LABEL_WIDTH }}>{this.props.label}</div>}
-                {...addonAfter}
-                value={this.props.value}
-                onChange={this.props.onChange}
-                controls={false}
-            />
+            <FormGroup
+                inline
+                label={this.props.label}
+            >
+                <NumericInput
+                    width={INPUT_WIDTH}
+                    {...addonAfter}
+                    onValueChange={this.props.onChange}
+                    buttonPosition="none"
+                />
+            </FormGroup>
         );
     }
 }

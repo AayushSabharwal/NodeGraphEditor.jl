@@ -1,0 +1,17 @@
+.menuitem {
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    // margin: 5px 0px;
+}
+
+.header {
+    display: flex;
+    flex-direction: row;
+    position: relative;
+    // margin: 5px;
+}
+
+.content {
+    padding: 5px 15px 0px 15px;
+}

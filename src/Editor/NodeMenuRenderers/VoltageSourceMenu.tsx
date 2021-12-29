@@ -1,7 +1,12 @@
-import { Select, Space } from "antd";
+import { Button, FormGroup, Label, MenuItem } from "@blueprintjs/core";
+import { ItemRenderer, Select } from "@blueprintjs/select";
 import { KVP } from "Editor/KVP";
 import { NodeMenuRendererProps, SourceType, VoltageSource } from "lib/types";
 import React from "react";
+import "normalize.css";
+import "@blueprintjs/core/lib/css/blueprint.css";
+import "@blueprintjs/icons/lib/css/blueprint-icons.css";
+const SourceTypeSelect = Select.ofType<SourceType>();
 
 export class VoltageSourceMenu extends React.Component<NodeMenuRendererProps<VoltageSource>> {
     changeParams(o: {}) {
@@ -75,21 +80,25 @@ export class VoltageSourceMenu extends React.Component<NodeMenuRendererProps<Vol
         return [];
     }
 
+    renderSourceType: ItemRenderer<number> = (s, { handleClick }) => {
+        return <MenuItem key={s} onClick={handleClick} text={SourceType[s]} />
+    }
+
     render() {
         return (
-            <Space direction="vertical">
-                <Select
-                    defaultValue={SourceType[0]}
-                    onChange={v => this.changeParams({ source_type: v })}
-                    style={{ width: "200px" }}
-                    showArrow
-                >
-                    {Array(Object.keys(SourceType).length / 2).fill(0).map((_, i) =>
-                        <Select.Option key={SourceType[i]} value={i}> {SourceType[i]} </Select.Option>
-                    )}
-                </Select>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <FormGroup inline label="Source Type">
+                    <SourceTypeSelect
+                        filterable={false}
+                        items={Array(Object.keys(SourceType).length / 2).fill(0).map((_, i) => i)}
+                        itemRenderer={this.renderSourceType}
+                        onItemSelect={v => this.changeParams({ source_type: v })}
+                    >
+                        <Button text={SourceType[this.props.params.source_type]} />
+                    </SourceTypeSelect>
+                </FormGroup>
                 {this.getOptions()}
-            </Space>
+            </div>
         );
     }
 }
