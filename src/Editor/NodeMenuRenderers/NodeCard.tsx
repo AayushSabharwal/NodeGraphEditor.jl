@@ -32,7 +32,7 @@ export class NodeCard extends React.Component<NodeCardProps, NodeCardState> {
                     />
                 </div>
                 <Collapse isOpen={this.state.isOpen} className="content">
-                    <Divider />
+                    <Divider style={{margin: "0px 0px 10px 0px"}}/>
                     {this.props.children}
                 </Collapse>
             </Card>

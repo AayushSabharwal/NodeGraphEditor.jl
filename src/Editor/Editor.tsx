@@ -174,11 +174,25 @@ export class Editor extends React.Component<{}, EditorState> {
                 )}
             </Menu>
         );
+        const height = Math.max(
+            document.body.scrollHeight,
+            document.body.offsetHeight,
+            document.documentElement.clientHeight,
+            document.documentElement.scrollHeight,
+            document.documentElement.offsetHeight,
+        );
+        const width = Math.max(
+            document.body.scrollWidth,
+            document.body.offsetWidth,
+            document.documentElement.clientWidth,
+            document.documentElement.scrollWidth,
+            document.documentElement.offsetWidth,
+        );
         return (
-            <div className="Editor">
+            <div className="Editor bp3-dark">
                 <Stage
                     width={this.state.stagewidth}
-                    height={748}
+                    height={height}
                     nodes={this.state.nodes}
                     edges={this.state.edges}
                     updateNode={this.updateNode}
@@ -187,25 +201,19 @@ export class Editor extends React.Component<{}, EditorState> {
                 />
                 <div
                     onMouseDown={this.onResizerMouseDown}
+                    className="bp3-button Resizer"
                     style={{
-                        position: "absolute",
                         left: this.state.stagewidth,
-                        top: 0,
-                        background: "black",
                         width: DIVIDER_WIDTH,
-                        height: 748
                     }}
-                >
-                </div>
+                >{/*<Button className="ResizeButton"/>*/}</div>
                 <div
-                    className="Menu bp3-dark"
+                    className="Menu"
                     style={{
                         left: this.state.stagewidth + DIVIDER_WIDTH,
-                        width: window.innerWidth - this.state.stagewidth - DIVIDER_WIDTH,
-                        height: 748
+                        width: width - this.state.stagewidth - DIVIDER_WIDTH,
                     }}
                 >
-                    {/* <Space direction="vertical"> */}
                     <Popover2 content={AddNodeMenu} placement="right-end">
                         <Button>
                             Add Node
@@ -217,7 +225,6 @@ export class Editor extends React.Component<{}, EditorState> {
                         updateNodeParams={this.updateNodeParams}
                         deleteNode={this.deleteNode}
                     />
-                    {/* </Space> */}
                 </div>
             </div >
         );

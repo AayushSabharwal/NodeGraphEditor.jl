@@ -1,6 +1,6 @@
 import React from 'react';
 import './Node.scss'
-import { CONN_RADIUS, CONN_SIDE_MARGIN, CONN_Y_SPACING, IMAGE_ASPECT_RATIOS, IMAGE_SIZE, NODE_CHAR_WIDTH, NODE_LINE_HEIGHT, NODE_MAX_WIDTH, NODE_MIN_WIDTH } from 'lib/constants';
+import { CONN_IN_COLORS, CONN_OUT_COLORS, CONN_RADIUS, CONN_SIDE_MARGIN, CONN_Y_SPACING, IMAGE_ASPECT_RATIOS, IMAGE_SIZE, NODE_CHAR_WIDTH, NODE_LINE_HEIGHT, NODE_MAX_WIDTH, NODE_MIN_WIDTH } from 'lib/constants';
 import { Vec2, ConnectorType, NodeProps, NodeData } from 'lib/types';
 
 export function calculateConnectorX(parent_size: Vec2, type: ConnectorType) {
@@ -69,20 +69,19 @@ export class Node extends React.Component<NodeProps, {}> {
                 {...(this.props as React.SVGAttributes<SVGGElement>)}
                 xmlns="http://www.w3.org/2000/svg"
             >
+                <rect className="NodeBorder"/>
                 <rect
-                    width="100%"
-                    height="100%"
-                    x={0}
-                    y={0}
                     className="Node"
-                    fill="red"
-                    strokeWidth={this.props.selected ? 1 : 0}
-                    stroke="rgb(0,0,255)"
+                    // strokeWidth={this.props.selected ? 1 : 0}
+                    // stroke="rgb(0,0,255)"
                 />
                 {this.props.children}
                 {Array(this.props.params.inputs).fill(1).map((_, i) =>
                     <circle
                         className="Connector"
+                        style={{
+                            fill: CONN_IN_COLORS[i%CONN_IN_COLORS.length]
+                        }}
                         key={i}
                         cx={calculateConnectorX(size, "input")}
                         cy={calculateConnectorY(i + 1)}
@@ -121,6 +120,9 @@ export class Node extends React.Component<NodeProps, {}> {
                     <circle
                         key={i}
                         className="Connector"
+                        style={{
+                            fill: CONN_OUT_COLORS[i%CONN_OUT_COLORS.length]
+                        }}
                         cx={calculateConnectorX(size, "output")}
                         cy={calculateConnectorY(i + 1)}
                         onMouseDown={e => this.props.onConnectorMouseDown(

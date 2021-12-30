@@ -97,6 +97,7 @@ export interface KVPProps {
 
 export interface KVPState {
     temp_value: string,
+    invalid: boolean,
 }
 
 export interface DropdownButtonProps {

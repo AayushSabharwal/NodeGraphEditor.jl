@@ -1,10 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
+@import "@blueprintjs/core/lib/scss/variables";
 
 .Stage {
+    position: fixed;
+    background-color: $pt-dark-app-background-color;
     margin: 0;
 }
 
-.Connector {
-    fill:green;
-    r: 7.5;
+svg text {
+    -webkit-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
 }

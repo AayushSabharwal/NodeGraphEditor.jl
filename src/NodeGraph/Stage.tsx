@@ -278,20 +278,26 @@ export class Stage extends React.Component<StageProps, StageState> {
         let connline = null;
         if (this.state.isconnecting) {
             const node = this.props.nodes[this.props.nodes.findIndex(n => n.node_id === this.state.connection.from)];
+            const from = {
+                x: node.pos.x + calculateConnectorX(
+                    node.size,
+                    this.state.connection.type,
+                ),
+                y: node.pos.y + calculateConnectorY(
+                    this.state.connection.conn,
+                ),
+            };
+            const to = {
+                x: this.state.dragstart.x * this.state.viewport.zoom + this.state.viewport.pos.x,
+                y: this.state.dragstart.y * this.state.viewport.zoom + this.state.viewport.pos.y + 2,
+            };
             connline = <Connection
-                from={{
-                    x: node.pos.x + calculateConnectorX(
-                        node.size,
-                        this.state.connection.type,
-                    ),
-                    y: node.pos.y + calculateConnectorY(
-                        this.state.connection.conn,
-                    ),
-                }}
-                to={{
-                    x: this.state.dragstart.x * this.state.viewport.zoom + this.state.viewport.pos.x,
-                    y: this.state.dragstart.y * this.state.viewport.zoom + this.state.viewport.pos.y,
-                }}
+                from={from}
+                from_type={this.state.connection.type}
+                from_ind={this.state.connection.conn}
+                to={to}
+                to_type={to.x > from.x ? "input" : "output"}
+                to_ind={1}
             />
         }
 
@@ -336,10 +342,14 @@ export class Stage extends React.Component<StageProps, StageState> {
                             x: node_from.pos.x + calculateConnectorX(node_from.size, edge.from_type),
                             y: node_from.pos.y + calculateConnectorY(edge.from_conn),
                         }}
+                        from_type={edge.from_type}
+                        from_ind={edge.from_conn}
                         to={{
                             x: node_to.pos.x + calculateConnectorX(node_to.size, edge.to_type),
                             y: node_to.pos.y + calculateConnectorY(edge.to_conn),
                         }}
+                        to_type={edge.to_type}
+                        to_ind={edge.to_conn}
                     />;
                 })}
                 {connline}

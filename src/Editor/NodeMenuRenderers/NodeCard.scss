@@ -1,17 +1,21 @@
 .menuitem {
     display: flex;
     flex-direction: column;
-    padding: 15px;
+    margin: 10px 0px;
+    padding: 15px 10px 5px 10px;
     // margin: 5px 0px;
 }
 
 .header {
     display: flex;
     flex-direction: row;
-    position: relative;
+    // position: relative;
     // margin: 5px;
 }
 
 .content {
-    padding: 5px 15px 0px 15px;
+    margin: 10px 15px 0px 15px;
+    padding: 0px;
+    display: flex;
+    flex-direction: column;
 }

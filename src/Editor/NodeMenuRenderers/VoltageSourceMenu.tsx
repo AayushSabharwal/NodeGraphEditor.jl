@@ -1,4 +1,4 @@
-import { Button, FormGroup, Label, MenuItem } from "@blueprintjs/core";
+import { Button, FormGroup, MenuItem } from "@blueprintjs/core";
 import { ItemRenderer, Select } from "@blueprintjs/select";
 import { KVP } from "Editor/KVP";
 import { NodeMenuRendererProps, SourceType, VoltageSource } from "lib/types";
