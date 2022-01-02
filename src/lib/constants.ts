@@ -38,7 +38,6 @@ export const IMAGE_ASPECT_RATIOS = {
 export const DefaultNodeData = {
     pos: { x: 0, y: 0 },
     size: { x: 150, y: 75 },
-    edges: [],
     selected: false,
 };
 export const DefaultVoltageSource: VoltageSource = {

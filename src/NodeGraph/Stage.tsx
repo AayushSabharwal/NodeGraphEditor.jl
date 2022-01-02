@@ -80,7 +80,6 @@ export class Stage extends React.Component<StageProps, StageState> {
             return;
         const ind = this.props.nodes.findIndex(n => n.node_id === id);
         const node = this.props.nodes[ind];
-        this.props.selectNode(ind);
         this.setState({
             isdragging: true,
             dragging_ind: ind,

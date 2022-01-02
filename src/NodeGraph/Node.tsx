@@ -70,11 +70,7 @@ export class Node extends React.Component<NodeProps, {}> {
                 xmlns="http://www.w3.org/2000/svg"
             >
                 <rect className="NodeBorder"/>
-                <rect
-                    className="Node"
-                    // strokeWidth={this.props.selected ? 1 : 0}
-                    // stroke="rgb(0,0,255)"
-                />
+                <rect className="Node"/>
                 {this.props.children}
                 {Array(this.props.params.inputs).fill(1).map((_, i) =>
                     <circle

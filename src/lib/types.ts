@@ -1,3 +1,4 @@
+import { NodeGraph } from "NodeGraph/NodeGraph"
 import React, { ReactNode } from "react"
 
 // #region Utilities
@@ -15,7 +16,6 @@ export interface NodeData {
     node_name: string,
     pos: Vec2,
     size: Vec2,
-    selected: boolean,
     params: NodeType,
 }
 
@@ -42,7 +42,6 @@ export interface StageProps {
     edges: Edge[],
     updateNode: (ind: number, node: NodeData) => void,
     addEdge: (edge: Edge) => void,
-    selectNode: (ind: number) => void,
 }
 
 export interface StageState {
@@ -68,10 +67,8 @@ export interface StageState {
 
 // #region Editor Menu
 export interface EditorState {
-    nodes: NodeData[],
-    edges: Edge[],
     stagewidth: number,
-    selected: number,
+    graph: NodeGraph,
     newnode_id: number,
 }
 
