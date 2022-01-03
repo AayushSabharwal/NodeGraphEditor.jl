@@ -1,6 +1,6 @@
 import React from 'react';
-import { ConnectorType, Vec2 } from 'lib/types';
-import { CONN_IN_COLORS, CONN_OUT_COLORS, LINE_MAX_BEZIER_OFFSET } from 'lib/constants';
+import { ConnectorType, Vec2 } from '~/src/lib/types';
+import { CONN_IN_COLORS, CONN_OUT_COLORS, LINE_MAX_BEZIER_OFFSET } from '~/src/lib/constants';
 
 export interface ConnectionProps {
     from: Vec2,

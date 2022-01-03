@@ -1,8 +1,8 @@
 import React from "react";
-import { Node, calculateConnectorX, calculateConnectorY } from 'NodeGraph/Node'
-import { Connection } from "NodeGraph/Connection";
-import { DRAG_BUTTON, MAX_ZOOM, MIN_ZOOM, PAN_BUTTON, ZOOM_SPEED } from "lib/constants";
-import { ConnectorType, StageProps, Edge, StageState } from "lib/types";
+import { Node, calculateConnectorX, calculateConnectorY } from '~/src/NodeGraph/Node'
+import { Connection } from "~/src/NodeGraph/Connection";
+import { DRAG_BUTTON, MAX_ZOOM, MIN_ZOOM, PAN_BUTTON, ZOOM_SPEED } from "~/src/lib/constants";
+import { ConnectorType, StageProps, Edge, StageState } from "~/src/lib/types";
 import "./Stage.scss"
 
 

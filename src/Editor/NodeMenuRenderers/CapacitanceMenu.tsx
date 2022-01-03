@@ -1,5 +1,5 @@
-import { KVP } from "Editor/KVP";
-import { Capacitance, NodeMenuRendererProps } from "lib/types";
+import { KVP } from "~/src/Editor/KVP";
+import { Capacitance, NodeMenuRendererProps } from "~/src/lib/types";
 import React from "react";
 
 export class CapacitanceMenu extends React.Component<NodeMenuRendererProps<Capacitance>> {

@@ -1,4 +1,4 @@
-import { NodeGraph } from "NodeGraph/NodeGraph"
+import { NodeGraph } from "~/src/NodeGraph/NodeGraph"
 import React, { ReactNode } from "react"
 
 // #region Utilities

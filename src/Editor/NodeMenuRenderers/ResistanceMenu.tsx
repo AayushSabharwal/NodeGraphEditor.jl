@@ -1,5 +1,5 @@
-import { KVP } from "Editor/KVP";
-import { NodeMenuRendererProps, Resistance } from "lib/types";
+import { KVP } from "~/src/Editor/KVP";
+import { NodeMenuRendererProps, Resistance } from "~/src/lib/types";
 import React from "react";
 
 export class ResistanceMenu extends React.Component<NodeMenuRendererProps<Resistance>> {

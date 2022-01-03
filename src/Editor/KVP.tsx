@@ -1,6 +1,6 @@
 import { FormGroup, NumericInput, Tag } from "@blueprintjs/core";
-import { INPUT_WIDTH } from "lib/constants";
-import { KVPProps, KVPState } from "lib/types";
+import { INPUT_WIDTH } from "~/src/lib/constants";
+import { KVPProps, KVPState } from "~/src/lib/types";
 import React from "react";
 import "normalize.css";
 import "@blueprintjs/core/lib/css/blueprint.css";

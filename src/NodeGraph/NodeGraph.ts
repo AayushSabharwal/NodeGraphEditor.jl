@@ -1,6 +1,6 @@
-import { Edge, NodeData, NodeType } from "lib/types";
-import { DefaultCapacitance, DefaultInductance, DefaultNodeData, DefaultResistance, DefaultVoltageSource } from "lib/constants";
-import { calculateNodeSize } from "./Node";
+import { Edge, NodeData, NodeType } from "~/src/lib/types";
+import { DefaultCapacitance, DefaultInductance, DefaultNodeData, DefaultResistance, DefaultVoltageSource } from "~/src/lib/constants";
+import { calculateNodeSize } from "~/src/NodeGraph/Node";
 
 export class NodeGraph {
     nodes: NodeData[];

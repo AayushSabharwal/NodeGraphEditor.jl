@@ -1,16 +1,16 @@
 import React from "react";
-import { DefaultNodeData, DefaultResistance, DefaultVoltageSource, DIVIDER_WIDTH, DRAG_BUTTON } from "lib/constants";
-import { calculateNodeSize } from "NodeGraph/Node";
-import { Stage } from "NodeGraph/Stage";
-import { Edge, EditorState, NodeData, NodeType } from "lib/types";
+import { DefaultNodeData, DefaultResistance, DefaultVoltageSource, DIVIDER_WIDTH, DRAG_BUTTON } from "~/src/lib/constants";
+import { calculateNodeSize } from "~/src/NodeGraph/Node";
+import { Stage } from "~/src/NodeGraph/Stage";
+import { Edge, EditorState, NodeData, NodeType } from "~/src/lib/types";
 import './Editor.scss';
-import { NodeMenu } from "./NodeMenu";
+import { NodeMenu } from "~/src/Editor/NodeMenu";
 import { Button, FileInput, Menu, MenuItem } from "@blueprintjs/core";
 import { Popover2 } from "@blueprintjs/popover2";
 import "normalize.css";
 import "@blueprintjs/core/lib/css/blueprint.css";
 import "@blueprintjs/icons/lib/css/blueprint-icons.css";
-import { NodeGraph } from "NodeGraph/NodeGraph";
+import { NodeGraph } from "~/src/NodeGraph/NodeGraph";
 import FileSaver from "file-saver";
 
 export class Editor extends React.Component<{}, EditorState> {

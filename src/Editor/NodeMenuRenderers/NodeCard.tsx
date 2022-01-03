@@ -1,5 +1,5 @@
 import { Button, Card, Collapse, Divider, InputGroup } from "@blueprintjs/core";
-import { NodeCardProps, NodeCardState } from "lib/types";
+import { NodeCardProps, NodeCardState } from "~/src/lib/types";
 import React from "react";
 import './NodeCard.scss';
 // import "normalize.css";

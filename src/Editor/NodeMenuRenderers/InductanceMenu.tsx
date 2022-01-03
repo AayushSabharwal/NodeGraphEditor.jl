@@ -1,5 +1,5 @@
-import { KVP } from "Editor/KVP";
-import { Inductance, NodeMenuRendererProps } from "lib/types";
+import { KVP } from "~/src/Editor/KVP";
+import { Inductance, NodeMenuRendererProps } from "~/src/lib/types";
 import React from "react";
 
 export class InductanceMenu extends React.Component<NodeMenuRendererProps<Inductance>> {

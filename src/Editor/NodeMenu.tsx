@@ -1,4 +1,4 @@
-import { NodeData, NodeMenuProps } from "lib/types";
+import { NodeData, NodeMenuProps } from "~/src/lib/types";
 import React from "react";
 import { CapacitanceMenu } from "./NodeMenuRenderers/CapacitanceMenu";
 import { InductanceMenu } from "./NodeMenuRenderers/InductanceMenu";
