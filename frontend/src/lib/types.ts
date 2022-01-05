@@ -7,7 +7,14 @@ export type Vec2 = {
     y: number,
 }
 
-export type ConnectorType = "input" | "output"
+export enum ConnectorType {
+    input = 0,
+    output = 1,
+}
+
+export type Err = {
+    err: string,
+}
 // #endregion
 
 // #region Nodes and Edges
@@ -16,7 +23,9 @@ export interface NodeData {
     node_name: string,
     pos: Vec2,
     size: Vec2,
-    params: NodeType,
+    inputs: number,
+    outputs: number,
+    params: Record<string, any>,
 }
 
 export type Edge = {
@@ -30,18 +39,22 @@ export type Edge = {
 // #endregion
 
 // #region NodeGraph Props and States
-export interface NodeProps extends NodeData, React.SVGAttributes<SVGGElement> {
-    onConnectorMouseUp: (id: number, type: ConnectorType, conn: number, e: React.MouseEvent) => void,
-    onConnectorMouseDown: (id: number, type: ConnectorType, conn: number, e: React.MouseEvent) => void,
+export interface NodeProps extends NodeData {
+    selected: boolean,
+    onConnectorMouseUp: (id: number, type: ConnectorType, conn: number, e: MouseEvent) => void,
+    onConnectorMouseDown: (id: number, type: ConnectorType, conn: number, e: MouseEvent) => void,
+    onMouseDown: (e: MouseEvent) => void,
 }
 
 export interface StageProps {
     width: number,
     height: number,
-    nodes: NodeData[],
-    edges: Edge[],
-    updateNode: (ind: number, node: NodeData) => void,
+    graph: NodeGraph,
+    dragNode: (ind: number, pos: Vec2) => void,
+    onNodeDragEnd: (ind: number) => void,
     addEdge: (edge: Edge) => void,
+    selectNode: (id: number) => void,
+    selection: number,
 }
 
 export interface StageState {
@@ -69,20 +82,20 @@ export interface StageState {
 export interface EditorState {
     stagewidth: number,
     graph: NodeGraph,
-    newnode_id: number,
+    selected: number,
 }
 
 export interface NodeMenuProps {
-    nodes: NodeData[],
-    updateNode: (ind: number, node: NodeData) => void,
-    updateNodeParams: (ind: number, params: NodeType) => void,
+    node: NodeData | undefined,
+    updateNode: (ind: number, key: string, value: any) => void,
+    updateNodeParams: (ind: number, key: string, value: any) => void,
     deleteNode: (id: number) => void,
 }
 
-export interface NodeMenuRendererProps<T extends NodeType> {
-    params: T,
+export interface NodeMenuRendererProps {
+    params: Record<string, any>,
     node_id: number,
-    onChangeParams: (id: number, params: T) => void,
+    onChangeParams: (id: number, key: string, value: any) => void,
 }
 
 export interface KVPProps {
@@ -135,49 +148,4 @@ export interface DropdownSelectorProps {
     options: string[],
     onSelect: (ind: number) => void,
 }
-// #endregion
-
-// #region Component types
-export enum SourceType {
-    Constant = 0,
-    Sine = 1,
-    Cosine = 2,
-    DampedSine = 3,
-}
-
-export type VoltageSource = {
-    type: "VoltageSource",
-    inputs: 1,
-    outputs: 1,
-    voltage: number,
-    source_type: SourceType,
-    offset: number,
-    frequency: number,
-    starttime: number,
-    phase: number,
-    damping_coef: number,
-}
-
-export type Resistance = {
-    type: "Resistance",
-    inputs: 1,
-    outputs: 1,
-    resistance: number,
-}
-
-export type Inductance = {
-    type: "Inductance",
-    inputs: 1,
-    outputs: 1,
-    inductance: number,
-}
-
-export type Capacitance = {
-    type: "Capacitance",
-    inputs: 1,
-    outputs: 1,
-    capacitance: number,
-}
-
-export type NodeType = VoltageSource | Resistance | Capacitance | Inductance;
 // #endregion

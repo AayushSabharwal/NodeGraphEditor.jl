@@ -1,16 +1,15 @@
+.card {
+    position: fixed;
+    width: 30%;
+    height: 90%;
+    right: 5%;
+    top: 5%;
+}
+
 .header {
     display: flex;
     width: 100%;
     align-items: stretch;
-}
-
-.input {
-    flex: 1 1 auto;
-    overflow: auto;
-}
-
-.headeritem {
-    margin: 0px 5px;
 }
 
 .collapse {

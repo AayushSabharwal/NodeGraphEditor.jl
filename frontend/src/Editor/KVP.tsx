@@ -1,4 +1,3 @@
-import { FormGroup, NumericInput, Tag } from "@blueprintjs/core";
 import { INPUT_WIDTH } from "~/src/lib/constants";
 import { KVPProps, KVPState } from "~/src/lib/types";
 import React from "react";
@@ -44,6 +43,7 @@ export class KVP extends React.Component<KVPProps,KVPState> {
                     onValueChange={this.validateAndSendInput}
                     buttonPosition="none"
                     intent={this.state.invalid ? "danger" : "none"}
+                    onBlur={()=>1}
                 />
             </FormGroup>
         );

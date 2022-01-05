@@ -14,8 +14,8 @@ export interface ConnectionProps {
 export class Connection extends React.Component<ConnectionProps> {
     render() {
         const {from, to, from_type, to_type, from_ind, to_ind} = this.props;
-        const from_off = (from_type === "input" ? -1 : 1) * LINE_MAX_BEZIER_OFFSET;
-        const to_off = (to_type === "input" ? -1 : 1) * LINE_MAX_BEZIER_OFFSET;
+        const from_off = (from_type === ConnectorType.input ? -1 : 1) * LINE_MAX_BEZIER_OFFSET;
+        const to_off = (to_type === ConnectorType.input ? -1 : 1) * LINE_MAX_BEZIER_OFFSET;
         const c1 = {
             x: from.x + from_off,
             y: from.y,
@@ -24,10 +24,10 @@ export class Connection extends React.Component<ConnectionProps> {
             x: to.x + to_off,
             y: to.y,
         }
-        const col1 = from_type === "input" ?
+        const col1 = from_type === ConnectorType.input ?
             CONN_IN_COLORS[(from_ind - 1)%CONN_IN_COLORS.length] :
             CONN_OUT_COLORS[(from_ind - 1)%CONN_OUT_COLORS.length];
-        const col2 = to_type === "input" ?
+        const col2 = to_type === ConnectorType.input ?
             CONN_IN_COLORS[(to_ind - 1)%CONN_IN_COLORS.length] :
             CONN_OUT_COLORS[(to_ind - 1)%CONN_OUT_COLORS.length];
         return (

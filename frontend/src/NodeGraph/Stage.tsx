@@ -18,7 +18,7 @@ export class Stage extends React.Component<StageProps, StageState> {
         connection: {
             from: -1,
             conn: -1,
-            type: "input",
+            type: ConnectorType.input,
         },
         ispanning: false,
         panstart: { x: 0, y: 0 },
@@ -75,11 +75,11 @@ export class Stage extends React.Component<StageProps, StageState> {
         }
     }
 
-    onNodeMouseDown(id: number, e: React.MouseEvent) {
+    onNodeMouseDown(id: number, e: MouseEvent) {
         if (e.button !== DRAG_BUTTON)
             return;
-        const ind = this.props.nodes.findIndex(n => n.node_id === id);
-        const node = this.props.nodes[ind];
+        const ind = this.props.graph.nodes.findIndex(n => n.node_id === id);
+        const node = this.props.graph.nodes[ind];
         this.setState({
             isdragging: true,
             dragging_ind: ind,
@@ -97,13 +97,11 @@ export class Stage extends React.Component<StageProps, StageState> {
     }
 
     onNodeMouseMove(e: MouseEvent): void {
-        this.props.updateNode(this.state.dragging_ind, {
-            ...this.props.nodes[this.state.dragging_ind],
-            pos: {
+        this.props.dragNode(this.state.dragging_ind, {
                 x: this.state.node_dragstart.x + (e.pageX - this.state.dragstart.x) * this.state.viewport.zoom,
                 y: this.state.node_dragstart.y + (e.pageY - this.state.dragstart.y) * this.state.viewport.zoom,
             }
-        });
+        );
 
         e.stopPropagation();
         e.preventDefault();
@@ -113,12 +111,13 @@ export class Stage extends React.Component<StageProps, StageState> {
         if (e.button !== DRAG_BUTTON || !this.state.isdragging)
             return;
 
+        this.props.onNodeDragEnd(this.state.dragging_ind);
         this.setState({ isdragging: false, dragging_ind: -1 });
         e.stopPropagation();
         e.preventDefault();
     }
 
-    onConnectorMouseDown(parent_id: number, type: ConnectorType, conn: number, e: React.MouseEvent) {
+    onConnectorMouseDown(parent_id: number, type: ConnectorType, conn: number, e: MouseEvent) {
         if (e.button !== DRAG_BUTTON)
             return;
 
@@ -156,7 +155,7 @@ export class Stage extends React.Component<StageProps, StageState> {
         e.preventDefault();
     }
 
-    onConnectorMouseUp(parent_id: number, type: ConnectorType, conn: number, e: React.MouseEvent) {
+    onConnectorMouseUp(parent_id: number, type: ConnectorType, conn: number, e: MouseEvent) {
         if (e.button !== DRAG_BUTTON || !this.state.isconnecting || parent_id === this.state.connection.from) {
             this.setState({ isconnecting: false });
             e.preventDefault();
@@ -175,7 +174,7 @@ export class Stage extends React.Component<StageProps, StageState> {
             isconnecting: false,
             connection: {
                 from: -1,
-                type: "input",
+                type: ConnectorType.input,
                 conn: -1,
             },
         });
@@ -249,7 +248,7 @@ export class Stage extends React.Component<StageProps, StageState> {
         e.preventDefault();
     }
 
-    onZoomWheel(e: React.WheelEvent<SVGSVGElement>) {
+    onZoomWheel(e: WheelEvent) {
         const vp = this.state.viewport;
         const zoom = Math.max(
             MIN_ZOOM,
@@ -276,7 +275,7 @@ export class Stage extends React.Component<StageProps, StageState> {
     render() {
         let connline = null;
         if (this.state.isconnecting) {
-            const node = this.props.nodes[this.props.nodes.findIndex(n => n.node_id === this.state.connection.from)];
+            const node = this.props.graph.nodes[this.props.graph.nodes.findIndex(n => n.node_id === this.state.connection.from)];
             const from = {
                 x: node.pos.x + calculateConnectorX(
                     node.size,
@@ -295,7 +294,7 @@ export class Stage extends React.Component<StageProps, StageState> {
                 from_type={this.state.connection.type}
                 from_ind={this.state.connection.conn}
                 to={to}
-                to_type={to.x > from.x ? "input" : "output"}
+                to_type={to.x > from.x ? ConnectorType.input : ConnectorType.output}
                 to_ind={1}
             />
         }
@@ -319,21 +318,22 @@ export class Stage extends React.Component<StageProps, StageState> {
                     </pattern>
                 </defs>
                 <rect width="5000%" height="5000%" fill="url(#grid)" x="-2500%" y="-2500%" />
-                {this.props.nodes.map(node => (
+                {this.props.graph.nodes.map(node => (
                     <Node
                         key={node.node_id}
                         {...node}
-                        onMouseDown={(e: React.MouseEvent) =>
+                        selected={this.props.selection === node.node_id}
+                        onMouseDown={e =>
                             this.onNodeMouseDown(node.node_id, e)
                         }
                         onConnectorMouseDown={this.onConnectorMouseDown}
                         onConnectorMouseUp={this.onConnectorMouseUp}
                     />
                 ))}
-                {this.props.edges.map(edge => {
-                    const node_from = this.props.nodes.find(n => n.node_id === edge.from);
+                {this.props.graph.edges.map(edge => {
+                    const node_from = this.props.graph.nodes.find(n => n.node_id === edge.from);
                     if (!node_from) return <g key={getEdgeKey(edge)}></g>
-                    const node_to = this.props.nodes.find(n => n.node_id === edge.to);
+                    const node_to = this.props.graph.nodes.find(n => n.node_id === edge.to);
                     if (!node_to) return <g key={getEdgeKey(edge)}></g>
                     return <Connection
                         key={getEdgeKey(edge)}
