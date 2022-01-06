@@ -1,5 +1,3 @@
-import { Colors } from "@blueprintjs/core";
-
 export const DRAG_BUTTON = 0;
 export const PAN_BUTTON = 2;
 export const CONN_SIDE_MARGIN = 10;
@@ -19,14 +17,12 @@ export const LABEL_WIDTH = 140;
 export const UNIT_WIDTH = 15;
 export const LINE_MAX_BEZIER_OFFSET = 70;
 export const CONN_IN_COLORS = [
-    Colors.VERMILION4,
-    Colors.GREEN3,
-    Colors.COBALT3,
+    '#FC8181', // red.300
+    '#F6AD55', // orange.300
 ];
 export const CONN_OUT_COLORS = [
-    Colors.ORANGE4,
-    Colors.FOREST4,
-    Colors.INDIGO3,
+    '#68D391', // green.300
+    '#4FD1C5', // teal.300
 ]
 export const DefaultNodeData = {
     pos: { x: 0, y: 0 },

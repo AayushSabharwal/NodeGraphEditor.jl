@@ -1,9 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
-@import "@blueprintjs/core/lib/scss/variables";
+@import "src/variables.scss";
 
 .Stage {
     position: fixed;
-    background-color: $pt-dark-app-background-color;
+    background-color: $bg-color;
     margin: 0;
 }
 

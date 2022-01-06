@@ -1,19 +1,25 @@
+@import "src/variables.scss";
+
 .card {
+    background-color: $fg-color;
     position: fixed;
     width: 30%;
-    height: 90%;
-    right: 5%;
-    top: 5%;
+    height: calc(100% - 40px);
+    right: 20px;
+    top: 20px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    align-items: center;
 }
 
-.header {
+.gridItem {
     display: flex;
-    width: 100%;
-    align-items: stretch;
+    align-items: center;
 }
 
 .collapse {
-    background-color: rgb(75, 75, 75);
     overflow-y: auto;
     &::-webkit-scrollbar{
         width: 5px;

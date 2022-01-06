@@ -1,20 +1,17 @@
-@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300&display=swap');
-@import "@blueprintjs/core/lib/scss/variables";
-
-$border: 3px;
+@import "src/variables.scss";
 
 .Node {
-    fill: $dark-gray2;
-    width: calc(100% - $border);
-    height: calc(100% - $border);
-    x: calc($border / 2);
-    y: calc($border / 2);
+    fill: $fg-color;
+    width: calc(100% - $node-border);
+    height: calc(100% - $node-border);
+    x: calc($node-border / 2);
+    y: calc($node-border / 2);
     rx: 9.8;
     ry: 9.8;
 }
 
 .NodeBorder {
-    fill: $pt-dark-icon-color-selected;
+    fill: $node-border-color;
     width: 100%;
     height: 100%;
     x: 0;
@@ -24,12 +21,11 @@ $border: 3px;
 }
 
 .Connector {
-    fill:green;
     r: 7.5;
 }
 
 .ContentText {
-    fill: $pt-dark-text-color;
-    font-family: 'Fira Code', monospace;
-    font-size: 10;
+    fill: $font-color;
+    font-family: $node-font;
+    font-size: $font-size;
 }

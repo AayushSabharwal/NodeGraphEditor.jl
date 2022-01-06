@@ -88,7 +88,7 @@ export interface EditorState {
 export interface NodeMenuProps {
     node: NodeData | undefined,
     updateNode: (ind: number, key: string, value: any) => void,
-    updateNodeParams: (ind: number, key: string, value: any) => void,
+    updateNodeParams: (id: number, key: string, value: any) => void,
     deleteNode: (id: number) => void,
 }
 
@@ -98,14 +98,13 @@ export interface NodeMenuRendererProps {
     onChangeParams: (id: number, key: string, value: any) => void,
 }
 
-export interface KVPProps {
-    label: string,
+export interface NumberInputWrapperProps {
     value: number,
     unit?: ReactNode,
     onChange: (value: number) => void,
 }
 
-export interface KVPState {
+export interface NumberInputWrapperState {
     temp_value: string,
     invalid: boolean,
 }

@@ -9,7 +9,7 @@ export class NodeGraph {
         this.nodes = nodes;
         this.edges = edges;
     }
-    
+
     static fromJSON(str: string): NodeGraph | string {
         const json = JSON.parse(str);
         if (!("nodes" in json))
@@ -25,7 +25,15 @@ export class NodeGraph {
     }
 
     toJSON(): string {
-        return JSON.stringify({nodes: this.nodes, edges: this.edges});
+        return JSON.stringify({ nodes: this.nodes, edges: this.edges });
+    }
+
+    findNode(id: number): NodeData | undefined {
+        return this.nodes.find(node => node.node_id === id);
+    }
+
+    findNodeIndex(id: number): number {
+        return this.nodes.findIndex(node => node.node_id === id);
     }
 
     withUpdatedNode(id: number, key: string, value: any): Promise<AxiosResponse<NodeGraph | Err>> {

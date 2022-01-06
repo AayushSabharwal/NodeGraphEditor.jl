@@ -78,7 +78,9 @@ export class Stage extends React.Component<StageProps, StageState> {
     onNodeMouseDown(id: number, e: MouseEvent) {
         if (e.button !== DRAG_BUTTON)
             return;
-        const ind = this.props.graph.nodes.findIndex(n => n.node_id === id);
+
+        this.props.selectNode(id);
+        const ind = this.props.graph.findNodeIndex(id);
         const node = this.props.graph.nodes[ind];
         this.setState({
             isdragging: true,
@@ -98,9 +100,9 @@ export class Stage extends React.Component<StageProps, StageState> {
 
     onNodeMouseMove(e: MouseEvent): void {
         this.props.dragNode(this.state.dragging_ind, {
-                x: this.state.node_dragstart.x + (e.pageX - this.state.dragstart.x) * this.state.viewport.zoom,
-                y: this.state.node_dragstart.y + (e.pageY - this.state.dragstart.y) * this.state.viewport.zoom,
-            }
+            x: this.state.node_dragstart.x + (e.pageX - this.state.dragstart.x) * this.state.viewport.zoom,
+            y: this.state.node_dragstart.y + (e.pageY - this.state.dragstart.y) * this.state.viewport.zoom,
+        }
         );
 
         e.stopPropagation();
@@ -275,7 +277,7 @@ export class Stage extends React.Component<StageProps, StageState> {
     render() {
         let connline = null;
         if (this.state.isconnecting) {
-            const node = this.props.graph.nodes[this.props.graph.nodes.findIndex(n => n.node_id === this.state.connection.from)];
+            const node = this.props.graph.nodes[this.props.graph.findNodeIndex(this.state.connection.from)];
             const from = {
                 x: node.pos.x + calculateConnectorX(
                     node.size,
@@ -331,9 +333,9 @@ export class Stage extends React.Component<StageProps, StageState> {
                     />
                 ))}
                 {this.props.graph.edges.map(edge => {
-                    const node_from = this.props.graph.nodes.find(n => n.node_id === edge.from);
+                    const node_from = this.props.graph.findNode(edge.from);
                     if (!node_from) return <g key={getEdgeKey(edge)}></g>
-                    const node_to = this.props.graph.nodes.find(n => n.node_id === edge.to);
+                    const node_to = this.props.graph.findNode(edge.to);
                     if (!node_to) return <g key={getEdgeKey(edge)}></g>
                     return <Connection
                         key={getEdgeKey(edge)}

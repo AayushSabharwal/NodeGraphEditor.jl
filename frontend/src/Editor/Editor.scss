@@ -1,4 +1,4 @@
-@import "@blueprintjs/core/lib/scss/variables";
+@import "src/variables.scss";
 
 .Editor {
     position: fixed;
@@ -26,7 +26,7 @@
     position: absolute;
     height: 100%;
     top: 0;
-    background-color: $pt-dark-app-background-color;
+    background-color: $bg-color;
     padding: 10px;
 }
 

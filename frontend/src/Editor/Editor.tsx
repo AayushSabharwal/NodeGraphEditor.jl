@@ -4,13 +4,9 @@ import { calculateNodeSize } from "~/src/NodeGraph/Node";
 import { Stage } from "~/src/NodeGraph/Stage";
 import { Edge, EditorState, Err, Vec2 } from "~/src/lib/types";
 import './Editor.scss';
-// import { NodeMenu } from "~/src/Editor/NodeMenu";
-import "normalize.css";
-import "@blueprintjs/core/lib/css/blueprint.css";
-import "@blueprintjs/icons/lib/css/blueprint-icons.css";
+import { NodeMenu } from "~/src/Editor/NodeMenu";
 import { NodeGraph } from "~/src/NodeGraph/NodeGraph";
 import axios, { AxiosResponse } from "axios";
-import { NodeMenu } from "./NodeMenu";
 
 export class Editor extends React.Component<{}, EditorState> {
     state: EditorState = {
@@ -26,7 +22,7 @@ export class Editor extends React.Component<{}, EditorState> {
                 ...node,
                 size: calculateNodeSize(node)
             }));
-            this.setState({ graph: r.data });
+            this.setState({ graph: new NodeGraph(r.data.nodes, r.data.edges) });
         }).catch(e => {
             console.log(e);
         });
@@ -44,7 +40,7 @@ export class Editor extends React.Component<{}, EditorState> {
 
     handleGraphPromise(p: Promise<AxiosResponse<NodeGraph | Err>>) {
         p.then(res => {
-            if(res.data instanceof NodeGraph)
+            if (res.data instanceof NodeGraph)
                 this.setState({ graph: res.data });
             else
                 console.log(res.data.err);
@@ -76,7 +72,7 @@ export class Editor extends React.Component<{}, EditorState> {
         let node = nodes[ind];
         node.pos = pos;
         nodes.splice(ind, 1, node);
-        this.setState({graph: new NodeGraph(nodes, this.state.graph.edges)});
+        this.setState({ graph: new NodeGraph(nodes, this.state.graph.edges) });
     }
 
     onNodeDragEnd(ind: number) {
@@ -84,7 +80,8 @@ export class Editor extends React.Component<{}, EditorState> {
     }
 
     onNodeSelect(id: number) {
-        this.setState({selected: id});
+        console.log(id);
+        this.setState({ selected: id });
     }
 
     render() {
@@ -115,7 +112,7 @@ export class Editor extends React.Component<{}, EditorState> {
                     selectNode={this.onNodeSelect}
                 />
                 <NodeMenu
-                    node={this.state.selected === -1 ? undefined : this.state.graph.nodes[this.state.selected]}
+                    node={this.state.selected === -1 ? undefined : this.state.graph.nodes.find(node => node.node_id === this.state.selected)}
                     updateNode={this.updateNode}
                     updateNodeParams={this.updateNodeParams}
                     deleteNode={this.deleteNode}

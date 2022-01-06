@@ -33,7 +33,7 @@ export function wrappedContentStringLines(content: string): number {
 }
 
 export function calculateNodeSize(node: NodeData): Vec2 {
-    const conn = Math.max(node.params.inputs, node.params.outputs);
+    const conn = Math.max(node.inputs, node.outputs);
     return {
         x: Math.min(
             Math.max(
@@ -69,14 +69,14 @@ export class Node extends React.Component<NodeProps, {}> {
                 onMouseDown={this.props.onMouseDown}
                 xmlns="http://www.w3.org/2000/svg"
             >
-                <rect className="NodeBorder"/>
-                <rect className="Node"/>
+                <rect className="NodeBorder" />
+                <rect className="Node" />
                 {this.props.children}
-                {Array(this.props.params.inputs).fill(1).map((_, i) =>
+                {Array(this.props.inputs).fill(1).map((_, i) =>
                     <circle
                         className="Connector"
                         style={{
-                            fill: CONN_IN_COLORS[i%CONN_IN_COLORS.length]
+                            fill: CONN_IN_COLORS[i % CONN_IN_COLORS.length]
                         }}
                         key={i}
                         cx={calculateConnectorX(size, ConnectorType.input)}
@@ -112,12 +112,12 @@ export class Node extends React.Component<NodeProps, {}> {
                         <tspan key={i} x="50%" dy={NODE_LINE_HEIGHT}>{s}</tspan>
                     )}
                 </text>
-                {Array(this.props.params.outputs).fill(1).map((_, i) =>
+                {Array(this.props.outputs).fill(1).map((_, i) =>
                     <circle
                         key={i}
                         className="Connector"
                         style={{
-                            fill: CONN_OUT_COLORS[i%CONN_OUT_COLORS.length]
+                            fill: CONN_OUT_COLORS[i % CONN_OUT_COLORS.length]
                         }}
                         cx={calculateConnectorX(size, ConnectorType.output)}
                         cy={calculateConnectorY(i + 1)}
