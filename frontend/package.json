@@ -21,6 +21,7 @@
     "react-dom": "preact/compat"
   },
   "scripts": {
+    "clean": "rimraf ../public/[!.gitkeep]*",
     "start": "parcel src/index.html",
     "build": "parcel build src/index.html --dist-dir ../public/",
     "serve": "npx serve ../public/"
@@ -49,6 +50,7 @@
     "@types/file-saver": "^2.0.4",
     "parcel": "^2.0.1",
     "parcel-reporter-static-files-copy": "^1.3.4",
+    "rimraf": "^3.0.2",
     "serve": "^13.0.2",
     "serve-static": "^1.14.2"
   }
