@@ -27,3 +27,6 @@ frontend/src/react-app-env.d.ts
 /*/dist
 /public/*
 !/*/.gitkeep
+
+Manifest.toml
+/.nodegraph_cache

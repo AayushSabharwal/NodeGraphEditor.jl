@@ -1,12 +1,13 @@
-import { Edge, Err, NodeData } from "~/src/lib/types";
+import { Edge, NodeData } from "~/src/lib/types";
 import axios, { AxiosResponse } from "axios";
+import { calculateNodeSize } from "~/src/NodeGraph/Node";
 
 export class NodeGraph {
     nodes: NodeData[];
     edges: Edge[];
 
     constructor(nodes: NodeData[] = [], edges: Edge[] = []) {
-        this.nodes = nodes;
+        this.nodes = nodes.map(n => ({...n, size: calculateNodeSize(n)}));
         this.edges = edges;
     }
 
@@ -36,24 +37,24 @@ export class NodeGraph {
         return this.nodes.findIndex(node => node.node_id === id);
     }
 
-    withUpdatedNode(id: number, key: string, value: any): Promise<AxiosResponse<NodeGraph | Err>> {
-        return axios.post<NodeGraph | Err>(`/updatenode/${id}/${key}/${value}`);
+    withUpdatedNode(id: number, key: string, value: any): Promise<AxiosResponse<NodeGraph>> {
+        return axios.post<NodeGraph>(`/updatenode/${id}`, { key, value });
     }
 
-    withUpdatedNodeParams(id: number, key: string, value: any): Promise<AxiosResponse<NodeGraph | Err>> {
-        return axios.post<NodeGraph | Err>(`/updateparams/${id}/${key}/${value}`);
+    withUpdatedNodeParams(id: number, key: string, value: any): Promise<AxiosResponse<NodeGraph>> {
+        return axios.post<NodeGraph>(`/updateparams/${id}`, { key, value });
     }
 
-    withNewEdge(edge: Edge): Promise<AxiosResponse<NodeGraph | Err>> {
-        return axios.post<NodeGraph | Err>('/addedge', edge);
+    withNewEdge(edge: Edge): Promise<AxiosResponse<NodeGraph>> {
+        return axios.post<NodeGraph>('/addedge', edge);
     }
 
-    withNewNode(type: string): Promise<AxiosResponse<NodeGraph | Err>> {
-        return axios.post<NodeGraph | Err>(`/addnode/${type}`);
+    withNewNode(type: string): Promise<AxiosResponse<NodeGraph>> {
+        return axios.post<NodeGraph>(`/addnode/${type}`);
     }
 
-    withDeletedNode(id: number): Promise<AxiosResponse<NodeGraph | Err>> {
-        return axios.post<NodeGraph | Err>(`/deletenode/${id}`);
+    withDeletedNode(id: number): Promise<AxiosResponse<NodeGraph>> {
+        return axios.post<NodeGraph>(`/deletenode/${id}`);
     }
 
     withTempChangedNode(ind: number, node: NodeData): NodeGraph {

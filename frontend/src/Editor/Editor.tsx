@@ -1,8 +1,6 @@
 import React from "react";
-import { DefaultNodeData, DIVIDER_WIDTH, DRAG_BUTTON } from "~/src/lib/constants";
-import { calculateNodeSize } from "~/src/NodeGraph/Node";
 import { Stage } from "~/src/NodeGraph/Stage";
-import { Edge, EditorState, Err, Vec2 } from "~/src/lib/types";
+import { Edge, EditorState, Vec2 } from "~/src/lib/types";
 import './Editor.scss';
 import { NodeMenu } from "~/src/Editor/NodeMenu";
 import { NodeGraph } from "~/src/NodeGraph/NodeGraph";
@@ -18,10 +16,6 @@ export class Editor extends React.Component<{}, EditorState> {
     constructor(props: {}) {
         super(props);
         axios.get<NodeGraph>("/graph").then(r => {
-            r.data.nodes = r.data.nodes.map(node => ({
-                ...node,
-                size: calculateNodeSize(node)
-            }));
             this.setState({ graph: new NodeGraph(r.data.nodes, r.data.edges) });
         }).catch(e => {
             console.log(e);
@@ -38,12 +32,11 @@ export class Editor extends React.Component<{}, EditorState> {
         this.onNodeSelect = this.onNodeSelect.bind(this);
     }
 
-    handleGraphPromise(p: Promise<AxiosResponse<NodeGraph | Err>>) {
+    handleGraphPromise(p: Promise<AxiosResponse<NodeGraph>>) {
         p.then(res => {
-            if (res.data instanceof NodeGraph)
-                this.setState({ graph: res.data });
-            else
-                console.log(res.data.err);
+            console.log(res.data);
+            this.setState({ graph: new NodeGraph(res.data.nodes, res.data.edges) });
+            console.log("UP");
         }).catch(e => console.log(e));
     }
 
@@ -51,8 +44,8 @@ export class Editor extends React.Component<{}, EditorState> {
         this.handleGraphPromise(this.state.graph.withUpdatedNodeParams(id, key, value))
     }
 
-    updateNode(ind: number, key: string, value: any) {
-        this.handleGraphPromise(this.state.graph.withUpdatedNode(ind, key, value));
+    updateNode(id: number, key: string, value: any) {
+        this.handleGraphPromise(this.state.graph.withUpdatedNode(id, key, value));
     }
 
     addEdge(edge: Edge) {
@@ -76,11 +69,14 @@ export class Editor extends React.Component<{}, EditorState> {
     }
 
     onNodeDragEnd(ind: number) {
-        this.updateNode(ind, "pos", this.state.graph.nodes[ind].pos);
+        this.updateNode(
+            this.state.graph.nodes[ind].node_id,
+            "pos",
+            this.state.graph.nodes[ind].pos
+        );
     }
 
     onNodeSelect(id: number) {
-        console.log(id);
         this.setState({ selected: id });
     }
 
