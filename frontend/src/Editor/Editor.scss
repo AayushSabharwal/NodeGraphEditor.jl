@@ -6,35 +6,15 @@
     width: 100%;
 }
 
-.Resizer {
-    position: absolute;
-    border-radius: 0px;
-    top: 0;
+.rightpanel {
+    position: fixed;
     height: 100%;
-    background-color: transparent;
-}
-
-.ResizerButton {
-    position: absolute;
+    width: 25%;
+    right: 0;
     top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-}
-
-.Menu {
-    position: absolute;
-    height: 100%;
-    top: 0;
-    background-color: $bg-color;
+    bottom: 0;
     padding: 10px;
-}
-
-.NodeData {
-    flex: 1 1 auto;
-    overflow-y: scroll;
-    &::-webkit-scrollbar {
-        width: 0;
-        height: 0;
-    }
+    display: grid;
+    grid-template-rows: 1fr 19fr;
+    row-gap: 10px;
 }

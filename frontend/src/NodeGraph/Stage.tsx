@@ -351,6 +351,7 @@ export class Stage extends React.Component<StageProps, StageState> {
                         }}
                         to_type={edge.to_type}
                         to_ind={edge.to_conn}
+                        onClick={() => this.props.deleteEdge(edge)}
                     />;
                 })}
                 {connline}

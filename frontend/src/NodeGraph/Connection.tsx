@@ -9,6 +9,7 @@ export interface ConnectionProps {
     to: Vec2,
     to_type: ConnectorType,
     to_ind: number,
+    onClick?: () => void,
 }
 
 export class Connection extends React.Component<ConnectionProps> {
@@ -41,6 +42,7 @@ export class Connection extends React.Component<ConnectionProps> {
                     </linearGradient>
                 </defs>
                 <path
+                    onClick={this.props.onClick}
                     d={`M ${from.x} ${from.y} C ${c1.x} ${c1.y}, ${c2.x} ${c2.y}, ${to.x} ${to.y}`}
                     fill="transparent"
                     stroke={`url(#${from_type}${from_ind}${to_type}${to_ind})`}

@@ -11,7 +11,6 @@ export const NODE_MIN_WIDTH = 150;
 export const NODE_MAX_WIDTH = 300;
 export const NODE_CHAR_WIDTH = 10;
 export const NODE_LINE_HEIGHT = 19;
-export const IMAGE_SIZE = { x: 100, y: 100 };
 export const INPUT_WIDTH = 400;
 export const LABEL_WIDTH = 140;
 export const UNIT_WIDTH = 15;

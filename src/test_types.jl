@@ -6,7 +6,7 @@ Nodegraph.type_symbol(::Type{VoltageSource}) = :voltage_source
 Nodegraph.inputs(::Val{:voltage_source}) = 1
 Nodegraph.outputs(::Val{:voltage_source}) = 1
 Nodegraph.create(::Val{:voltage_source}) = VoltageSource(1.0)
-function Nodegraph.update!(v::VoltageSource, key::Symbol, value::F) where {F<:AbstractFloat}
+function Nodegraph.update!(v::VoltageSource, key::Symbol, value)
     key == :voltage || return "No key matching $key"
     v.voltage = value
     nothing

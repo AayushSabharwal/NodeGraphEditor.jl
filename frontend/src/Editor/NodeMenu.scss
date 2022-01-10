@@ -2,11 +2,6 @@
 
 .card {
     background-color: $fg-color;
-    position: fixed;
-    width: 30%;
-    height: calc(100% - 40px);
-    right: 20px;
-    top: 20px;
     border-radius: 10px;
     display: flex;
     flex-direction: column;
@@ -31,4 +26,18 @@
         background-color: rgba(80, 80, 80, 0.8);
         border-radius: 5px;
     }
+}
+
+.header {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    margin: 0px 0px 10px 0px;
+}
+
+.namefield {
+    color: $font-color;
+    font-family: $ui-font;
+    font-size: $font-size;
+    margin: 0px 5px 0px 0px;
 }

@@ -49,6 +49,10 @@ export class NodeGraph {
         return axios.post<NodeGraph>('/addedge', edge);
     }
 
+    withDeletedEdge(edge: Edge): Promise<AxiosResponse<NodeGraph>> {
+        return axios.post<NodeGraph>('/deleteedge', edge);
+    }
+
     withNewNode(type: string): Promise<AxiosResponse<NodeGraph>> {
         return axios.post<NodeGraph>(`/addnode/${type}`);
     }

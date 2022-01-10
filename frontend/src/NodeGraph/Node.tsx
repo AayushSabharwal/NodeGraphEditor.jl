@@ -1,6 +1,6 @@
 import React from 'react';
 import './Node.scss'
-import { CONN_IN_COLORS, CONN_OUT_COLORS, CONN_RADIUS, CONN_SIDE_MARGIN, CONN_Y_SPACING, IMAGE_SIZE, NODE_CHAR_WIDTH, NODE_LINE_HEIGHT, NODE_MAX_WIDTH, NODE_MIN_WIDTH } from '~/src/lib/constants';
+import { CONN_IN_COLORS, CONN_OUT_COLORS, CONN_RADIUS, CONN_SIDE_MARGIN, CONN_Y_SPACING, NODE_CHAR_WIDTH, NODE_LINE_HEIGHT, NODE_MAX_WIDTH, NODE_MIN_WIDTH } from '~/src/lib/constants';
 import { Vec2, ConnectorType, NodeProps, NodeData } from '~/src/lib/types';
 
 export function calculateConnectorX(parent_size: Vec2, type: ConnectorType) {
@@ -37,7 +37,6 @@ export function calculateNodeSize(node: NodeData): Vec2 {
     return {
         x: Math.min(
             Math.max(
-                IMAGE_SIZE.x,
                 node.node_name.length * NODE_CHAR_WIDTH,
                 NODE_MIN_WIDTH
             ),
@@ -45,8 +44,7 @@ export function calculateNodeSize(node: NodeData): Vec2 {
         ) + 2 * (2 * CONN_RADIUS + CONN_Y_SPACING),
         y: Math.max(
             conn * (2 * CONN_RADIUS + CONN_Y_SPACING) - CONN_Y_SPACING,
-            IMAGE_SIZE.y /*/ IMAGE_ASPECT_RATIOS[node.params.type]*/
-            + NODE_LINE_HEIGHT * wrappedContentStringLines(node.node_name),
+            NODE_LINE_HEIGHT * wrappedContentStringLines(node.node_name),
         ) + 2 * CONN_Y_SPACING,
     }
 }
@@ -95,15 +93,8 @@ export class Node extends React.Component<NodeProps, {}> {
                         )}
                     />
                 )}
-                {/* <image
-                    filter="invert(1)"
-                    href={`${this.props.params.type}.svg`}
-                    x={(size.x - IMAGE_SIZE.x) / 2}
-                    width={IMAGE_SIZE.x}
-                /> */}
                 <text
                     x="50%"
-                    y={IMAGE_SIZE.y /*/ IMAGE_ASPECT_RATIOS[this.props.params.type]*/}
                     dominantBaseline="middle"
                     textAnchor="middle"
                     className="ContentText"

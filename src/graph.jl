@@ -6,7 +6,6 @@ export Node,
     Edge,
     NodeGraph,
     AbstractNodeParams,
-    icon,
     editor_fields,
     inputs,
     outputs,
@@ -17,7 +16,6 @@ abstract type AbstractNodeParams end
 notimplemented(t) = error("Not implemented for type-symbol $t")
 
 type_symbol(::Type{T}) where {T<:AbstractNodeParams} = notimplemented(T)
-icon(::T) where {T<:AbstractNodeParams} = ""
 inputs(::Val{T}) where {T<:Symbol} = notimplemented(T)
 outputs(::Val{T}) where {T<:Symbol} = notimplemented(T)
 create(::Val{T}) where {T<:Symbol} = notimplemented(T)
@@ -72,7 +70,6 @@ StructTypes.keyvaluepairs(n::Node) = [
     :node_id => n.id,
     :node_name => n.name,
     :pos => (x = n.x, y = n.y),
-    :icon => icon(n.params),
     :inputs => inputs(typeof(n.params)),
     :outputs => outputs(typeof(n.params)),
     :params => Dict(

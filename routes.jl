@@ -8,30 +8,36 @@ route("/") do
 end
 
 route("/graph", method = GET) do
-    JSON3.write(load(CACHE_FILE, "ng"))
+    JSON3.write(Nodegraph.get_nodegraph())
 end
 
-route("/addnode/:add_type::Symbol", method = POST) do
-    ng, types, nn_id = load(CACHE_FILE, "ng", "types", "nn_id")
-    add_type = payload(:add_type)
+route("/addnode/:add_type::String", method = POST) do
+    ng = Nodegraph.get_nodegraph()
+    types = Nodegraph.get_param_types()
+    nn_id = Nodegraph.get_new_node_id()
+
+    add_type = Symbol(payload(:add_type))
+    println(add_type)
+    println(types)
     if !(add_type in types)
         return Genie.Router.error(404, "Invalid node type $add_type", MIME"text/html")
     end
-    new_params = create(Val{add_type})
+    new_params = create(Val{add_type}())
     push!(ng.nodes, Node(nn_id, "new_$add_type", 0.0, 0.0, new_params))
-    jldsave(CACHE_FILE; nb, types, nn_id)
+
+    Nodegraph.set_nodegraph(ng)
+    Nodegraph.set_new_node_id(nn_id)
 
     return JSON3.write(ng)
 end
 
 route("/updatenode/:id::Int", method = POST) do
-    ng = load(CACHE_FILE, "ng")
+    ng = Nodegraph.get_nodegraph()
     id = payload(:id)
     index = id_to_index(id, ng)
     isnothing(index) && return Genie.Router.error(404, "Invalid node_id: $id", MIME"text/html")
 
     msg = jsonpayload()
-    println(msg)
     haskey(msg, "key") || return Genie.Router.error(400, "Key `key` required in `updatenode` payload", MIME"text/html")
     haskey(msg, "value") || return Genie.Router.error(400, "Value `value` required in `updatenode` payload", MIME"text/html")
     
@@ -48,21 +54,18 @@ route("/updatenode/:id::Int", method = POST) do
         return Genie.Router.error(400, "Invalid key: $key", MIME"text/html")
     end
 
-    jldsave(CACHE_FILE; ng)
+    Nodegraph.set_nodegraph(ng)
     return JSON3.write(ng)
 end
 
 route("/updateparams/:id::Int", method = POST) do
-    ng = load(CACHE_FILE, "ng")
+    ng = Nodegraph.get_nodegraph()
+
     id = payload(:id)
     index = findnext(n -> n.id == id, ng.nodes, 1)
     isnothing(index) && return Genie.Router.error(404, "Invalid node_id: $id", MIME"text/html")
 
     msg = jsonpayload()
-
-    # TODO
-    println(typeof(msg))
-    println(msg)
 
     haskey(msg, "key") || return Genie.Router.error(400, "Key `key` required in `updatenode` payload", MIME"text/html")
     haskey(msg, "value") || return Genie.Router.error(400, "Value `value` required in `updatenode` payload", MIME"text/html")
@@ -74,13 +77,14 @@ route("/updateparams/:id::Int", method = POST) do
 
     isnothing(ret) || return Genie.Router.error(400, ret, MIME"text/html")
 
-    jldsave(CACHE_FILE; ng)
+    Nodegraph.set_nodegraph(ng)
 
     return JSON3.write(ng)
 end
 
 route("/addedge", method = POST) do
-    ng = load(CACHE_FILE, "ng")
+    ng = Nodegraph.get_nodegraph()
+
     edge = jsonpayload()
     from = id_to_index(edge["from"], ng)
     if isnothing(from)
@@ -112,21 +116,45 @@ route("/addedge", method = POST) do
             edge["to_type"]
         )
     )
-    jldsave(CACHE_FILE; ng)
-    println("H");
+
+    Nodegraph.set_nodegraph(ng)
     return JSON3.write(ng)
 end
 
-route("/deletenode/:id", method = POST) do
-    ng = load(CACHE_FILE, "ng")
+route("/deleteedge", method = POST) do
+    ng = Nodegraph.get_nodegraph()
+
+    edge = jsonpayload()
+    filter!(
+        e -> e.from != edge["from"] ||
+            e.to != edge["to"] ||
+            e.from_conn != edge["from_conn"] ||
+            e.to_conn != edge["to_conn"] ||
+            e.from_type != edge["from_type"] ||
+            e.to_type != edge["to_type"],
+        ng.edges
+    )
+    Nodegraph.set_nodegraph(ng)
+    
+    return JSON3.write(ng)
+end
+
+route("/deletenode/:id::Int", method = POST) do
+    ng = Nodegraph.get_nodegraph()
+
     id = payload(:id)
     ind = id_to_index(id, ng)
     isnothing(ind) && return Genie.Router.error(404, "Invalid ID: $id", MIME"text/html")
     
-    popat!(ng.node, ind)
-    filter!(e -> e.from == id || e.to == id, ng.edges)
+    popat!(ng.nodes, ind)
+    filter!(e -> e.from != id && e.to != id, ng.edges)
     
-    jldsave(CACHE_FILE; ng)
+    Nodegraph.set_nodegraph(ng)
 
     return JSON3.write(ng)
+end
+
+route("/types", method = GET) do
+    types = Nodegraph.get_param_types()
+    return JSON3.write(Dict(:types => types))
 end

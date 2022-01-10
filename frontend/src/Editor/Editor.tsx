@@ -5,6 +5,8 @@ import './Editor.scss';
 import { NodeMenu } from "~/src/Editor/NodeMenu";
 import { NodeGraph } from "~/src/NodeGraph/NodeGraph";
 import axios, { AxiosResponse } from "axios";
+import { Box } from "@chakra-ui/react";
+import { AddNodeButton } from "~/src/Editor/AddNode";
 
 export class Editor extends React.Component<{}, EditorState> {
     state: EditorState = {
@@ -23,6 +25,7 @@ export class Editor extends React.Component<{}, EditorState> {
 
         this.updateNode = this.updateNode.bind(this);
         this.addEdge = this.addEdge.bind(this);
+        this.deleteEdge = this.deleteEdge.bind(this);
         this.updateNodeParams = this.updateNodeParams.bind(this);
         this.addNode = this.addNode.bind(this);
         this.deleteNode = this.deleteNode.bind(this);
@@ -34,9 +37,7 @@ export class Editor extends React.Component<{}, EditorState> {
 
     handleGraphPromise(p: Promise<AxiosResponse<NodeGraph>>) {
         p.then(res => {
-            console.log(res.data);
             this.setState({ graph: new NodeGraph(res.data.nodes, res.data.edges) });
-            console.log("UP");
         }).catch(e => console.log(e));
     }
 
@@ -50,6 +51,10 @@ export class Editor extends React.Component<{}, EditorState> {
 
     addEdge(edge: Edge) {
         this.handleGraphPromise(this.state.graph.withNewEdge(edge));
+    }
+
+    deleteEdge(edge: Edge) {
+        this.handleGraphPromise(this.state.graph.withDeletedEdge(edge));
     }
 
     addNode(type: string) {
@@ -106,13 +111,17 @@ export class Editor extends React.Component<{}, EditorState> {
                     onNodeDragEnd={this.onNodeDragEnd}
                     addEdge={this.addEdge}
                     selectNode={this.onNodeSelect}
+                    deleteEdge={this.deleteEdge}
                 />
-                <NodeMenu
-                    node={this.state.selected === -1 ? undefined : this.state.graph.nodes.find(node => node.node_id === this.state.selected)}
-                    updateNode={this.updateNode}
-                    updateNodeParams={this.updateNodeParams}
-                    deleteNode={this.deleteNode}
-                />
+                <Box className="rightpanel">
+                    <AddNodeButton addNode={this.addNode}/>
+                    <NodeMenu
+                        node={this.state.selected === -1 ? undefined : this.state.graph.nodes.find(node => node.node_id === this.state.selected)}
+                        updateNode={this.updateNode}
+                        updateNodeParams={this.updateNodeParams}
+                        deleteNode={this.deleteNode}
+                    />
+                </Box>
             </div >
         );
     }

@@ -53,6 +53,7 @@ export interface StageProps {
     dragNode: (ind: number, pos: Vec2) => void,
     onNodeDragEnd: (ind: number) => void,
     addEdge: (edge: Edge) => void,
+    deleteEdge: (edge: Edge) => void,
     selectNode: (id: number) => void,
     selection: number,
 }
@@ -109,42 +110,7 @@ export interface NumberInputWrapperState {
     invalid: boolean,
 }
 
-export interface DropdownButtonProps {
-    width?: string | number,
-    button_name: string,
-    options: string[],
-    onSelect: (opt: string) => void,
-}
-
-export interface DropdownButtonState {
-    isopen: boolean,
-}
-
-export interface ControlledTextFieldProps {
-    label: string,
-    submitChange: (value: string) => void,
-    width?: string,
-    height?: string,
-}
-
-export interface ControlledTextFieldState {
-    focused: boolean,
-}
-
-export interface NodeCardProps {
-    label: string,
-    changeLabel: (value: string) => void,
-    deleteNode: () => void,
-}
-
-export interface NodeCardState {
-    isOpen: boolean,
-}
-
-export interface DropdownSelectorProps {
-    width?: string | number,
-    selected: number,
-    options: string[],
-    onSelect: (ind: number) => void,
+export interface AddNodeButtonProps {
+    addNode: (type: string) => void,
 }
 // #endregion

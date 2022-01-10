@@ -31,7 +31,6 @@ export class NumberInputWrapper extends React.Component<NumberInputWrapperProps,
             : {};
         return (
             <NumberInput
-                className="uiText"
                 value={this.state.temp_value}
                 onChange={this.validateAndSendInput}
                 isInvalid={this.state.invalid}
