@@ -2,8 +2,8 @@ module Nodegraph
 
 using Genie, Logging, LoggingExtras
 using JLD2
-
-include("graph.jl")
+using JSON3
+using StructTypes
 
 const CACHE_DIR = ".nodegraph_cache"
 const NG_FILE_NAME = "data.jld2"
@@ -13,18 +13,19 @@ const PTYPES_FILE = joinpath(CACHE_DIR, PTYPES_FILE_NAME)
 const NNID_FILE_NAME = "nnid"
 const NNID_FILE = joinpath(CACHE_DIR, NNID_FILE_NAME)
 
+include("graph.jl")
+include("node_params_API.jl")
+include("file_interface.jl")
+include("operations.jl")
+
+export run_server
+
 function __init__()
     Genie.genie(; context = @__MODULE__)
     Core.eval(Main, :(using Genie))
     isdir(CACHE_DIR) || mkdir(CACHE_DIR)
 end
 
-get_nodegraph() = load(NG_FILE, "ng")
-get_param_types() = Symbol.(readlines(PTYPES_FILE))
-get_new_node_id() = read(NNID_FILE, Int)
-set_nodegraph(ng::NodeGraph) = jldsave(NG_FILE; ng)
-set_param_types(types::Vector{Symbol}) = write(PTYPES_FILE, join(types, "\n"))
-set_new_node_id(nn_id::Int) = write(NNID_FILE, nn_id)
 
 function run_server(
     ng::NodeGraph = NodeGraph(),

@@ -19,6 +19,7 @@ export function AddNodeButton({ addNode }: AddNodeButtonProps) {
             <Menu>
                 <MenuButton
                     width="100%"
+                    height="100%"
                     as={Button}
                     rightIcon={ <AddIcon/> }
                     onClick={getOptions}

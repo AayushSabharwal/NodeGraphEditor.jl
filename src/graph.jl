@@ -1,39 +1,34 @@
-using JLD2
-using JSON3
-using StructTypes
-
-export Node,
+export AbstractNodeParams,
+    Node,
     Edge,
     NodeGraph,
-    AbstractNodeParams,
-    editor_fields,
-    inputs,
-    outputs,
     INPUT,
     OUTPUT
-
-abstract type AbstractNodeParams end
-notimplemented(t) = error("Not implemented for type-symbol $t")
-
-type_symbol(::Type{T}) where {T<:AbstractNodeParams} = notimplemented(T)
-inputs(::Val{T}) where {T<:Symbol} = notimplemented(T)
-outputs(::Val{T}) where {T<:Symbol} = notimplemented(T)
-create(::Val{T}) where {T<:Symbol} = notimplemented(T)
-update!(::T, key::Symbol, value) where {T<:AbstractNodeParams} = notimplemented(T)
-validate_edge(::S, ::T, edge::D) where {S<:AbstractNodeParams,T<:AbstractNodeParams,D<:Dict} = true
-editor_fields(t::T) where {T<:AbstractNodeParams} = (k => getfield(t, k) for k in fieldnames(typeof(t)))
-
-inputs(::T) where {T<:AbstractNodeParams} = inputs(Val{type_symbol(T)}())
-inputs(::Type{T}) where {T<:AbstractNodeParams} = inputs(Val{type_symbol(T)}())
-outputs(::T) where {T<:AbstractNodeParams} = outputs(Val{type_symbol(T)}())
-outputs(::Type{T}) where {T<:AbstractNodeParams} = outputs(Val{type_symbol(T)}())
-create(::T) where {T<:AbstractNodeParams} = create(Val{type_symbol(T)}())
-create(::Type{T}) where {T<:AbstractNodeParams} = create(Val{type_symbol(T)}())
-type_symbol(::T) where {T<:AbstractNodeParams} = type_symbol(T)
 
 const INPUT = 0
 const OUTPUT = 1
 
+"""
+    abstract type AbstractNodeParams end
+
+Abstract type that should be implemented to create new nodes.
+"""
+abstract type AbstractNodeParams end
+
+"""
+    mutable struct Node
+
+Represents a node in the graph. Each node has the following fields:
+- `id::Int`: Unique identifier of the node
+- `name::String`: Name of the node
+- `x::Float64`, `y::Float64`: Position of the node
+- `params::AbstractNodeParams`: Parameters of the node
+
+Each node has a finite number of input and output connectors, which can be
+used to join them to other nodes through [`Edge`](@ref)s. The number of
+input and output connectors is found through the [`input`](@ref) and
+[`output`](@ref) functions corresponding to the type-symbol of `params`.
+"""
 mutable struct Node
     id::Int
     name::String
@@ -42,16 +37,35 @@ mutable struct Node
     params::AbstractNodeParams
 end
 
+"""
+    struct Edge
 
+Represents an edge between two nodes in the graph. Each edge has the following
+fields:
+- `from::Int`: Source node ID
+- `from_type::Int`: 0 if the edge is from an input connector, 1 if 
+  from an output connector
+- `from_conn::Int`: Source connector index
+- `to::Int`: Destination node ID
+- `to_type::Int`: 0 if the edge is from an input connector, 1 if
+  from an output connector
+- `to_conn::Int`: Destination connector index
+"""
 struct Edge
     from::Int
-    from_conn::Int
     from_type::Int
+    from_conn::Int
     to::Int
-    to_conn::Int
     to_type::Int
+    to_conn::Int
 end
 
+"""
+    mutable struct NodeGraph
+
+Struct containing vectors of the [`Node`](@ref)s and [`Edge`](@ref)s of
+the graph.
+"""
 mutable struct NodeGraph
     nodes::Vector{Node}
     edges::Vector{Edge}
@@ -60,7 +74,7 @@ end
 NodeGraph() = NodeGraph(Node[], Edge[])
 
 function NodeGraph(path::String)
-    load(path, "nodegraph")
+    load(path, "ng")
 end
 
 StructTypes.StructType(::Type{NodeGraph}) = StructTypes.Mutable()
