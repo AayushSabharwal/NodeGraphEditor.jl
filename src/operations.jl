@@ -1,5 +1,6 @@
 export id_to_index,
     add_node!,
+    delete_node!,
     update_node_name!,
     update_node_position!,
     update_node_params!,
@@ -15,7 +16,7 @@ end
 
 function delete_node!(ng::NodeGraph, node_ind::Int)
     removed = popat!(ng.nodes, node_ind)
-    filter!(e -> e.from == removed.id || e.to == removed.id, ng.edges)
+    filter!(e -> e.from != removed.id && e.to != removed.id, ng.edges)
 end
 
 function update_node_name!(ng::NodeGraph, node_ind::Int, new_name::String)

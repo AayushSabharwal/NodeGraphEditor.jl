@@ -6,11 +6,11 @@ route("/") do
 end
 
 route("/graph", method = GET) do
-    JSON3.write(Nodegraph.get_nodegraph())
+    JSON3.write(NodeGraphEditor.get_nodegraph())
 end
 
 route("/addnode/:add_type::String", method = POST) do
-    types = Nodegraph.get_param_types()
+    types = NodeGraphEditor.get_param_types()
     
     add_type = Symbol(payload(:add_type))
     
@@ -18,21 +18,21 @@ route("/addnode/:add_type::String", method = POST) do
         return Genie.Router.error(404, "Invalid node type $add_type", MIME"text/html")
     end
 
-    ng = Nodegraph.get_nodegraph()
-    nn_id = Nodegraph.get_new_node_id()
+    ng = NodeGraphEditor.get_nodegraph()
+    nn_id = NodeGraphEditor.get_new_node_id()
 
     add_node!(ng, add_type, nn_id)
     
     nn_id += 1
 
-    Nodegraph.set_nodegraph(ng)
-    Nodegraph.set_new_node_id(nn_id)
+    NodeGraphEditor.set_nodegraph(ng)
+    NodeGraphEditor.set_new_node_id(nn_id)
 
     return JSON3.write(ng)
 end
 
 route("/updatenode/:id::Int", method = POST) do
-    ng = Nodegraph.get_nodegraph()
+    ng = NodeGraphEditor.get_nodegraph()
     id = payload(:id)
     index = id_to_index(id, ng)
     isnothing(index) && return Genie.Router.error(404, "Invalid node_id: $id", MIME"text/html")
@@ -52,12 +52,12 @@ route("/updatenode/:id::Int", method = POST) do
         return Genie.Router.error(400, "Invalid key: $key", MIME"text/html")
     end
 
-    Nodegraph.set_nodegraph(ng)
+    NodeGraphEditor.set_nodegraph(ng)
     return JSON3.write(ng)
 end
 
 route("/updateparams/:id::Int", method = POST) do
-    ng = Nodegraph.get_nodegraph()
+    ng = NodeGraphEditor.get_nodegraph()
 
     id = payload(:id)
     index = findnext(n -> n.id == id, ng.nodes, 1)
@@ -75,13 +75,13 @@ route("/updateparams/:id::Int", method = POST) do
 
     isnothing(ret) || return Genie.Router.error(400, ret, MIME"text/html")
 
-    Nodegraph.set_nodegraph(ng)
+    NodeGraphEditor.set_nodegraph(ng)
 
     return JSON3.write(ng)
 end
 
 route("/addedge", method = POST) do
-    ng = Nodegraph.get_nodegraph()
+    ng = NodeGraphEditor.get_nodegraph()
 
     edge = JSON3.read(rawpayload(), Edge)
 
@@ -89,24 +89,24 @@ route("/addedge", method = POST) do
 
     isvalid || return Genie.Router.error(400, "Invalid connection", MIME"text/html")
 
-    Nodegraph.set_nodegraph(ng)
+    NodeGraphEditor.set_nodegraph(ng)
     return JSON3.write(ng)
 end
 
 route("/deleteedge", method = POST) do
-    ng = Nodegraph.get_nodegraph()
+    ng = NodeGraphEditor.get_nodegraph()
 
     edge = JSON3.read(rawpayload(), Edge)
 
     delete_edge!(ng, edge)
     
-    Nodegraph.set_nodegraph(ng)
+    NodeGraphEditor.set_nodegraph(ng)
     
     return JSON3.write(ng)
 end
 
 route("/deletenode/:id::Int", method = POST) do
-    ng = Nodegraph.get_nodegraph()
+    ng = NodeGraphEditor.get_nodegraph()
 
     id = payload(:id)
     ind = id_to_index(id, ng)
@@ -114,12 +114,12 @@ route("/deletenode/:id::Int", method = POST) do
     
     delete_node!(ng, ind)
     
-    Nodegraph.set_nodegraph(ng)
+    NodeGraphEditor.set_nodegraph(ng)
 
     return JSON3.write(ng)
 end
 
 route("/types", method = GET) do
-    types = Nodegraph.get_param_types()
+    types = NodeGraphEditor.get_param_types()
     return JSON3.write(Dict(:types => types))
 end

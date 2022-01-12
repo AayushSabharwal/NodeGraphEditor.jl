@@ -1,4 +1,4 @@
-module Nodegraph
+module NodeGraphEditor
 
 using Genie, Logging, LoggingExtras
 using JLD2

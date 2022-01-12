@@ -1,4 +1,4 @@
-name = "Nodegraph"
+name = "NodeGraphEditor"
 uuid = "554b460f-3343-4d70-b327-24510ba82dac"
 authors = ["Aayush Sabharwal <aayush.sabharwal@gmail.com>"]
 version = "0.0.1"
