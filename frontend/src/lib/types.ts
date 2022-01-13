@@ -1,5 +1,5 @@
+import { ComponentChildren } from "preact"
 import { NodeGraph } from "~/src/NodeGraph/NodeGraph"
-import { ReactNode } from "react"
 
 // #region Utilities
 export type Vec2 = {
@@ -35,12 +35,6 @@ export type Edge = {
 // #endregion
 
 // #region NodeGraph Props and States
-export interface NodeProps extends NodeData {
-    selected: boolean,
-    onConnectorMouseUp: (id: number, type: ConnectorType, conn: number, e: MouseEvent) => void,
-    onConnectorMouseDown: (id: number, type: ConnectorType, conn: number, e: MouseEvent) => void,
-    onMouseDown: (e: MouseEvent) => void,
-}
 
 export interface StageProps {
     width: number,
@@ -72,35 +66,5 @@ export interface StageState {
         pos: Vec2,
         zoom: number,
     },
-}
-// #endregion
-
-// #region Editor Menu
-export interface NodeMenuProps {
-    node: NodeData | undefined,
-    updateNode: (ind: number, key: string, value: any) => void,
-    updateNodeParams: (id: number, key: string, value: any) => void,
-    deleteNode: (id: number) => void,
-}
-
-export interface NodeMenuRendererProps {
-    params: Record<string, any>,
-    node_id: number,
-    onChangeParams: (id: number, key: string, value: any) => void,
-}
-
-export interface NumberInputWrapperProps {
-    value: number,
-    unit?: ReactNode,
-    onChange: (value: number) => void,
-}
-
-export interface NumberInputWrapperState {
-    temp_value: string,
-    invalid: boolean,
-}
-
-export interface AddNodeButtonProps {
-    addNode: (type: string) => void,
 }
 // #endregion

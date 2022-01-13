@@ -1,9 +1,12 @@
 import { Box, Button, Menu, MenuButton, MenuItem, MenuList } from "@chakra-ui/react";
-import { AddNodeButtonProps } from "~/src/lib/types";
 import { useState } from "preact/hooks";
 import axios from "axios";
 import { AddIcon } from "@chakra-ui/icons";
 import "./AddNode.scss"
+
+export interface AddNodeButtonProps {
+    addNode: (type: string) => void,
+}
 
 export function AddNodeButton({ addNode }: AddNodeButtonProps) {
     const [types, setTypes] = useState(['']);

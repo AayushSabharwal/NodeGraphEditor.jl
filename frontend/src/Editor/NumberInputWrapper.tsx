@@ -1,42 +1,39 @@
-import { NumberInputWrapperProps, NumberInputWrapperState } from "~/src/lib/types";
-import React from "react";
+import React, { useState } from "react";
 import { NumberInput, NumberInputField, Tag } from "@chakra-ui/react";
 
-export class NumberInputWrapper extends React.Component<NumberInputWrapperProps, NumberInputWrapperState> {
-    state: NumberInputWrapperState = {
-        temp_value: this.props.value.toString(),
-        invalid: false,
-    }
-    constructor(props: NumberInputWrapperProps) {
-        super(props);
-        this.validateAndSendInput = this.validateAndSendInput.bind(this);
-    }
+export interface NumberInputWrapperProps {
+    value: number,
+    unit?: React.ReactNode,
+    onChange: (value: number) => void,
+}
 
-    validateAndSendInput(val: string) {
-        this.setState({ temp_value: val });
+export function NumberInputWrapper(props: NumberInputWrapperProps) {
+    const [temp_value, set_temp_value] = useState(props.value.toString());
+    const [invalid, setInvalid] = useState(false);
+
+    const validateAndSendInput = (val: string) => {
+        set_temp_value(val);
+
         let num = +val;
-        if (Number.isNaN(num)) {
-            this.setState({ invalid: true });
-        }
+        if (Number.isNaN(num))
+            setInvalid(true);
         else {
-            this.props.onChange(num);
-            this.setState({ invalid: false });
+            props.onChange(num);
+            setInvalid(false);
         }
     }
 
-    render() {
-        const addonAfter = this.props.unit ? {
-            rightElement: <Tag>{this.props.unit}</Tag>
-        }
-            : {};
-        return (
-            <NumberInput
-                value={this.state.temp_value}
-                onChange={this.validateAndSendInput}
-                isInvalid={this.state.invalid}
-            >
-                <NumberInputField />
-            </NumberInput>
-        );
+    const addonAfter = props.unit ? {
+        rightElement: <Tag>{props.unit}</Tag>
     }
+        : {};
+    return (
+        <NumberInput
+            value={temp_value}
+            onChange={validateAndSendInput}
+            isInvalid={invalid}
+        >
+            <NumberInputField />
+        </NumberInput>
+    );
 }
