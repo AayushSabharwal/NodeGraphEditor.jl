@@ -1,5 +1,5 @@
 import { NodeGraph } from "~/src/NodeGraph/NodeGraph"
-import React, { ReactNode } from "react"
+import { ReactNode } from "react"
 
 // #region Utilities
 export type Vec2 = {
@@ -10,10 +10,6 @@ export type Vec2 = {
 export enum ConnectorType {
     input = 0,
     output = 1,
-}
-
-export type Err = {
-    err: string,
 }
 // #endregion
 
@@ -80,12 +76,6 @@ export interface StageState {
 // #endregion
 
 // #region Editor Menu
-export interface EditorState {
-    stagewidth: number,
-    graph: NodeGraph,
-    selected: number,
-}
-
 export interface NodeMenuProps {
     node: NodeData | undefined,
     updateNode: (ind: number, key: string, value: any) => void,

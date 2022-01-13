@@ -1,13 +1,11 @@
-import { Editor } from '~/src/Editor/Editor';
 import { ChakraProvider } from '@chakra-ui/react';
+import Manager from '~/src/Manager';
 import { theme } from '~/src/theme';
 
 function App() {
     return (
         <ChakraProvider theme={theme}>
-            <div className="App">
-                <Editor />
-            </div>
+            <Manager/>
         </ChakraProvider>
     );
 }
