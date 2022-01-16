@@ -1,4 +1,4 @@
-import { Edge, Vec2 } from "~/src/lib/types";
+import { Edge } from "~/src/lib/types";
 import { Connection } from "~/src/NodeGraph/Connection";
 import { calculateConnectorX, calculateConnectorY } from "~/src/NodeGraph/Connector";
 import { NodeGraph } from "~/src/NodeGraph/NodeGraph";
@@ -7,14 +7,12 @@ function getEdgeKey(edge: Edge) {
     return `${edge.from}${edge.from_type}${edge.from_conn}_${edge.to}${edge.to_type}${edge.to_conn}`;
 }
 
-export interface ConnectionLayerProps {
+export interface EdgeLayerProps {
     graph: NodeGraph
     deleteEdge: (edge: Edge) => void
 }
 
-export function ConnectionLayer(props: ConnectionLayerProps) {
-    
-
+export function EdgeLayer(props: EdgeLayerProps) {
     return (
         <>
             {props.graph.edges.map(edge => {

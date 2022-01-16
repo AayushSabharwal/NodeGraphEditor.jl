@@ -180,6 +180,7 @@ export function NodeLayer(props: NodeLayerProps) {
         />
     }
     // #endregion
+
     return (
         <>
             {props.graph.nodes.map(node => (

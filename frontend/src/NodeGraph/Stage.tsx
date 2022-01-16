@@ -1,17 +1,12 @@
 import React from "react";
-import { Node, calculateConnectorX, calculateConnectorY } from '~/src/NodeGraph/Node'
+import { calculateConnectorX, calculateConnectorY } from '~/src/NodeGraph/Node'
 import { Connection } from "~/src/NodeGraph/Connection";
-import { DRAG_BUTTON, MAX_ZOOM, MIN_ZOOM, PAN_BUTTON, ZOOM_SPEED } from "~/src/lib/constants";
-import { ConnectorType, StageProps, Edge, StageState } from "~/src/lib/types";
+import { MAX_ZOOM, MIN_ZOOM, PAN_BUTTON, ZOOM_SPEED } from "~/src/lib/constants";
+import { ConnectorType, StageProps, StageState } from "~/src/lib/types";
 import "./Stage.scss"
 import { BackgroundLayer } from "./BackgroundLayer";
 import { NodeLayer } from "./NodeLayer";
-import { ConnectionLayer } from "./EdgeLayer";
-
-
-function getEdgeKey(edge: Edge) {
-    return `${edge.from}${edge.from_type}${edge.from_conn}_${edge.to}${edge.to_type}${edge.to_conn}`;
-}
+import { EdgeLayer } from "./EdgeLayer";
 
 export class Stage extends React.Component<StageProps, StageState> {
     state: StageState = {
@@ -162,7 +157,7 @@ export class Stage extends React.Component<StageProps, StageState> {
                     onNodeDragEnd={this.props.onNodeDragEnd}
                     addEdge={this.props.addEdge}
                 />
-                <ConnectionLayer
+                <EdgeLayer
                     graph={this.props.graph}
                     deleteEdge={this.props.deleteEdge}
                 />
