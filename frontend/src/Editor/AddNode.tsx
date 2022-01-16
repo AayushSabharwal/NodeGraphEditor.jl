@@ -9,7 +9,7 @@ export interface AddNodeButtonProps {
 }
 
 export function AddNodeButton({ addNode }: AddNodeButtonProps) {
-    const [types, setTypes] = useState(['']);
+    const [types, setTypes] = useState<string[]>([]);
 
     const getOptions = () => {
         axios.get<{types: string[]}>('/types').then(r => {
