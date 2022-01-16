@@ -32,7 +32,7 @@ export default function Manager() {
         let node = nodes[ind];
         node.pos = pos;
         nodes.splice(ind, 1, node);
-        setGraph(new NodeGraph(nodes, graph.edges));
+        setGraph(new NodeGraph(nodes, graph.edges, false));
     }
     const onNodeDragEnd = (ind: number) =>
         updateNode(

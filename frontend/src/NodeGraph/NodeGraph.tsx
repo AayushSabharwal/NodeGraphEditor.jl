@@ -5,8 +5,11 @@ export class NodeGraph {
     nodes: NodeData[];
     edges: Edge[];
 
-    constructor(nodes: NodeData[] = [], edges: Edge[] = []) {
-        this.nodes = nodes.map(n => ({...n, size: calculateNodeSize(n)}));
+    constructor(nodes: NodeData[] = [], edges: Edge[] = [], recalculate_sizes: boolean = true) {
+        if (recalculate_sizes)
+            this.nodes = nodes.map(n => ({...n, size: calculateNodeSize(n)}));
+        else
+            this.nodes = nodes;
         this.edges = edges;
     }
 
