@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-import { useState } from "preact/hooks";
+import { useEffect, useState } from "preact/hooks";
 import { Editor } from "~/src/Editor/Editor";
 import { Edge, Vec2 } from "~/src/lib/types";
 import { NodeGraph } from "~/src/NodeGraph/NodeGraph";
@@ -42,7 +42,7 @@ export default function Manager() {
         );
     
     // fetch graph
-    handleGraphPromise(axios.get<NodeGraph>("/graph"));
+    useEffect(() => handleGraphPromise(axios.get<NodeGraph>("/graph")), []);
 
     const height = Math.max(
         document.body.scrollHeight,
