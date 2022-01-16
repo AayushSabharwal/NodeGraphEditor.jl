@@ -27,19 +27,22 @@ export default function Manager() {
         handleGraphPromise(axios.post<NodeGraph>('/deleteedge', edge));
     const deleteNode = (id: number) =>
         handleGraphPromise(axios.post<NodeGraph>(`/deletenode/${id}`));
-    const onNodeDrag = (ind: number, pos: Vec2) => {
+    const onNodeDrag = (id: number, pos: Vec2) => {
+        const ind = graph.findNodeIndex(id);
         let nodes = graph.nodes;
         let node = nodes[ind];
         node.pos = pos;
         nodes.splice(ind, 1, node);
         setGraph(new NodeGraph(nodes, graph.edges, false));
     }
-    const onNodeDragEnd = (ind: number) =>
+    const onNodeDragEnd = (id: number) => {
+        const ind = graph.findNodeIndex(id);
         updateNode(
             graph.nodes[ind].node_id,
             "pos",
             graph.nodes[ind].pos
         );
+    }
     
     // fetch graph
     useEffect(() => handleGraphPromise(axios.get<NodeGraph>("/graph")), []);
