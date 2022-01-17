@@ -18,7 +18,6 @@ export interface NodeData {
     size: Vec2,
     inputs: number,
     outputs: number,
-    params: Record<string, any>,
 }
 
 export type Edge = {

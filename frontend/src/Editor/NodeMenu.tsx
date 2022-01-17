@@ -5,29 +5,31 @@ import { DeleteIcon } from "@chakra-ui/icons";
 import { NodeData } from '~/src/lib/types';
 
 export interface NodeMenuProps {
-    node: NodeData | undefined,
-    updateNode: (ind: number, key: string, value: any) => void,
+    node: NodeData | undefined
+    params: Record<string, any>
+    updateNode: (id: number, key: string, value: any) => void
     updateNodeParams: (id: number, key: string, value: any) => void,
     deleteNode: (id: number) => void,
 }
 
-
 export function NodeMenu(props: NodeMenuProps) {
     const node = props.node;
-    
-    if(!node)
+
+    if (!node)
         return <Box className='card collapse'></Box>;
     
     let grid_items = [];
-    for (const k in node.params) {
+    for (const k in props.params) {
         if(k == "type")
             continue;
+        
         grid_items.push(
-            <div className="gridItem uiText">
+            <div key={`key${k}`} className="gridItem uiText">
                 {k}
             </div>,
             <NumberInputWrapper
-                value={node.params[k]}
+                key={`val${k}`}
+                value={props.params[k]}
                 onChange={v => props.updateNodeParams(node.node_id, k, v)}
             />
         )

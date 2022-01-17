@@ -7,6 +7,7 @@ import { NodeGraph } from "~/src/NodeGraph/NodeGraph";
 export interface EditorProps {
     graph: NodeGraph
     selected: number
+    selected_params: Record<string, any>
     addNode: (type: string) => void
     updateNode: (id: number, key: string, value: any) => void
     updateNodeParams: (id: number, key: string, value: any) => void
@@ -19,6 +20,7 @@ export function Editor(props: EditorProps) {
             <AddNodeButton addNode={props.addNode}/>
             <NodeMenu
                 node={props.graph.findNode(props.selected)}
+                params={props.selected_params}
                 updateNode={props.updateNode}
                 updateNodeParams={props.updateNodeParams}
                 deleteNode={props.deleteNode}

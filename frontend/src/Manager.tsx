@@ -8,6 +8,7 @@ import { Stage } from "~/src/NodeGraph/Stage";
 export default function Manager() {
     const [graph, setGraph] = useState(new NodeGraph());
     const [selected, setSelected] = useState(-1);
+    const [params, setParams] = useState<Record<string,any>>({});
 
     const handleGraphPromise = (p: Promise<AxiosResponse<NodeGraph>>) => {
         p.then(res => {
@@ -18,7 +19,9 @@ export default function Manager() {
     const updateNode = (id: number, key: string, value: any) =>
         handleGraphPromise(axios.post<NodeGraph>(`/updatenode/${id}`, { key, value }));
     const updateNodeParams = (id: number, key: string, value: any) =>
-        handleGraphPromise(axios.post<NodeGraph>(`/updateparams/${id}`, { key, value }));
+        axios.post<Record<string,any>>(`/updateparams/${id}`, { key, value })
+            .then(r => setParams(r.data))
+            .catch(e => console.log(e));
     const addEdge = (edge: Edge) =>
         handleGraphPromise(axios.post<NodeGraph>('/addedge', edge));
     const addNode = (type: string) =>
@@ -42,6 +45,12 @@ export default function Manager() {
             "pos",
             graph.nodes[ind].pos
         );
+    }
+    const selectNode = (id: number) => {
+        setSelected(id);
+        axios.get<Record<string,any>>(`/getparams/${id}`)
+            .then(r => setParams(r.data))
+            .catch(e => console.log(e));
     }
     
     // fetch graph
@@ -71,12 +80,13 @@ export default function Manager() {
             dragNode={onNodeDrag}
             onNodeDragEnd={onNodeDragEnd}
             addEdge={addEdge}
-            selectNode={setSelected}
+            selectNode={selectNode}
             deleteEdge={deleteEdge}
         />
         <Editor
             graph={graph}
             selected={selected}
+            selected_params={params}
             addNode={addNode}
             updateNode={updateNode}
             updateNodeParams={updateNodeParams}

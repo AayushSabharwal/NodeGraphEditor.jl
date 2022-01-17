@@ -86,8 +86,9 @@ StructTypes.keyvaluepairs(n::Node) = [
     :pos => (x = n.x, y = n.y),
     :inputs => inputs(typeof(n.params)),
     :outputs => outputs(typeof(n.params)),
-    :params => Dict(
-        :type => type_symbol(n.params),
-        editor_fields(n.params)...
-    )
+]
+StructTypes.StructType(::Type{T}) where {T<:AbstractNodeParams} = StructTypes.DictType()
+StructTypes.keyvaluepairs(t::T) where {T<:AbstractNodeParams} = [
+    :type => type_symbol(t),
+    editor_fields(t)...
 ]
