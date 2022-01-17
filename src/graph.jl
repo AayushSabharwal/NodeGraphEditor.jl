@@ -29,12 +29,12 @@ used to join them to other nodes through [`Edge`](@ref)s. The number of
 input and output connectors is found through the [`input`](@ref) and
 [`output`](@ref) functions corresponding to the type-symbol of `params`.
 """
-mutable struct Node
+mutable struct Node{P<:AbstractNodeParams}
     id::Int
     name::String
     x::Float64
     y::Float64
-    params::AbstractNodeParams
+    params::P
 end
 
 """
@@ -79,7 +79,7 @@ end
 
 StructTypes.StructType(::Type{NodeGraph}) = StructTypes.Mutable()
 StructTypes.StructType(::Type{Edge}) = StructTypes.Struct()
-StructTypes.StructType(::Type{Node}) = StructTypes.DictType()
+StructTypes.StructType(::Type{N}) where {N<:Node} = StructTypes.DictType()
 StructTypes.keyvaluepairs(n::Node) = [
     :node_id => n.id,
     :node_name => n.name,
@@ -90,5 +90,5 @@ StructTypes.keyvaluepairs(n::Node) = [
 StructTypes.StructType(::Type{T}) where {T<:AbstractNodeParams} = StructTypes.DictType()
 StructTypes.keyvaluepairs(t::T) where {T<:AbstractNodeParams} = [
     :type => type_symbol(t),
-    editor_fields(t)...
+    (p.first => to_editor_format(p.second) for p in editor_fields(t))...
 ]

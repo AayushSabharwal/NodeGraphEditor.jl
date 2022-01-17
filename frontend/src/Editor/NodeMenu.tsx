@@ -3,6 +3,7 @@ import { Box, Button, Icon, Input, SimpleGrid } from "@chakra-ui/react";
 import { NumberInputWrapper } from "~/src/Editor/NumberInputWrapper";
 import { DeleteIcon } from "@chakra-ui/icons";
 import { NodeData } from '~/src/lib/types';
+import { EnumInput } from '~/src/Editor/EnumInput';
 
 export interface NodeMenuProps {
     node: NodeData | undefined
@@ -23,16 +24,36 @@ export function NodeMenu(props: NodeMenuProps) {
         if(k == "type")
             continue;
         
+        
         grid_items.push(
             <div key={`key${k}`} className="gridItem uiText">
                 {k}
-            </div>,
-            <NumberInputWrapper
-                key={`val${k}`}
-                value={props.params[k]}
-                onChange={v => props.updateNodeParams(node.node_id, k, v)}
-            />
-        )
+            </div>
+        );
+        
+        // numeric
+        if (['Int', 'UIn', 'Flo'].find(e => e === props.params[k].type.slice(0,3))) {
+            grid_items.push(
+                <NumberInputWrapper
+                    key={`val${k}`}
+                    integer={props.params[k].type[0] != 'F'}
+                    unsigned={props.params[k].type[0] == 'U'}
+                    value={props.params[k].value}
+                    onChange={v => props.updateNodeParams(node.node_id, k, v)}
+                />
+            );
+        }
+        else if (props.params[k].type === 'enum') {
+            grid_items.push(
+                <EnumInput
+                    options={props.params[k].options}
+                    value={props.params[k].value}
+                    onChange={v => props.updateNodeParams(node.node_id, k, v)}
+                />
+            )
+        }
+        else
+            console.error('Unimplemented Input Type', props.params[k]);
     }
 
     return (

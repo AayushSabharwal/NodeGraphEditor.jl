@@ -74,7 +74,7 @@ By default, this takes every field of the struct and its corresponding value. Th
 function only needs to be implemented if not all struct fields should be editable,
 or some are editable conditionally.
 """
-editor_fields(t::T) where {T<:AbstractNodeParams} = (k => getfield(t, k) for k in fieldnames(typeof(t)))
+editor_fields(t::T) where {T<:AbstractNodeParams} = (k => getproperty(t, k) for k in propertynames(t))
 
 inputs(::T) where {T<:AbstractNodeParams} = inputs(Val{type_symbol(T)}())
 inputs(::Type{T}) where {T<:AbstractNodeParams} = inputs(Val{type_symbol(T)}())

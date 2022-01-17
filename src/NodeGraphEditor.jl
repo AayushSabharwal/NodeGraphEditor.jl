@@ -15,6 +15,7 @@ const NNID_FILE = joinpath(CACHE_DIR, NNID_FILE_NAME)
 
 include("graph.jl")
 include("node_params_API.jl")
+include("editor_formatting.jl")
 include("file_interface.jl")
 include("operations.jl")
 

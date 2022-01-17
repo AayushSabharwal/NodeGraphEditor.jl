@@ -2,26 +2,36 @@ import React, { useState } from "react";
 import { NumberInput, NumberInputField, Tag } from "@chakra-ui/react";
 
 export interface NumberInputWrapperProps {
-    value: number,
-    unit?: React.ReactNode,
-    onChange: (value: number) => void,
+    value: number
+    unsigned: boolean
+    integer: boolean
+    unit?: React.ReactNode
+    onChange: (value: number) => void
 }
 
 export function NumberInputWrapper(props: NumberInputWrapperProps) {
     const [temp_value, set_temp_value] = useState(props.value.toString());
-    const [invalid, setInvalid] = useState(false);
 
     const validateAndSendInput = (val: string) => {
         set_temp_value(val);
 
         let num = +val;
         if (Number.isNaN(num))
-            setInvalid(true);
+            return;
         else {
+            if (props.integer && num !== Math.floor(num)) {
+                num = Math.floor(num);
+                set_temp_value(Math.floor(num).toString());
+            }
+            if (props.unsigned && num < 0) {
+                num = 0;
+                set_temp_value('0');
+            }
             props.onChange(num);
-            setInvalid(false);
         }
     }
+
+    const onBlur = () => set_temp_value(props.value.toString());
 
     const addonAfter = props.unit ? {
         rightElement: <Tag>{props.unit}</Tag>
@@ -31,7 +41,8 @@ export function NumberInputWrapper(props: NumberInputWrapperProps) {
         <NumberInput
             value={temp_value}
             onChange={validateAndSendInput}
-            isInvalid={invalid}
+            onBlur={onBlur}
+            min={props.unsigned ? 0 : -Infinity}
         >
             <NumberInputField />
         </NumberInput>
