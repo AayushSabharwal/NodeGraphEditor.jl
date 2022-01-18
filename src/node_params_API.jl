@@ -46,16 +46,6 @@ This function needs to be implemented for each node type.
 create(::Val{T}) where {T<:Symbol} = notimplemented(T)
 
 """
-    update!(::T, key::Symbol, value) where {T<:AbstractNodeParams}
-
-Given a node, and a key-value pair, update the property indicated by `key` to
-the provided `value`. If the update is invalid, a string error may be returned.
-
-This function needs to be implemented for each node type.
-"""
-# update!(::T, key::Symbol, value) where {T<:AbstractNodeParams} = notimplemented(T)
-
-"""
     validate_edge(::S, ::T, edge::D) where {S<:AbstractNodeParams,T<:AbstractNodeParams,D<:Dict}
 
 Given a pair of nodes and a descriptor of an edge joining them, return `true` if the
@@ -63,16 +53,6 @@ edge is valid or `false` otherwise. Defaults to true. This function only needs t
 implemented if not all connections between any two nodes are valid.
 """
 validate_edge(::S, ::T, edge::Edge) where {S<:AbstractNodeParams,T<:AbstractNodeParams} = true
-
-"""
-    editor_fields(t::T) where {T<:AbstractNodeParams}
-
-Returns a `Vector{Pair}` of node properties that should be editable in the editor.
-By default, this takes every field of the struct and its corresponding value. This
-function only needs to be implemented if not all struct fields should be editable,
-or some are editable conditionally.
-"""
-# editor_fields(t::T) where {T<:AbstractNodeParams} = (k => getproperty(t, k) for k in propertynames(t))
 
 inputs(::T) where {T<:AbstractNodeParams} = inputs(Val{type_symbol(T)}())
 inputs(::Type{T}) where {T<:AbstractNodeParams} = inputs(Val{type_symbol(T)}())
