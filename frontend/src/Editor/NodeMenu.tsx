@@ -93,7 +93,6 @@ export function NodeMenu(props: NodeMenuProps) {
                     onChange={e => props.updateNode(node.node_id, "name", e.target.value)}
                 />
                 <Button
-                    className='deletebutton'
                     background='red.400'
                     onClick={() => props.deleteNode(node.node_id)}
                 >

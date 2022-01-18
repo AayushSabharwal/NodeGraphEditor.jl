@@ -32,8 +32,8 @@ export function useViewport() {
             return;
         
         setViewport({
-            x: vp_panstart.x - (e.pageX - panstart.x) * zoom,
-            y: vp_panstart.y - (e.pageY - panstart.y) * zoom,
+            x: vp_panstart.x - (e.pageX - panstart.x) / zoom,
+            y: vp_panstart.y - (e.pageY - panstart.y) / zoom,
         });
 
         e.stopPropagation();
@@ -53,18 +53,30 @@ export function useViewport() {
     const onZoomWheel = useCallback((e: WheelEvent) => {
         const new_zoom = Math.max(
             MIN_ZOOM,
-            Math.min(MAX_ZOOM, zoom + e.deltaY * ZOOM_SPEED)
+            Math.min(MAX_ZOOM, zoom - Math.sign(e.deltaY) * ZOOM_SPEED)
         );
 
-        setViewport({
-            x: viewport.x + e.pageX * (zoom - new_zoom),
-            y: viewport.y + e.pageY * (zoom - new_zoom),
-        });
-
-        setZoom(new_zoom);
+        zoomTo(new_zoom, { x: e.pageX, y: e.pageY });
 
         e.stopPropagation();
     }, [viewport, zoom]);
 
-    return { viewport, zoom, onPanMouseDown, onPanMouseMove, onPanMouseUp, onZoomWheel };
+    const zoomTo = useCallback((new_zoom: number, focus: Vec2 = {x: 0, y: 0}) => {
+        setViewport({
+            x: viewport.x + focus.x * (1 / zoom - 1 / new_zoom),
+            y: viewport.y + focus.y * (1 / zoom - 1 / new_zoom),
+        });
+
+        setZoom(new_zoom);
+    }, [viewport, zoom]);
+
+    const zoomIn = useCallback((focus: Vec2 = {x: 0, y: 0}) => {
+        zoomTo(zoom + ZOOM_SPEED, focus);
+    }, [zoom]);
+
+    const zoomOut = useCallback((focus: Vec2 = {x: 0, y: 0}) => {
+        zoomTo(zoom - ZOOM_SPEED, focus);
+    }, [zoom]);
+
+    return { viewport, zoom, onPanMouseDown, onPanMouseMove, onPanMouseUp, onZoomWheel, zoomIn , zoomOut };
 }
