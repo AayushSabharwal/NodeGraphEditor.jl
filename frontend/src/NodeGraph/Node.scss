@@ -2,18 +2,12 @@
 
 .Node {
     fill: $fg-color;
-    width: calc(100% - $node-border);
-    height: calc(100% - $node-border);
-    x: calc($node-border / 2);
-    y: calc($node-border / 2);
     rx: 9.8;
     ry: 9.8;
 }
 
 .NodeBorder {
     fill: $node-border-color;
-    width: 100%;
-    height: 100%;
     x: 0;
     y: 0;
     rx: 10;

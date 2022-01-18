@@ -1,7 +1,6 @@
 import './Node.scss'
-import { CONN_IN_COLORS, CONN_OUT_COLORS, CONN_RADIUS, CONN_SIDE_MARGIN, CONN_Y_SPACING, NODE_CHAR_WIDTH, NODE_LINE_HEIGHT, NODE_MAX_WIDTH, NODE_MIN_WIDTH } from '~/src/lib/constants';
+import { CONN_IN_COLORS, CONN_OUT_COLORS, CONN_RADIUS, CONN_SIDE_MARGIN, CONN_Y_SPACING, NODE_BORDER, NODE_CHAR_WIDTH, NODE_LINE_HEIGHT, NODE_MAX_WIDTH, NODE_MIN_WIDTH } from '~/src/lib/constants';
 import { Vec2, ConnectorType, NodeData } from '~/src/lib/types';
-import { ComponentChildren } from 'preact';
 
 export function calculateConnectorX(parent_size: Vec2, type: ConnectorType) {
     if (type === ConnectorType.input)
@@ -58,74 +57,80 @@ export interface NodeProps extends NodeData {
 
 export function Node(props: NodeProps) {
     const { node_id, pos, size } = props;
-        return (
-            <svg
-                id={"node_" + node_id}
-                width={size.x}
-                height={size.y}
-                x={pos.x}
-                y={pos.y}
-                onMouseDown={props.onMouseDown}
-                xmlns="http://www.w3.org/2000/svg"
-            >
-                <rect className="NodeBorder" />
-                <rect className="Node" />
-                {Array(props.inputs).fill(1).map((_, i) =>
-                    <circle
-                        className="Connector"
-                        style={{
-                            fill: CONN_IN_COLORS[i % CONN_IN_COLORS.length]
-                        }}
-                        key={i}
-                        cx={calculateConnectorX(size, ConnectorType.input)}
-                        cy={calculateConnectorY(i + 1)}
-                        onMouseDown={e => props.onConnectorMouseDown(
-                            node_id,
-                            ConnectorType.input,
-                            i + 1,
-                            e,
-                        )}
-                        onMouseUp={e => props.onConnectorMouseUp(
-                            node_id,
-                            ConnectorType.input,
-                            i + 1,
-                            e,
-                        )}
-                    />
-                )}
-                <text
-                    x="50%"
-                    dominantBaseline="middle"
-                    textAnchor="middle"
-                    className="ContentText"
-                >
-                    {wrappedContentString(props.node_name).map((s, i) =>
-                        <tspan key={i} x="50%" dy={NODE_LINE_HEIGHT}>{s}</tspan>
+    return (
+        <svg
+            id={"node_" + node_id}
+            width={size.x}
+            height={size.y}
+            x={pos.x}
+            y={pos.y}
+            onMouseDown={props.onMouseDown}
+            xmlns="http://www.w3.org/2000/svg"
+        >
+            <rect className="NodeBorder" width={size.x} height={size.y}/>
+            <rect
+                className="Node"
+                width={size.x - NODE_BORDER}
+                height={size.y - NODE_BORDER}
+                x={NODE_BORDER / 2}
+                y={NODE_BORDER / 2}
+            />
+            {Array(props.inputs).fill(1).map((_, i) =>
+                <circle
+                    className="Connector"
+                    style={{
+                        fill: CONN_IN_COLORS[i % CONN_IN_COLORS.length]
+                    }}
+                    key={i}
+                    cx={calculateConnectorX(size, ConnectorType.input)}
+                    cy={calculateConnectorY(i + 1)}
+                    onMouseDown={e => props.onConnectorMouseDown(
+                        node_id,
+                        ConnectorType.input,
+                        i + 1,
+                        e,
                     )}
-                </text>
-                {Array(props.outputs).fill(1).map((_, i) =>
-                    <circle
-                        key={i}
-                        className="Connector"
-                        style={{
-                            fill: CONN_OUT_COLORS[i % CONN_OUT_COLORS.length]
-                        }}
-                        cx={calculateConnectorX(size, ConnectorType.output)}
-                        cy={calculateConnectorY(i + 1)}
-                        onMouseDown={e => props.onConnectorMouseDown(
-                            node_id,
-                            ConnectorType.output,
-                            i + 1,
-                            e,
-                        )}
-                        onMouseUp={e => props.onConnectorMouseUp(
-                            node_id,
-                            ConnectorType.output,
-                            i + 1,
-                            e,
-                        )}
-                    />
+                    onMouseUp={e => props.onConnectorMouseUp(
+                        node_id,
+                        ConnectorType.input,
+                        i + 1,
+                        e,
+                    )}
+                />
+            )}
+            <text
+                x="50%"
+                dominantBaseline="middle"
+                textAnchor="middle"
+                className="ContentText"
+            >
+                {wrappedContentString(props.node_name).map((s, i) =>
+                    <tspan key={i} x="50%" dy={NODE_LINE_HEIGHT}>{s}</tspan>
                 )}
-            </svg>
-        );
+            </text>
+            {Array(props.outputs).fill(1).map((_, i) =>
+                <circle
+                    key={i}
+                    className="Connector"
+                    style={{
+                        fill: CONN_OUT_COLORS[i % CONN_OUT_COLORS.length]
+                    }}
+                    cx={calculateConnectorX(size, ConnectorType.output)}
+                    cy={calculateConnectorY(i + 1)}
+                    onMouseDown={e => props.onConnectorMouseDown(
+                        node_id,
+                        ConnectorType.output,
+                        i + 1,
+                        e,
+                    )}
+                    onMouseUp={e => props.onConnectorMouseUp(
+                        node_id,
+                        ConnectorType.output,
+                        i + 1,
+                        e,
+                    )}
+                />
+            )}
+        </svg>
+    );
 }
