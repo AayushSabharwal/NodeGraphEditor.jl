@@ -1,11 +1,10 @@
-import React, { useState } from "react";
-import { NumberInput, NumberInputField, Tag } from "@chakra-ui/react";
+import { useState } from "preact/hooks";
+import { NumberInput, NumberInputField } from "@chakra-ui/react";
 
 export interface NumberInputWrapperProps {
     value: number
     unsigned: boolean
     integer: boolean
-    unit?: React.ReactNode
     onChange: (value: number) => void
 }
 
@@ -33,10 +32,6 @@ export function NumberInputWrapper(props: NumberInputWrapperProps) {
 
     const onBlur = () => set_temp_value(props.value.toString());
 
-    const addonAfter = props.unit ? {
-        rightElement: <Tag>{props.unit}</Tag>
-    }
-        : {};
     return (
         <NumberInput
             value={temp_value}

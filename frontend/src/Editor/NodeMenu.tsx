@@ -4,6 +4,7 @@ import { NumberInputWrapper } from "~/src/Editor/NumberInputWrapper";
 import { DeleteIcon } from "@chakra-ui/icons";
 import { NodeData } from '~/src/lib/types';
 import { EnumInput } from '~/src/Editor/EnumInput';
+import { ClampedInput } from './ClampedInput';
 
 export interface NodeMenuProps {
     node: NodeData | undefined
@@ -32,12 +33,12 @@ export function NodeMenu(props: NodeMenuProps) {
         );
         
         // numeric
-        if (['Int', 'UIn', 'Flo'].find(e => e === props.params[k].type.slice(0,3))) {
+        if (props.params[k].type === 'num') {
             grid_items.push(
                 <NumberInputWrapper
                     key={`val${k}`}
-                    integer={props.params[k].type[0] != 'F'}
-                    unsigned={props.params[k].type[0] == 'U'}
+                    integer={props.params[k].num_type !== 'float'}
+                    unsigned={props.params[k].num_type === 'unsigned'}
                     value={props.params[k].value}
                     onChange={v => props.updateNodeParams(node.node_id, k, v)}
                 />
@@ -50,7 +51,19 @@ export function NodeMenu(props: NodeMenuProps) {
                     value={props.params[k].value}
                     onChange={v => props.updateNodeParams(node.node_id, k, v)}
                 />
-            )
+            );
+        }
+        else if (props.params[k].type === 'clamped') {
+            grid_items.push(
+                <ClampedInput
+                    min={props.params[k].min}
+                    max={props.params[k].max}
+                    value={props.params[k].value}
+                    integer={props.params[k].num_type !== 'float'}
+                    unsigned={props.params[k].num_type === 'unsigned'}
+                    onChange={v => props.updateNodeParams(node.node_id, k, {min: props.params[k].min, max: props.params[k].max, value: v})}
+                />
+            );
         }
         else
             console.error('Unimplemented Input Type', props.params[k]);

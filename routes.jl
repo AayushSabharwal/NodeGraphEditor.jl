@@ -31,23 +31,20 @@ route("/addnode/:add_type::String", method = POST) do
     return JSON3.write(ng)
 end
 
-route("/updatenode/:id::Int", method = POST) do
+route("/updatenode/:id::Int/:key::String", method = POST) do
     ng = NodeGraphEditor.get_nodegraph()
     id = payload(:id)
     index = id_to_index(id, ng)
     isnothing(index) && return Genie.Router.error(404, "Invalid node_id: $id", MIME"text/html")
-
-    msg = jsonpayload()
-    haskey(msg, "key") || return Genie.Router.error(400, "Key `key` required in `updatenode` payload", MIME"text/html")
-    haskey(msg, "value") || return Genie.Router.error(400, "Value `value` required in `updatenode` payload", MIME"text/html")
     
-    key = Symbol(msg["key"])
-    value = msg["value"]
+    key = Symbol(payload(:key))
+    value = rawpayload()
 
     if key == :name
         update_node_name!(ng, index, value)
     elseif key == :pos
-        update_node_position!(ng, index, Float64(value["x"]), Float64(value["y"]))
+        json = JSON3.read(value)
+        update_node_position!(ng, index, Float64(json.x), Float64(json.y))
     else
         return Genie.Router.error(400, "Invalid key: $key", MIME"text/html")
     end
@@ -56,20 +53,15 @@ route("/updatenode/:id::Int", method = POST) do
     return JSON3.write(ng)
 end
 
-route("/updateparams/:id::Int", method = POST) do
+route("/updateparams/:id::Int/:key::String", method = POST) do
     ng = NodeGraphEditor.get_nodegraph()
 
     id = payload(:id)
     index = findnext(n -> n.id == id, ng.nodes, 1)
     isnothing(index) && return Genie.Router.error(404, "Invalid node_id: $id", MIME"text/html")
 
-    msg = jsonpayload()
-
-    haskey(msg, "key") || return Genie.Router.error(400, "Key `key` required in `updatenode` payload", MIME"text/html")
-    haskey(msg, "value") || return Genie.Router.error(400, "Value `value` required in `updatenode` payload", MIME"text/html")
-
-    key = Symbol(msg["key"])
-    value = msg["value"]
+    key = Symbol(payload(:key))
+    value = rawpayload()
 
     update_node_params!(ng, index, key, value)
 
