@@ -22,7 +22,16 @@ export interface StageProps {
 }
 
 export function Stage(props: StageProps) {
-    const { viewport, zoom, onPanMouseDown, onPanMouseMove, onPanMouseUp, onZoomWheel, zoomIn, zoomOut } = useViewport();
+    const {
+        viewport,
+        zoom,
+        onPanMouseDown,
+        onPanMouseMove,
+        onPanMouseUp,
+        onZoomWheel,
+        zoomIn,
+        zoomOut
+    } = useViewport();
 
     useEffect(() => document.addEventListener('contextmenu', e => e.preventDefault()), []);
 
@@ -44,6 +53,7 @@ export function Stage(props: StageProps) {
                     graph={props.graph}
                     selected={props.selection}
                     viewportPos={viewport}
+                    viewportSize={{x: props.width, y: props.height}}
                     zoom={1 / zoom}
                     selectNode={props.selectNode}
                     dragNode={props.dragNode}

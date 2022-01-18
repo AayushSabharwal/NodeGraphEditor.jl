@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { DRAG_BUTTON } from "~/src/lib/constants";
-import { ConnectorType, Edge, Vec2 } from "~/src/lib/types";
+import { ConnectorType, Edge, NodeData, Vec2 } from "~/src/lib/types";
 import { Node } from "~/src/NodeGraph/Node";
 import { NodeGraph } from "~/src/NodeGraph/NodeGraph";
 import { Connection } from "./Connection";
@@ -17,6 +17,7 @@ export interface NodeLayerProps {
     graph: NodeGraph
     selected: number
     viewportPos: Vec2
+    viewportSize: Vec2
     zoom: number
     selectNode: (id: number) => void
     dragNode: (id: number, pos: Vec2) => void,
@@ -180,18 +181,26 @@ export function NodeLayer(props: NodeLayerProps) {
         />
     }
     // #endregion
+    const nodeInViewport = (node: NodeData) => {
+        return node.pos.x <= props.viewportPos.x + props.viewportSize.x * props.zoom &&
+            node.pos.x + node.size.x * props.zoom >= props.viewportPos.x &&
+            node.pos.y <= props.viewportPos.y + props.viewportSize.y * props.zoom &&
+            node.pos.y + node.size.y * props.zoom >= props.viewportPos.y;
+    }
 
     return (
         <>
-            {props.graph.nodes.map(node => (
-                <Node
-                    key={node.node_id}
-                    {...node}
-                    selected={props.selected === node.node_id}
-                    onMouseDown={e => onNodeMouseDown(node.node_id, e)}
-                    onConnectorMouseDown={onConnectorMouseDown}
-                    onConnectorMouseUp={onConnectorMouseUp}
-                />
+            {props.graph.nodes
+                .filter(nodeInViewport)
+                .map(node => (
+                    <Node
+                        key={node.node_id}
+                        {...node}
+                        selected={props.selected === node.node_id}
+                        onMouseDown={e => onNodeMouseDown(node.node_id, e)}
+                        onConnectorMouseDown={onConnectorMouseDown}
+                        onConnectorMouseUp={onConnectorMouseUp}
+                    />
             ))}
             {connline}
         </>
