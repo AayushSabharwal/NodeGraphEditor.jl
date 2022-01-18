@@ -1,6 +1,7 @@
 import './Node.scss'
-import { CONN_IN_COLORS, CONN_OUT_COLORS, CONN_RADIUS, CONN_SIDE_MARGIN, CONN_Y_SPACING, NODE_BORDER, NODE_CHAR_WIDTH, NODE_LINE_HEIGHT, NODE_MAX_WIDTH, NODE_MIN_WIDTH } from '~/src/lib/constants';
+import { CONN_RADIUS, CONN_SIDE_MARGIN, CONN_Y_SPACING, NODE_BORDER, NODE_CHAR_WIDTH, NODE_LINE_HEIGHT, NODE_MAX_WIDTH, NODE_MIN_WIDTH } from '~/src/lib/constants';
 import { Vec2, ConnectorType, NodeData } from '~/src/lib/types';
+import { Connector } from '~/src/NodeGraph/Connector';
 
 export function calculateConnectorX(parent_size: Vec2, type: ConnectorType) {
     if (type === ConnectorType.input)
@@ -76,26 +77,12 @@ export function Node(props: NodeProps) {
                 y={NODE_BORDER / 2}
             />
             {Array(props.inputs).fill(1).map((_, i) =>
-                <circle
-                    className="Connector"
-                    style={{
-                        fill: CONN_IN_COLORS[i % CONN_IN_COLORS.length]
-                    }}
-                    key={i}
-                    cx={calculateConnectorX(size, ConnectorType.input)}
-                    cy={calculateConnectorY(i + 1)}
-                    onMouseDown={e => props.onConnectorMouseDown(
-                        node_id,
-                        ConnectorType.input,
-                        i + 1,
-                        e,
-                    )}
-                    onMouseUp={e => props.onConnectorMouseUp(
-                        node_id,
-                        ConnectorType.input,
-                        i + 1,
-                        e,
-                    )}
+                <Connector
+                    index={i}
+                    type={ConnectorType.input}
+                    parent={props}
+                    onConnectorMouseDown={props.onConnectorMouseDown}
+                    onConnectorMouseUp={props.onConnectorMouseUp}
                 />
             )}
             <text
@@ -109,26 +96,12 @@ export function Node(props: NodeProps) {
                 )}
             </text>
             {Array(props.outputs).fill(1).map((_, i) =>
-                <circle
-                    key={i}
-                    className="Connector"
-                    style={{
-                        fill: CONN_OUT_COLORS[i % CONN_OUT_COLORS.length]
-                    }}
-                    cx={calculateConnectorX(size, ConnectorType.output)}
-                    cy={calculateConnectorY(i + 1)}
-                    onMouseDown={e => props.onConnectorMouseDown(
-                        node_id,
-                        ConnectorType.output,
-                        i + 1,
-                        e,
-                    )}
-                    onMouseUp={e => props.onConnectorMouseUp(
-                        node_id,
-                        ConnectorType.output,
-                        i + 1,
-                        e,
-                    )}
+                <Connector
+                    index={i}
+                    type={ConnectorType.output}
+                    parent={props}
+                    onConnectorMouseDown={props.onConnectorMouseDown}
+                    onConnectorMouseUp={props.onConnectorMouseUp}
                 />
             )}
         </svg>
