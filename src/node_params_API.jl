@@ -2,9 +2,7 @@ export type_symbol,
     inputs,
     outputs,
     create,
-    update!,
-    validate_edge,
-    editor_fields
+    validate_edge
 
 notimplemented(t) = error("Not implemented for type-symbol $t")
 
@@ -55,7 +53,7 @@ the provided `value`. If the update is invalid, a string error may be returned.
 
 This function needs to be implemented for each node type.
 """
-update!(::T, key::Symbol, value) where {T<:AbstractNodeParams} = notimplemented(T)
+# update!(::T, key::Symbol, value) where {T<:AbstractNodeParams} = notimplemented(T)
 
 """
     validate_edge(::S, ::T, edge::D) where {S<:AbstractNodeParams,T<:AbstractNodeParams,D<:Dict}
@@ -74,7 +72,7 @@ By default, this takes every field of the struct and its corresponding value. Th
 function only needs to be implemented if not all struct fields should be editable,
 or some are editable conditionally.
 """
-editor_fields(t::T) where {T<:AbstractNodeParams} = (k => getproperty(t, k) for k in propertynames(t))
+# editor_fields(t::T) where {T<:AbstractNodeParams} = (k => getproperty(t, k) for k in propertynames(t))
 
 inputs(::T) where {T<:AbstractNodeParams} = inputs(Val{type_symbol(T)}())
 inputs(::Type{T}) where {T<:AbstractNodeParams} = inputs(Val{type_symbol(T)}())

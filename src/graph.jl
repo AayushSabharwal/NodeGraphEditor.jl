@@ -90,5 +90,5 @@ StructTypes.keyvaluepairs(n::Node) = [
 StructTypes.StructType(::Type{T}) where {T<:AbstractNodeParams} = StructTypes.DictType()
 StructTypes.keyvaluepairs(t::T) where {T<:AbstractNodeParams} = [
     :type => type_symbol(t),
-    (p.first => to_editor_format(p.second) for p in editor_fields(t))...
+    (p => to_editor_format(getproperty(t, p)) for p in propertynames(t))...
 ]

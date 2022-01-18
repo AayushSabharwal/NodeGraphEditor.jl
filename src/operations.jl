@@ -29,7 +29,7 @@ function update_node_position!(ng::NodeGraph, node_ind::Int, x::Float64, y::Floa
 end
 
 function update_node_params!(ng::NodeGraph, node_ind::Int, key::Symbol, value)
-    update!(ng.nodes[node_ind].params, key, value)
+    setproperty!(ng.nodes[node_ind].params, key, value)
 end
 
 function add_edge!(ng::NodeGraph, edge::Edge)

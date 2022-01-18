@@ -71,12 +71,9 @@ route("/updateparams/:id::Int", method = POST) do
     key = Symbol(msg["key"])
     value = msg["value"]
 
-    ret = update_node_params!(ng, index, key, value)
-
-    isnothing(ret) || return Genie.Router.error(400, ret, MIME"text/html")
+    update_node_params!(ng, index, key, value)
 
     NodeGraphEditor.set_nodegraph(ng)
-    println(ng.nodes[index].params)
     return JSON3.write(ng.nodes[index].params)
 end
 
@@ -86,7 +83,7 @@ route("/getparams/:id::Int", method = GET) do
     id = payload(:id)
     index = findnext(n -> n.id == id, ng.nodes, 1)
     isnothing(index) && return Genie.Router.error(404, "Invalid node_id: $id", MIME"text/html")
-    println(ng.nodes[index].params)
+
     return JSON3.write(ng.nodes[index].params)
 end
 
