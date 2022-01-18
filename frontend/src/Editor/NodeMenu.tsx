@@ -33,7 +33,7 @@ export function NodeMenu(props: NodeMenuProps) {
         );
         
         // numeric
-        if (props.params[k].type === 'num') {
+        if (props.params[k].type === 'Num') {
             grid_items.push(
                 <NumberInputWrapper
                     key={`val${k}`}
@@ -44,7 +44,7 @@ export function NodeMenu(props: NodeMenuProps) {
                 />
             );
         }
-        else if (props.params[k].type === 'enum') {
+        else if (props.params[k].type === 'Enum') {
             grid_items.push(
                 <EnumInput
                     options={props.params[k].options}
@@ -53,7 +53,7 @@ export function NodeMenu(props: NodeMenuProps) {
                 />
             );
         }
-        else if (props.params[k].type === 'clamped') {
+        else if (props.params[k].type === 'Clamped') {
             grid_items.push(
                 <ClampedInput
                     min={props.params[k].min}
@@ -61,7 +61,22 @@ export function NodeMenu(props: NodeMenuProps) {
                     value={props.params[k].value}
                     integer={props.params[k].num_type !== 'float'}
                     unsigned={props.params[k].num_type === 'unsigned'}
-                    onChange={v => props.updateNodeParams(node.node_id, k, {min: props.params[k].min, max: props.params[k].max, value: v})}
+                    onChange={v => props.updateNodeParams(
+                        node.node_id, k,
+                        {
+                            min: props.params[k].min,
+                            max: props.params[k].max,
+                            value: v
+                        }
+                    )}
+                />
+            );
+        }
+        else if (props.params[k].type === 'String') {
+            grid_items.push(
+                <Input
+                    value={props.params[k].value}
+                    onChange={v => {console.log(v.target.value); props.updateNodeParams(node.node_id, k, v.target.value)}}
                 />
             );
         }

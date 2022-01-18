@@ -29,8 +29,11 @@ function update_node_position!(ng::NodeGraph, node_ind::Int, x::Float64, y::Floa
 end
 
 function update_node_params!(ng::NodeGraph, node_ind::Int, key::Symbol, value)
-    jvalue = JSON3.read(value, typeof(getproperty(ng.nodes[node_ind].params, key)))
-    setproperty!(ng.nodes[node_ind].params, key, jvalue)
+    parsed_value = JSON3.read(
+        value,
+        Dict{Symbol,typeof(getproperty(ng.nodes[node_ind].params, key))}
+    )[:value]
+    setproperty!(ng.nodes[node_ind].params, key, parsed_value)
 end
 
 function add_edge!(ng::NodeGraph, edge::Edge)

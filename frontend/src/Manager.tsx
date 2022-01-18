@@ -17,9 +17,9 @@ export default function Manager() {
     }
 
     const updateNode = (id: number, key: string, value: any) =>
-        handleGraphPromise(axios.post<NodeGraph>(`/updatenode/${id}/${key}`, value));
+        handleGraphPromise(axios.post<NodeGraph>(`/updatenode/${id}/${key}`, {value}));
     const updateNodeParams = (id: number, key: string, value: any) =>
-        axios.post<Record<string,any>>(`/updateparams/${id}/${key}`, value)
+        axios.post<Record<string,any>>(`/updateparams/${id}/${key}`, {value})
             .then(r => setParams(r.data))
             .catch(e => console.log(e));
     const addEdge = (edge: Edge) =>

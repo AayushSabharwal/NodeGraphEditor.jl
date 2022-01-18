@@ -38,13 +38,12 @@ route("/updatenode/:id::Int/:key::String", method = POST) do
     isnothing(index) && return Genie.Router.error(404, "Invalid node_id: $id", MIME"text/html")
     
     key = Symbol(payload(:key))
-    value = rawpayload()
+    value = jsonpayload()["value"]
 
     if key == :name
         update_node_name!(ng, index, value)
     elseif key == :pos
-        json = JSON3.read(value)
-        update_node_position!(ng, index, Float64(json.x), Float64(json.y))
+        update_node_position!(ng, index, Float64(value["x"]), Float64(value["y"]))
     else
         return Genie.Router.error(400, "Invalid key: $key", MIME"text/html")
     end

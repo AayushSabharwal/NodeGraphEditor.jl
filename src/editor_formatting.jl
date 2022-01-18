@@ -9,12 +9,12 @@ complex types.
 """
 to_editor_format(t::T) where {T} = Dict(:type => Symbol(T), :value => t)
 to_editor_format(t::T) where {T<:Number} = Dict(
-    :type => :num,
+    :type => :Num,
     :num_type => T <: Unsigned ? :unsigned : T <: Integer ? :integer : :float,
     :value => t
 )
 to_editor_format(t::T) where {T<:Base.Enum} = Dict(
-    :type => :enum,
+    :type => :Enum,
     :options => Symbol.(instances(T)),
     :value => Int(t),
 )
@@ -31,7 +31,7 @@ Base.convert(::Type{Clamped{T}}, x::Clamped{U}) where {T,U} =
     Clamped{T}(T(x.min), T(x.max), T(x.value))
 
 to_editor_format(t::Clamped{T}) where {T<:Number} = Dict(
-    :type => :clamped,
+    :type => :Clamped,
     :num_type => T <: Unsigned ? :unsigned : T <: Integer ? :integer : :float,
     :min => t.min,
     :max => t.max,
