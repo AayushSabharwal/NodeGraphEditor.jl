@@ -62,6 +62,9 @@ export function Stage(props: StageProps) {
                 />
                 <EdgeLayer
                     graph={props.graph}
+                    viewportPos={viewport}
+                    viewportSize={{x: props.width, y: props.height}}
+                    zoom={zoom}
                     deleteEdge={props.deleteEdge}
                 />
             </svg>

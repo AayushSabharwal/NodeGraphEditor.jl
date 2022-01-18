@@ -183,9 +183,9 @@ export function NodeLayer(props: NodeLayerProps) {
     // #endregion
     const nodeInViewport = (node: NodeData) => {
         return node.pos.x <= props.viewportPos.x + props.viewportSize.x * props.zoom &&
-            node.pos.x + node.size.x * props.zoom >= props.viewportPos.x &&
+            node.pos.x + node.size.x >= props.viewportPos.x &&
             node.pos.y <= props.viewportPos.y + props.viewportSize.y * props.zoom &&
-            node.pos.y + node.size.y * props.zoom >= props.viewportPos.y;
+            node.pos.y + node.size.y >= props.viewportPos.y;
     }
 
     return (
