@@ -13,6 +13,10 @@ to_editor_format(t::T) where {T<:Number} = Dict(
     :num_type => T <: Unsigned ? :unsigned : T <: Integer ? :integer : :float,
     :value => t
 )
+to_editor_format(t::Bool) = Dict(
+    :type => :Bool,
+    :value => t
+)
 to_editor_format(t::T) where {T<:Base.Enum} = Dict(
     :type => :Enum,
     :options => Symbol.(instances(T)),

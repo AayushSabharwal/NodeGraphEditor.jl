@@ -1,5 +1,5 @@
 import './NodeMenu.scss';
-import { Box, Button, Icon, Input, SimpleGrid } from "@chakra-ui/react";
+import { Box, Button, Checkbox, Icon, Input, SimpleGrid } from "@chakra-ui/react";
 import { NumberInputWrapper } from "~/src/Editor/NumberInputWrapper";
 import { DeleteIcon } from "@chakra-ui/icons";
 import { NodeData } from '~/src/lib/types';
@@ -21,17 +21,16 @@ export function NodeMenu(props: NodeMenuProps) {
         return <Box className='card collapse'></Box>;
     
     let grid_items = [];
+    
     for (const k in props.params) {
         if(k == "type")
             continue;
-        
         
         grid_items.push(
             <div key={`key${k}`} className="gridItem uiText">
                 {k}
             </div>
         );
-        
         // numeric
         if (props.params[k].type === 'Num') {
             grid_items.push(
@@ -76,9 +75,17 @@ export function NodeMenu(props: NodeMenuProps) {
             grid_items.push(
                 <Input
                     value={props.params[k].value}
-                    onChange={v => {console.log(v.target.value); props.updateNodeParams(node.node_id, k, v.target.value)}}
+                    onChange={v => props.updateNodeParams(node.node_id, k, v.target.value)}
                 />
             );
+        }
+        else if (props.params[k].type === 'Bool') {
+            grid_items.push(
+                <Checkbox
+                    isChecked={props.params[k].value}
+                    onChange={e => props.updateNodeParams(node.node_id, k, !props.params[k].value)}
+                />
+            )
         }
         else
             console.error('Unimplemented Input Type', props.params[k]);
