@@ -10,6 +10,7 @@ route("/graph", method = GET) do
 end
 
 route("/addnode/:add_type::String", method = POST) do
+    println("ADD")
     types = NodeGraphEditor.get_param_types()
     
     add_type = Symbol(payload(:add_type))
@@ -28,6 +29,8 @@ route("/addnode/:add_type::String", method = POST) do
     NodeGraphEditor.set_nodegraph(ng)
     NodeGraphEditor.set_new_node_id(nn_id)
 
+    str = JSON3.write(ng)
+    println(str);
     return JSON3.write(ng)
 end
 

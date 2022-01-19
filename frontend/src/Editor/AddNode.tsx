@@ -3,13 +3,18 @@ import { useState } from "preact/hooks";
 import axios from "axios";
 import { AddIcon } from "@chakra-ui/icons";
 import "./AddNode.scss"
+import { useDispatch } from "react-redux";
+import { addNode } from "../lib/graphSlice";
 
-export interface AddNodeButtonProps {
-    addNode: (type: string) => void,
-}
-
-export function AddNodeButton({ addNode }: AddNodeButtonProps) {
+export function AddNodeButton() {
     const [types, setTypes] = useState<string[]>([]);
+
+    const dispatch = useDispatch();
+
+    const buttonClick = (type: string) => {
+        console.log("C");
+        dispatch(addNode(type));
+    }
 
     const getOptions = () => {
         axios.get<{types: string[]}>('/types').then(r => {
@@ -30,7 +35,7 @@ export function AddNodeButton({ addNode }: AddNodeButtonProps) {
                     Add Node
                 </MenuButton>
                 <MenuList>
-                    {types.map(t => <MenuItem onClick={() => addNode(t)}>{t}</MenuItem>)}
+                    {types.map(t => <MenuItem onClick={() => buttonClick(t)}>{t}</MenuItem>)}
                 </MenuList>
             </Menu>
         </Box>

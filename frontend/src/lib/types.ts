@@ -28,4 +28,9 @@ export type Edge = {
     to_type: ConnectorType,
     to_conn: number,
 }
+
+export type Graph = {
+    nodes: NodeData[]
+    edges: Edge[]
+}
 // #endregion

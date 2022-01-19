@@ -1,10 +1,15 @@
 import { useState } from "react";
 import { DRAG_BUTTON } from "~/src/lib/constants";
-import { ConnectorType, Edge, NodeData, Vec2 } from "~/src/lib/types";
+import { ConnectorType, NodeData, Vec2 } from "~/src/lib/types";
 import { Node } from "~/src/NodeGraph/Node";
-import { NodeGraph } from "~/src/NodeGraph/NodeGraph";
 import { Connection } from "./Connection";
 import { calculateConnectorX, calculateConnectorY } from "~/src/NodeGraph/Connector";
+import { useDispatch, useSelector } from "react-redux";
+import { addEdge, dragNode, graphSelector, nodeSelector, updateNode } from "../lib/graphSlice";
+import { idSelector, setSelected } from "../lib/editorSlice";
+import store from "../lib/store";
+import { useCallback } from "preact/hooks";
+import { vpPosSelector, vpSizeSelector, vpZoomSelector } from "../lib/viewportSlice";
 
 
 type HalfConnection = {
@@ -13,67 +18,71 @@ type HalfConnection = {
     conn: number
 }
 
-export interface NodeLayerProps {
-    graph: NodeGraph
-    selected: number
-    viewportPos: Vec2
-    viewportSize: Vec2
-    zoom: number
-    selectNode: (id: number) => void
-    dragNode: (id: number, pos: Vec2) => void,
-    onNodeDragEnd: (ind: number) => void
-    addEdge: (edge: Edge) => void
-}
-
-export function NodeLayer(props: NodeLayerProps) {
+export function NodeLayer() {
+    const graph = useSelector(graphSelector());
+    const dispatch = useDispatch();
+    
     // #region Node Dragging
-
     const onNodeMouseDown = (id: number, e: MouseEvent) => {
         if (e.button !== DRAG_BUTTON)
             return;
 
-        props.selectNode(id);
-        const node = props.graph.findNode(id);
+        dispatch(setSelected(id));
+        const node = nodeSelector(id)(store.getState());
+    
         if(!node)
             return;
-        
+    
         const dragStart = { x: e.pageX, y: e.pageY };
         const nodeDragStart = { x: node.pos.x, y: node.pos.y };
         
         const onNodeMouseMove = (e: MouseEvent) => {
+            const id = idSelector()(store.getState());
             if(id === -1) {
                 return;
             }
     
-            props.dragNode(id, {
-                x: nodeDragStart.x + (e.pageX - dragStart.x) * props.zoom,
-                y: nodeDragStart.y + (e.pageY - dragStart.y) * props.zoom,
-            });
+            dispatch(dragNode({
+                id,
+                pos: {
+                    x: nodeDragStart.x + (e.pageX - dragStart.x) / vpZoomSelector()(store.getState()),
+                    y: nodeDragStart.y + (e.pageY - dragStart.y) / vpZoomSelector()(store.getState()),
+                }
+            }));
     
             e.stopPropagation();
             e.preventDefault();
         }
     
         const onNodeMouseUp = (e: MouseEvent) => {
+            const id = idSelector()(store.getState());
+    
             if (e.button !== DRAG_BUTTON || id === -1)
                 return;
     
-            props.onNodeDragEnd(id);
-            
             document.removeEventListener('mousemove', onNodeMouseMove);
             document.removeEventListener('mouseup', onNodeMouseUp);
             e.stopPropagation();
             e.preventDefault();
+    
+            const node = nodeSelector(id)(store.getState());
+            if (!node)
+                return;
+            
+            dispatch(updateNode({
+                id,
+                key: 'pos',
+                value: node.pos
+            }));
         }
-
+        
         document.addEventListener('mousemove', onNodeMouseMove);
         document.addEventListener('mouseup', onNodeMouseUp);
-
-
+        
         e.stopPropagation();
         e.preventDefault();
     }
-
+    
     // #endregion
 
     // #region ConnectorDragging
@@ -132,14 +141,14 @@ export function NodeLayer(props: NodeLayerProps) {
             return;
         }
 
-        props.addEdge({
+        dispatch(addEdge({
             from: connection.from,
             from_type: connection.type,
             from_conn: connection.conn,
             to: parent_id,
             to_type: type,
             to_conn: conn,
-        });
+        }));
         stopConnecting();
 
         e.preventDefault();
@@ -156,8 +165,8 @@ export function NodeLayer(props: NodeLayerProps) {
     }
 
     let connline = null;
-    if (connection) {
-        const node = props.graph.nodes[props.graph.findNodeIndex(connection.from)];
+    const node = connection && useSelector(nodeSelector(connection.from));
+    if (node) {
         const from = {
             x: node.pos.x + calculateConnectorX(
                 node.size,
@@ -168,8 +177,8 @@ export function NodeLayer(props: NodeLayerProps) {
             ),
         };
         const to = {
-            x: dragPos.x * props.zoom + props.viewportPos.x,
-            y: dragPos.y * props.zoom + props.viewportPos.y + 2,
+            x: dragPos.x / vpZoomSelector()(store.getState()) + vpPosSelector()(store.getState()).x,
+            y: dragPos.y / vpZoomSelector()(store.getState()) + vpPosSelector()(store.getState()).y + 2,
         };
         connline = <Connection
             from={from}
@@ -182,21 +191,23 @@ export function NodeLayer(props: NodeLayerProps) {
     }
     // #endregion
     const nodeInViewport = (node: NodeData) => {
-        return node.pos.x <= props.viewportPos.x + props.viewportSize.x * props.zoom &&
-            node.pos.x + node.size.x >= props.viewportPos.x &&
-            node.pos.y <= props.viewportPos.y + props.viewportSize.y * props.zoom &&
-            node.pos.y + node.size.y >= props.viewportPos.y;
+        return node.pos.x <= vpPosSelector()(store.getState()).x + vpSizeSelector()(store.getState()).x / vpZoomSelector()(store.getState()) &&
+            node.pos.x + node.size.x >= vpPosSelector()(store.getState()).x &&
+            node.pos.y <= vpPosSelector()(store.getState()).y + vpSizeSelector()(store.getState()).y / vpZoomSelector()(store.getState()) &&
+            node.pos.y + node.size.y >= vpPosSelector()(store.getState()).y;
     }
+
+    const selected = useSelector(idSelector());
 
     return (
         <>
-            {props.graph.nodes
+            {graph.nodes
                 .filter(nodeInViewport)
                 .map(node => (
                     <Node
                         key={node.node_id}
                         {...node}
-                        selected={props.selected === node.node_id}
+                        selected={selected === node.node_id}
                         onMouseDown={e => onNodeMouseDown(node.node_id, e)}
                         onConnectorMouseDown={onConnectorMouseDown}
                         onConnectorMouseUp={onConnectorMouseUp}

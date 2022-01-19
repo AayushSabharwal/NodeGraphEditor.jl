@@ -2,27 +2,56 @@ import './NodeMenu.scss';
 import { Box, Button, Checkbox, Icon, Input, SimpleGrid } from "@chakra-ui/react";
 import { NumberInputWrapper } from "~/src/Editor/NumberInputWrapper";
 import { DeleteIcon } from "@chakra-ui/icons";
-import { NodeData } from '~/src/lib/types';
 import { EnumInput } from '~/src/Editor/EnumInput';
 import { ClampedInput } from './ClampedInput';
+import { useDispatch, useSelector } from 'react-redux';
+import { idSelector, setSelected } from '~/src/lib/editorSlice';
+import { deleteNode, nodeSelector, updateNode } from '../lib/graphSlice';
+import { useEffect, useState } from 'preact/hooks';
+import axios from 'axios';
 
-export interface NodeMenuProps {
-    node: NodeData | undefined
-    params: Record<string, any>
-    updateNode: (id: number, key: string, value: any) => void
-    updateNodeParams: (id: number, key: string, value: any) => void,
-    deleteNode: (id: number) => void,
-}
-
-export function NodeMenu(props: NodeMenuProps) {
-    const node = props.node;
+export function NodeMenu() {
+    const selected = useSelector(idSelector());
+    const node = useSelector(nodeSelector(selected));
+    const dispatch = useDispatch();
 
     if (!node)
         return <Box className='card collapse'></Box>;
     
+    const [ params, setParams ] = useState<Record<string,any>>({});
+
+    useEffect(
+        () => {
+            if (selected === -1) {
+                setParams({});
+                return;
+            }
+            axios
+                .get<Record<string,any>>(`/getparams/${selected}`)
+                .then(r => setParams(r.data))
+                .catch(e => console.log(e));
+        },
+        [selected]
+    );
+
+    const updateNodeParams = (id: number, key: string, value: any) => {
+        axios
+            .post<Record<string,any>>(`/updateparams/${id}/${key}`, { value })
+            .then(r => setParams(r.data))
+            .catch(e => console.log(e));
+    };
+
+    const updateName = (new_name: string) =>
+        dispatch(updateNode({ id: selected, key: 'name', value: new_name }));
+    
+    const deleteButtonClick = () => {
+        dispatch(deleteNode(selected));
+        dispatch(setSelected(-1));
+    }
+
     let grid_items = [];
     
-    for (const k in props.params) {
+    for (const k in params) {
         if(k == "type")
             continue;
         
@@ -32,63 +61,63 @@ export function NodeMenu(props: NodeMenuProps) {
             </div>
         );
         // numeric
-        if (props.params[k].type === 'Num') {
+        if (params[k].type === 'Num') {
             grid_items.push(
                 <NumberInputWrapper
                     key={`val${k}`}
-                    integer={props.params[k].num_type !== 'float'}
-                    unsigned={props.params[k].num_type === 'unsigned'}
-                    value={props.params[k].value}
-                    onChange={v => props.updateNodeParams(node.node_id, k, v)}
+                    integer={params[k].num_type !== 'float'}
+                    unsigned={params[k].num_type === 'unsigned'}
+                    value={params[k].value}
+                    onChange={v => updateNodeParams(node.node_id, k, v)}
                 />
             );
         }
-        else if (props.params[k].type === 'Enum') {
+        else if (params[k].type === 'Enum') {
             grid_items.push(
                 <EnumInput
-                    options={props.params[k].options}
-                    value={props.params[k].value}
-                    onChange={v => props.updateNodeParams(node.node_id, k, v)}
+                    options={params[k].options}
+                    value={params[k].value}
+                    onChange={v => updateNodeParams(node.node_id, k, v)}
                 />
             );
         }
-        else if (props.params[k].type === 'Clamped') {
+        else if (params[k].type === 'Clamped') {
             grid_items.push(
                 <ClampedInput
-                    min={props.params[k].min}
-                    max={props.params[k].max}
-                    value={props.params[k].value}
-                    integer={props.params[k].num_type !== 'float'}
-                    unsigned={props.params[k].num_type === 'unsigned'}
-                    onChange={v => props.updateNodeParams(
+                    min={params[k].min}
+                    max={params[k].max}
+                    value={params[k].value}
+                    integer={params[k].num_type !== 'float'}
+                    unsigned={params[k].num_type === 'unsigned'}
+                    onChange={v => updateNodeParams(
                         node.node_id, k,
                         {
-                            min: props.params[k].min,
-                            max: props.params[k].max,
+                            min: params[k].min,
+                            max: params[k].max,
                             value: v
                         }
                     )}
                 />
             );
         }
-        else if (props.params[k].type === 'String') {
+        else if (params[k].type === 'String') {
             grid_items.push(
                 <Input
-                    value={props.params[k].value}
-                    onChange={v => props.updateNodeParams(node.node_id, k, v.target.value)}
+                    value={params[k].value}
+                    onChange={v => updateNodeParams(node.node_id, k, v.target.value)}
                 />
             );
         }
-        else if (props.params[k].type === 'Bool') {
+        else if (params[k].type === 'Bool') {
             grid_items.push(
                 <Checkbox
-                    isChecked={props.params[k].value}
-                    onChange={e => props.updateNodeParams(node.node_id, k, !props.params[k].value)}
+                    isChecked={params[k].value}
+                    onChange={() => updateNodeParams(node.node_id, k, !params[k].value)}
                 />
             )
         }
         else
-            console.error('Unimplemented Input Type', props.params[k]);
+            console.error('Unimplemented Input Type', params[k]);
     }
 
     return (
@@ -97,11 +126,11 @@ export function NodeMenu(props: NodeMenuProps) {
                 <Input
                     className='namefield'
                     defaultValue={node.node_name}
-                    onChange={e => props.updateNode(node.node_id, "name", e.target.value)}
+                    onChange={e => updateName(e.target.value)}
                 />
                 <Button
                     background='red.400'
-                    onClick={() => props.deleteNode(node.node_id)}
+                    onClick={deleteButtonClick}
                 >
                     <Icon children={ <DeleteIcon/> } color='white'/>
                 </Button>
