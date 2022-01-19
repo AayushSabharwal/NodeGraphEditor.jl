@@ -9,7 +9,7 @@ import { addEdge, dragNode, graphSelector, nodeSelector, updateNode } from "../l
 import { idSelector, setSelected } from "../lib/editorSlice";
 import store from "../lib/store";
 import { useCallback } from "preact/hooks";
-import { vpPosSelector, vpSizeSelector, vpZoomSelector } from "../lib/viewportSlice";
+import { vpIntersects, vpPosSelector, vpSizeSelector, vpZoomSelector } from "../lib/viewportSlice";
 
 
 type HalfConnection = {
@@ -190,12 +190,14 @@ export function NodeLayer() {
         />
     }
     // #endregion
-    const nodeInViewport = (node: NodeData) => {
-        return node.pos.x <= vpPosSelector()(store.getState()).x + vpSizeSelector()(store.getState()).x / vpZoomSelector()(store.getState()) &&
-            node.pos.x + node.size.x >= vpPosSelector()(store.getState()).x &&
-            node.pos.y <= vpPosSelector()(store.getState()).y + vpSizeSelector()(store.getState()).y / vpZoomSelector()(store.getState()) &&
-            node.pos.y + node.size.y >= vpPosSelector()(store.getState()).y;
-    }
+    const nodeInViewport = (node: NodeData) => vpIntersects(
+        store.getState().viewport,
+        node.pos,
+        {
+            x: node.pos.x + node.size.x,
+            y: node.pos.y + node.size.y
+        }
+    );
 
     const selected = useSelector(idSelector());
 

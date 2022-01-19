@@ -33,10 +33,7 @@ function zoomInReducer(state: Viewport) {
         type: 'viewport/zoomIn',
         payload: {
             zoom: state.zoom + ZOOM_SPEED,
-            focus: {
-                x: state.pos.x + state.size.x * 0.35 / state.zoom,
-                y: state.pos.y + state.size.y * 0.35 / state.zoom,
-            }
+            focus: vpCenter(state)
         }
     });
 }
@@ -46,10 +43,7 @@ function zoomOutReducer(state: Viewport) {
         type: 'viewport/zoomOut',
         payload: {
             zoom: state.zoom - ZOOM_SPEED,
-            focus: {
-                x: state.pos.x + state.size.x * 0.35 / state.zoom,
-                y: state.pos.y + state.size.y * 0.35 / state.zoom,
-            }
+            focus: vpCenter(state)
         }
     });
 }
@@ -77,3 +71,14 @@ export const vpSizeSelector = () => (state: RootState) => state.viewport.size;
 export const vpPosSelector = () => (state: RootState) => state.viewport.pos;
 
 export const vpZoomSelector = () => (state: RootState) => state.viewport.zoom;
+
+export const vpSelector = () => (state: RootState) => state.viewport;
+
+export const vpCenter = (state: Viewport) => ({
+    x: state.pos.x + 0.35 * state.size.x / state.zoom,
+    y: state.pos.y + 0.35 * state.size.y / state.zoom,
+})
+
+export const vpIntersects = (state: Viewport, min: Vec2, max: Vec2) =>
+    min.x <= state.pos.x + state.size.x / state.zoom && max.x >= state.pos.x &&
+    min.y <= state.pos.y + state.size.y / state.zoom && max.y >= state.pos.y;

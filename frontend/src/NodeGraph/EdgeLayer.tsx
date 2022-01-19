@@ -4,8 +4,8 @@ import { calculateConnectorX, calculateConnectorY } from "~/src/NodeGraph/Connec
 import { LINE_MAX_BEZIER_OFFSET } from "~/src/lib/constants";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteEdge, graphSelector, nodeSelector } from "../lib/graphSlice";
-import { vpPosSelector, vpSizeSelector, vpZoomSelector } from "../lib/viewportSlice";
 import store from "../lib/store";
+import { vpIntersects } from "../lib/viewportSlice";
 
 function getEdgeKey(edge: Edge) {
     return `${edge.from}${edge.from_type}${edge.from_conn}_${edge.to}${edge.to_type}${edge.to_conn}`;
@@ -17,15 +17,18 @@ export function EdgeLayer() {
 
     const edgeClick = (edge: Edge) => dispatch(deleteEdge(edge));
 
-    const edgeInViewport = (p1: Vec2, p2: Vec2) => {
-        const vp_pos = vpPosSelector()(store.getState());
-        const vp_size = vpSizeSelector()(store.getState());
-        const vp_zoom = vpZoomSelector()(store.getState());
-        return Math.max(p1.x, p2.x) + LINE_MAX_BEZIER_OFFSET >= vp_pos.x &&
-            Math.min(p1.x, p2.x) - LINE_MAX_BEZIER_OFFSET <= vp_pos.x + vp_size.x / vp_zoom &&
-            Math.max(p1.y, p2.y) >= vp_pos.y &&
-            Math.min(p1.y, p2.y) <= vp_pos.y + vp_size.y / vp_zoom;
-    }
+    const edgeInViewport = (p1: Vec2, p2: Vec2) => vpIntersects(
+        store.getState().viewport,
+        {
+            x: Math.min(p1.x, p2.x) - LINE_MAX_BEZIER_OFFSET,
+            y: Math.min(p1.y, p2.y)
+        },
+        {
+            x: Math.max(p1.x, p2.x) + LINE_MAX_BEZIER_OFFSET,
+            y: Math.max(p1.y, p2.y)
+        }
+    );
+    
     return (
         <>
             {graph.edges.map(edge => {

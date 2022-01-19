@@ -10,7 +10,6 @@ route("/graph", method = GET) do
 end
 
 route("/addnode/:add_type::String", method = POST) do
-    println("ADD")
     types = NodeGraphEditor.get_param_types()
     
     add_type = Symbol(payload(:add_type))
@@ -19,18 +18,19 @@ route("/addnode/:add_type::String", method = POST) do
         return Genie.Router.error(404, "Invalid node type $add_type", MIME"text/html")
     end
 
+    data = jsonpayload()
+    new_pos = (Float64(data["x"]), Float64(data["y"]))
+    
     ng = NodeGraphEditor.get_nodegraph()
     nn_id = NodeGraphEditor.get_new_node_id()
 
-    add_node!(ng, add_type, nn_id)
+    add_node!(ng, add_type, nn_id, new_pos)
     
     nn_id += 1
 
     NodeGraphEditor.set_nodegraph(ng)
     NodeGraphEditor.set_new_node_id(nn_id)
 
-    str = JSON3.write(ng)
-    println(str);
     return JSON3.write(ng)
 end
 

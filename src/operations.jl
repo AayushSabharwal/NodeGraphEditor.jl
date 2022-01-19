@@ -9,9 +9,9 @@ export id_to_index,
 
 id_to_index(id::Int, ng::NodeGraph) = findnext(n -> n.id == id, ng.nodes, 1)
 
-function add_node!(ng::NodeGraph, type::Symbol, newnode_id::Int)
+function add_node!(ng::NodeGraph, type::Symbol, newnode_id::Int, new_pos::NTuple{2,Float64})
     new_params = create(Val{type}())
-    push!(ng.nodes, Node(newnode_id, "new_$type", 0.0, 0.0, new_params))
+    push!(ng.nodes, Node(newnode_id, "new_$type", new_pos..., new_params))
 end
 
 function delete_node!(ng::NodeGraph, node_ind::Int)

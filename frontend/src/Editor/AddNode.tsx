@@ -5,6 +5,8 @@ import { AddIcon } from "@chakra-ui/icons";
 import "./AddNode.scss"
 import { useDispatch } from "react-redux";
 import { addNode } from "../lib/graphSlice";
+import store from "../lib/store";
+import { vpCenter } from "../lib/viewportSlice";
 
 export function AddNodeButton() {
     const [types, setTypes] = useState<string[]>([]);
@@ -12,8 +14,10 @@ export function AddNodeButton() {
     const dispatch = useDispatch();
 
     const buttonClick = (type: string) => {
-        console.log("C");
-        dispatch(addNode(type));
+        dispatch(addNode({
+            type,
+            new_pos: vpCenter(store.getState().viewport)
+        }));
     }
 
     const getOptions = () => {

@@ -1,8 +1,9 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import { calculateNodeSize } from "../NodeGraph/Node";
-import { RootState } from "./store";
+import store, { RootState } from "./store";
 import { Edge, Graph, Vec2 } from "./types";
+import { vpCenter, vpPosSelector } from "./viewportSlice";
 
 const initialState: Graph = {
     nodes: [],
@@ -43,8 +44,8 @@ export const addEdge = createAsyncThunk(
 
 export const addNode = createAsyncThunk(
     'graph/addnode',
-    async (type: string) => {
-        const r = await axios.post<Graph>(`/addnode/${type}`);
+    async ({ type, new_pos }: { type: string, new_pos: Vec2}) => {
+        let r = await axios.post<Graph>(`/addnode/${type}`, new_pos);
         return r.data;
     }
 )
