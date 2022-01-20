@@ -4,7 +4,7 @@ import {
     SliderMark,
     SliderThumb,
     SliderTrack,
-    Tooltip
+    Tooltip,
 } from "@chakra-ui/react";
 import { useState } from "preact/hooks";
 

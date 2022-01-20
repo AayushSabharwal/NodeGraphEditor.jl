@@ -10,6 +10,40 @@ import { deleteNode, nodeSelector, updateNode } from "../lib/graphSlice";
 import { ClampedInput } from "./ClampedInput";
 import "./NodeMenu.scss";
 
+type NumberType = "integer" | "float" | "unsigned";
+
+type NumberParam = {
+    type: "Num";
+    num_type: NumberType;
+    value: number;
+};
+
+type EnumParam = {
+    type: "Enum";
+    options: string[];
+    value: number;
+};
+
+type ClampedParam = {
+    type: "Clamped";
+    num_type: NumberType;
+    min: number;
+    max: number;
+    value: number;
+};
+
+type StringParam = {
+    type: "String";
+    value: string;
+};
+
+type BoolParam = {
+    type: "Bool";
+    value: boolean;
+};
+
+type Param = NumberParam | EnumParam | ClampedParam | StringParam | BoolParam;
+
 export function NodeMenu() {
     const selected = useSelector(idSelector());
     const node = useSelector(nodeSelector(selected));
@@ -17,7 +51,7 @@ export function NodeMenu() {
 
     if (!node) return <Box className="card collapse"></Box>;
 
-    const [params, setParams] = useState<Record<string, any>>({});
+    const [params, setParams] = useState<Record<string, Param>>({});
 
     useEffect(() => {
         if (selected === -1) {
@@ -25,14 +59,14 @@ export function NodeMenu() {
             return;
         }
         axios
-            .get<Record<string, any>>(`/getparams/${selected}`)
+            .get<Record<string, Param>>(`/getparams/${selected}`)
             .then(r => setParams(r.data))
             .catch(e => console.log(e));
     }, [selected]);
 
-    const updateNodeParams = (id: number, key: string, value: any) => {
+    const updateNodeParams = (id: number, key: string, value: unknown) => {
         axios
-            .post<Record<string, any>>(`/updateparams/${id}/${key}`, { value })
+            .post<Record<string, Param>>(`/updateparams/${id}/${key}`, { value })
             .then(r => setParams(r.data))
             .catch(e => console.log(e));
     };
@@ -55,57 +89,59 @@ export function NodeMenu() {
                 {k}
             </div>
         );
+
+        const param = params[k];
         // numeric
-        if (params[k].type === "Num") {
+        if (param.type === "Num") {
             grid_items.push(
                 <NumberInputWrapper
                     key={`val${k}`}
-                    integer={params[k].num_type !== "float"}
-                    unsigned={params[k].num_type === "unsigned"}
-                    value={params[k].value}
+                    integer={param.num_type !== "float"}
+                    unsigned={param.num_type === "unsigned"}
+                    value={param.value}
                     onChange={v => updateNodeParams(node.node_id, k, v)}
                 />
             );
-        } else if (params[k].type === "Enum") {
+        } else if (param.type === "Enum") {
             grid_items.push(
                 <EnumInput
-                    options={params[k].options}
-                    value={params[k].value}
+                    options={param.options}
+                    value={param.value}
                     onChange={v => updateNodeParams(node.node_id, k, v)}
                 />
             );
-        } else if (params[k].type === "Clamped") {
+        } else if (param.type === "Clamped") {
             grid_items.push(
                 <ClampedInput
-                    min={params[k].min}
-                    max={params[k].max}
-                    value={params[k].value}
-                    integer={params[k].num_type !== "float"}
-                    unsigned={params[k].num_type === "unsigned"}
+                    min={param.min}
+                    max={param.max}
+                    value={param.value}
+                    integer={param.num_type !== "float"}
+                    unsigned={param.num_type === "unsigned"}
                     onChange={v =>
                         updateNodeParams(node.node_id, k, {
-                            min: params[k].min,
-                            max: params[k].max,
+                            min: param.min,
+                            max: param.max,
                             value: v,
                         })
                     }
                 />
             );
-        } else if (params[k].type === "String") {
+        } else if (param.type === "String") {
             grid_items.push(
                 <Input
-                    value={params[k].value}
+                    value={param.value}
                     onChange={v => updateNodeParams(node.node_id, k, v.target.value)}
                 />
             );
-        } else if (params[k].type === "Bool") {
+        } else if (param.type === "Bool") {
             grid_items.push(
                 <Checkbox
-                    isChecked={params[k].value}
-                    onChange={() => updateNodeParams(node.node_id, k, !params[k].value)}
+                    isChecked={param.value}
+                    onChange={() => updateNodeParams(node.node_id, k, !param.value)}
                 />
             );
-        } else console.error("Unimplemented Input Type", params[k]);
+        } else console.error("Unimplemented Input Type", param);
     }
 
     return (

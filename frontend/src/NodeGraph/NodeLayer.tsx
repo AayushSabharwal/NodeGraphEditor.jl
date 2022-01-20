@@ -10,13 +10,10 @@ import {
     dragNode,
     graphSelector,
     nodeSelector,
-    updateNode
+    updateNode,
 } from "../lib/graphSlice";
 import store from "../lib/store";
-import {
-    vpIntersects,
-    vpPosSelector, vpZoomSelector
-} from "../lib/viewportSlice";
+import { vpIntersects, vpPosSelector, vpZoomSelector } from "../lib/viewportSlice";
 import { Connection } from "./Connection";
 
 type HalfConnection = {

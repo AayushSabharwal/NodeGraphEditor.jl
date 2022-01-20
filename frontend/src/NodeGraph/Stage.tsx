@@ -14,7 +14,7 @@ import {
     vpZoomSelector,
     zoomIn,
     zoomOut,
-    zoomTo
+    zoomTo,
 } from "../lib/viewportSlice";
 import "./Stage.scss";
 
