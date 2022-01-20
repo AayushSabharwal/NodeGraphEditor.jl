@@ -26,7 +26,9 @@
     "clean": "rimraf ../public/[!.gitkeep]*",
     "start": "parcel src/index.html",
     "build": "parcel build src/index.html --dist-dir ../public/",
-    "serve": "npx serve ../public/"
+    "serve": "npx serve ../public/",
+    "lint": "eslint .",
+    "lintfix": "eslint . --fix"
   },
   "eslintConfig": {
     "extends": [
@@ -49,6 +51,12 @@
     "@parcel/packager-raw-url": "^2.0.1",
     "@parcel/transformer-sass": "^2.0.1",
     "@parcel/transformer-webmanifest": "^2.0.1",
+    "@typescript-eslint/eslint-plugin": "^5.10.0",
+    "@typescript-eslint/parser": "^5.10.0",
+    "eslint": "^8.7.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-react": "^7.28.0",
     "parcel": "^2.0.1",
     "rimraf": "^3.0.2",
     "serve": "^13.0.2",

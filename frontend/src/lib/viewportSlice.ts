@@ -4,19 +4,19 @@ import { RootState } from "./store";
 import { Vec2 } from "./types";
 
 export type Viewport = {
-    size: Vec2
-    pos: Vec2
-    zoom: number
-}
+    size: Vec2;
+    pos: Vec2;
+    zoom: number;
+};
 
 const initialState: Viewport = {
     size: { x: 0, y: 0 },
     pos: { x: 0, y: 0 },
     zoom: 1,
-}
+};
 function zoomToReducer(
     state: Viewport,
-    { payload }: PayloadAction<{zoom: number, focus: Vec2}>
+    { payload }: PayloadAction<{ zoom: number; focus: Vec2 }>
 ) {
     const { zoom, focus } = payload;
     const new_zoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, zoom));
@@ -30,26 +30,26 @@ function zoomToReducer(
 
 function zoomInReducer(state: Viewport) {
     zoomToReducer(state, {
-        type: 'viewport/zoomIn',
+        type: "viewport/zoomIn",
         payload: {
             zoom: state.zoom + ZOOM_SPEED,
-            focus: vpCenter(state)
-        }
+            focus: vpCenter(state),
+        },
     });
 }
 
 function zoomOutReducer(state: Viewport) {
     zoomToReducer(state, {
-        type: 'viewport/zoomOut',
+        type: "viewport/zoomOut",
         payload: {
             zoom: state.zoom - ZOOM_SPEED,
-            focus: vpCenter(state)
-        }
+            focus: vpCenter(state),
+        },
     });
 }
 
 export const viewportSlice = createSlice({
-    name: 'viewport',
+    name: "viewport",
     initialState,
     reducers: {
         zoomTo: zoomToReducer,
@@ -60,11 +60,12 @@ export const viewportSlice = createSlice({
         },
         resizeViewport(state, { payload }: PayloadAction<Vec2>) {
             state.size = payload;
-        }
-    }
+        },
+    },
 });
 
-export const { zoomTo, zoomIn, zoomOut, moveViewport, resizeViewport } = viewportSlice.actions;
+export const { zoomTo, zoomIn, zoomOut, moveViewport, resizeViewport } =
+    viewportSlice.actions;
 
 export const vpSizeSelector = () => (state: RootState) => state.viewport.size;
 
@@ -75,10 +76,12 @@ export const vpZoomSelector = () => (state: RootState) => state.viewport.zoom;
 export const vpSelector = () => (state: RootState) => state.viewport;
 
 export const vpCenter = (state: Viewport) => ({
-    x: state.pos.x + 0.35 * state.size.x / state.zoom,
-    y: state.pos.y + 0.35 * state.size.y / state.zoom,
-})
+    x: state.pos.x + (0.35 * state.size.x) / state.zoom,
+    y: state.pos.y + (0.35 * state.size.y) / state.zoom,
+});
 
 export const vpIntersects = (state: Viewport, min: Vec2, max: Vec2) =>
-    min.x <= state.pos.x + state.size.x / state.zoom && max.x >= state.pos.x &&
-    min.y <= state.pos.y + state.size.y / state.zoom && max.y >= state.pos.y;
+    min.x <= state.pos.x + state.size.x / state.zoom &&
+    max.x >= state.pos.x &&
+    min.y <= state.pos.y + state.size.y / state.zoom &&
+    max.y >= state.pos.y;

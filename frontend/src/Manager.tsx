@@ -7,32 +7,33 @@ import { resizeViewport } from "./lib/viewportSlice";
 
 export default function Manager() {
     const dispatch = useDispatch();
-    
-    useEffect(() => { dispatch(fetchGraph()); }, []);
-    
-    let height = Math.max(
+
+    useEffect(() => {
+        dispatch(fetchGraph());
+    }, []);
+
+    const height = Math.max(
         document.body.scrollHeight,
         document.body.offsetHeight,
         document.documentElement.clientHeight,
         document.documentElement.scrollHeight,
-        document.documentElement.offsetHeight,
+        document.documentElement.offsetHeight
     );
-    let width = Math.max(
+    const width = Math.max(
         document.body.scrollWidth,
         document.body.offsetWidth,
         document.documentElement.clientWidth,
         document.documentElement.scrollWidth,
-        document.documentElement.offsetWidth,
+        document.documentElement.offsetWidth
     );
-    useEffect(
-        () => { dispatch(resizeViewport({ x: width, y: height })); },
-        [width, height]
-    );
+    useEffect(() => {
+        dispatch(resizeViewport({ x: width, y: height }));
+    }, [width, height]);
 
     return (
         <>
-            <Stage/>
-            <Editor/>
+            <Stage />
+            <Editor />
         </>
     );
 }

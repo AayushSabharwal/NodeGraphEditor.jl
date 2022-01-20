@@ -8,7 +8,7 @@ const store = configureStore({
         graph: graphSlice.reducer,
         editor: editorSlice.reducer,
         viewport: viewportSlice.reducer,
-    }
+    },
 });
 
 export type RootState = ReturnType<typeof store.getState>;

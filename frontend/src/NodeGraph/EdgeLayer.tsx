@@ -17,18 +17,19 @@ export function EdgeLayer() {
 
     const edgeClick = (edge: Edge) => dispatch(deleteEdge(edge));
 
-    const edgeInViewport = (p1: Vec2, p2: Vec2) => vpIntersects(
-        store.getState().viewport,
-        {
-            x: Math.min(p1.x, p2.x) - LINE_MAX_BEZIER_OFFSET,
-            y: Math.min(p1.y, p2.y)
-        },
-        {
-            x: Math.max(p1.x, p2.x) + LINE_MAX_BEZIER_OFFSET,
-            y: Math.max(p1.y, p2.y)
-        }
-    );
-    
+    const edgeInViewport = (p1: Vec2, p2: Vec2) =>
+        vpIntersects(
+            store.getState().viewport,
+            {
+                x: Math.min(p1.x, p2.x) - LINE_MAX_BEZIER_OFFSET,
+                y: Math.min(p1.y, p2.y),
+            },
+            {
+                x: Math.max(p1.x, p2.x) + LINE_MAX_BEZIER_OFFSET,
+                y: Math.max(p1.y, p2.y),
+            }
+        );
+
     return (
         <>
             {graph.edges.map(edge => {
@@ -37,25 +38,29 @@ export function EdgeLayer() {
                 const node_to = useSelector(nodeSelector(edge.to));
                 if (!node_to) return null;
                 const from_pos = {
-                    x: node_from.pos.x + calculateConnectorX(node_from.size, edge.from_type),
+                    x:
+                        node_from.pos.x +
+                        calculateConnectorX(node_from.size, edge.from_type),
                     y: node_from.pos.y + calculateConnectorY(edge.from_conn),
                 };
                 const to_pos = {
                     x: node_to.pos.x + calculateConnectorX(node_to.size, edge.to_type),
                     y: node_to.pos.y + calculateConnectorY(edge.to_conn),
-                }
-                if(!edgeInViewport(from_pos, to_pos)) return null;
+                };
+                if (!edgeInViewport(from_pos, to_pos)) return null;
 
-                return <Connection
-                    key={getEdgeKey(edge)}
-                    from={from_pos}
-                    from_type={edge.from_type}
-                    from_ind={edge.from_conn}
-                    to={to_pos}
-                    to_type={edge.to_type}
-                    to_ind={edge.to_conn}
-                    onClick={() => edgeClick(edge)}
-                />;
+                return (
+                    <Connection
+                        key={getEdgeKey(edge)}
+                        from={from_pos}
+                        from_type={edge.from_type}
+                        from_ind={edge.from_conn}
+                        to={to_pos}
+                        to_type={edge.to_type}
+                        to_ind={edge.to_conn}
+                        onClick={() => edgeClick(edge)}
+                    />
+                );
             })}
         </>
     );

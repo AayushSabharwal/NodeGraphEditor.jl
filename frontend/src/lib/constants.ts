@@ -17,13 +17,13 @@ export const LABEL_WIDTH = 140;
 export const UNIT_WIDTH = 15;
 export const LINE_MAX_BEZIER_OFFSET = 70;
 export const CONN_IN_COLORS = [
-    '#FC8181', // red.300
-    '#F6AD55', // orange.300
+    "#FC8181", // red.300
+    "#F6AD55", // orange.300
 ];
 export const CONN_OUT_COLORS = [
-    '#68D391', // green.300
-    '#4FD1C5', // teal.300
-]
+    "#68D391", // green.300
+    "#4FD1C5", // teal.300
+];
 export const DefaultNodeData = {
     pos: { x: 0, y: 0 },
     size: { x: 150, y: 75 },
