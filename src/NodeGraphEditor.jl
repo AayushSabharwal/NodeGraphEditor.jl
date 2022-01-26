@@ -19,7 +19,7 @@ include("editor_formatting.jl")
 include("file_interface.jl")
 include("operations.jl")
 
-export run_server
+export edit_graph
 
 function __init__()
     Genie.genie(; context = @__MODULE__)
@@ -27,8 +27,14 @@ function __init__()
     isdir(CACHE_DIR) || mkdir(CACHE_DIR)
 end
 
+"""
+    edit_graph(nodegraph::NodeGraph = NodeGraph(), param_type_symbols::Vector{Symbol} = [])
 
-function run_server(
+Edit the given `nodegraph`. Valid [`type_symbol`](@ref)s for node types should be provided
+through `param_type_symbols`. These will be available in the "Add Node" menu in the editor.
+This runs a webserver on `localhost:8000`. Navigating to this URL will open the editor.
+"""
+function edit_graph(
     ng::NodeGraph = NodeGraph(),
     param_type_symbols::Vector{Symbol} = []
 )
