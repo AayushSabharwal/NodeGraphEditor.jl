@@ -29,6 +29,8 @@ Fields of a node can be selectively displayed by defining a method for `Base.pro
 
 Inside the editor, nodes can be added using the blue "Add Node" button in the top right corner. Each node can be renamed by selecting (clicking on) it and editing the name at the top of the side panel. Nodes can be deleted by selecting them and pressing the red delete button at the top right corner of the side panel. Nodes can be moved around by clicking and dragging them. Edges can be drawn by clicking on a connector, and dragging to another connector on a different node. To delete an edge, simply click on the edge. Pan around the editor by dragging with the right mouse button, and use the scroll wheel or the buttons in the bottom left to zoom.
 
+Once edited, the `NodeGraph` can be obtained using the `get_nodegraph` function.
+
 # Contributing
 
 The frontend code is in the `frontend` directory. To compile it into the `public` folder (required), run `npm run build` from inside the `frontend` directory. Alternatively, run `npm --prefix frontend run build` from the root directory.
