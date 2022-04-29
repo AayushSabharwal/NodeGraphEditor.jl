@@ -1,0 +1,5 @@
+Manifest.toml
+frontend/node_modules/
+frontend/public/build/
+
+.DS_Store
