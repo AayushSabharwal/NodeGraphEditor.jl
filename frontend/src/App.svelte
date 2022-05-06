@@ -1,30 +1,31 @@
 <script lang="ts">
-	export let name: string;
+    import { dragstate } from "./stores/drag_store";
+
+    import Stage from "./Stage.svelte";
+
+    $: mouseuphandler = $dragstate.drag_type === null ? undefined : dragstate.stopDrag;
 </script>
 
-<main>
-	<h1>Hello {name}!</h1>
-	<p>Visit the <a href="https://svelte.dev/tutorial">Svelte tutorial</a> to learn how to build Svelte apps.</p>
-</main>
+<svelte:body on:mousemove={$dragstate.drag_callback} on:mouseup={mouseuphandler} />
+<div class="w-full h-full m-0"><Stage /></div>
 
-<style>
-	main {
-		text-align: center;
-		padding: 1em;
-		max-width: 240px;
-		margin: 0 auto;
-	}
+<style global lang="postcss">
+    @tailwind base;
+    @tailwind components;
+    @tailwind utilities;
 
-	h1 {
-		color: #ff3e00;
-		text-transform: uppercase;
-		font-size: 4em;
-		font-weight: 100;
-	}
+    :global(body),
+    :global(html) {
+        margin: 0;
+        padding: 0px;
+        width: 100%;
+        height: 100%;
+        position: relative;
+    }
 
-	@media (min-width: 640px) {
-		main {
-			max-width: none;
-		}
-	}
+    :global(body) {
+        box-sizing: border-box !important;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans,
+            Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+    }
 </style>
