@@ -6,8 +6,8 @@
     $: mouseuphandler = $dragstate.drag_type === null ? undefined : dragstate.stopDrag;
 </script>
 
-<svelte:body on:mousemove={$dragstate.drag_callback} on:mouseup={mouseuphandler} />
-<div class="w-full h-full m-0"><Stage /></div>
+<!-- <svelte:body  /> -->
+<div on:mousemove={$dragstate.drag_callback} on:mouseup={mouseuphandler} class="w-full h-full m-0"><Stage /></div>
 
 <style global lang="postcss">
     @tailwind base;

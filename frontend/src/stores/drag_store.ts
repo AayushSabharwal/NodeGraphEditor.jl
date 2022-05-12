@@ -1,5 +1,5 @@
 import { writable } from "svelte/store";
-import type { DragState, DragType } from "../types";
+import type { DragState } from "../types";
 
 export function getDragStore() {
     const { subscribe, update, set } = writable<DragState>({

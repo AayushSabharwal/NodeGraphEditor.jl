@@ -5,6 +5,7 @@ function inputs(::Type{<:NodeProperties}) end
 function outputs(::Type{<:NodeProperties}) end
 
 struct Node
+    id::Int
     name::Symbol
     inputs::Int
     outputs::Int
@@ -13,26 +14,27 @@ struct Node
 end
 
 mutable struct NodeGraph{G<:MetaGraph}
-    nodes::Dict{Symbol,Node}
+    nodes::Dict{Int,Node}
     graph::G
     next_id::Int
 end
 
-NodeGraph() = NodeGraph(
-    Dict{Symbol,Node}(),
-    MetaGraph(  # graph of connectors
-        SimpleDiGraph();
-        Label = Symbol, # :node_type_number
-    ),
-    0,
-)
+struct Connector
+    node::Int
+    type::Symbol
+    index::Int
+end
+
+NodeGraph() = NodeGraph(Dict{Int,Node}(), MetaGraph(  # graph of connectors
+    SimpleDiGraph();
+    Label = Connector,
+), 0)
 
 JSON3.StructTypes.StructType(::Type{<:NodeGraph}) = JSON3.StructTypes.DictType()
 
 JSON3.StructTypes.keyvaluepairs(x::NodeGraph) = Dict(
     :nodes => x.nodes,
-    :graph => Dict(
-        v => Symbol[x.graph.vertex_labels[i] for i in outneighbors(x.graph, k)] for
-        (k, v) in x.graph.vertex_labels
-    ),
+    :edges => [
+        (src = x.graph.vertex_labels[e.src], dst = x.graph.vertex_labels[e.dst]) for e in edges(x.graph)
+    ],
 )
