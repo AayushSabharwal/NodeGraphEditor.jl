@@ -18,6 +18,15 @@ export function getDragStore() {
         });
     }
 
+    function dragConnector(offset: number[]) {
+        if (offset.length !== 2) return;
+
+        update(old => {
+            if (old.drag_type !== "connector") return old;
+            return { ...old, drag_offset: offset };
+        });
+    }
+
     function stopDrag() {
         set({
             drag_type: null,
@@ -31,6 +40,7 @@ export function getDragStore() {
         subscribe,
         startDrag,
         stopDrag,
+        dragConnector,
     };
 }
 

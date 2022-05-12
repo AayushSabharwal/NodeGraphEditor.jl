@@ -1,5 +1,6 @@
 import { writable } from "svelte/store";
-import type { NodeGraph } from "../types";
+import type { MyConnector, NodeGraph } from "../types";
+import { identicalEdge } from "../utils";
 
 export function createGraphStore() {
     const { subscribe, update, set } = writable<NodeGraph>({
@@ -7,7 +8,7 @@ export function createGraphStore() {
             0: {
                 id: 0,
                 name: "a",
-                inputs: 1,
+                inputs: 2,
                 outputs: 1,
                 position: [0, 0],
                 properties: { p: 0, q: 0 },
@@ -47,9 +48,21 @@ export function createGraphStore() {
         });
     }
 
+    function addEdge(from: MyConnector, to: MyConnector) {
+        if (from.node === to.node) return;
+
+        update(old => {
+            const new_edge = { src: from, dst: to };
+            if (!(from.node in old.nodes) || !(to.node in old.nodes)) return old;
+            if (old.edges.find(e => identicalEdge(e, new_edge)) !== undefined) return old;
+            return { ...old, edges: [...old.edges, new_edge] };
+        });
+    }
+
     return {
         subscribe,
         dragNodeTo,
+        addEdge,
     };
 }
 

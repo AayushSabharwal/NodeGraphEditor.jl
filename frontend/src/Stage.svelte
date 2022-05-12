@@ -1,23 +1,22 @@
 <script lang="ts">
+    import Background from "./Background.svelte";
+    import { DRAG_KEY } from "./constants";
+    import Edge from "./Edge.svelte";
+    import Node from "./Node.svelte";
     import { dragstate } from "./stores/drag_store";
     import { nodegraph } from "./stores/graph_store";
-    import Node from "./Node.svelte";
-    import { viewport } from "./stores/viewport_store";
-    import Edge from "./Edge.svelte";
     import { connector_positions } from "./stores/positions_store";
-    import type { MyConnector } from "./types";
-import { DRAG_KEY } from "./constants";
+    import { viewport } from "./stores/viewport_store";
+    import type { MyConnector, PositionsState } from "./types";
 
     let height = 0,
         width = 0;
 
-    function connectorPositionExists(conn: MyConnector) {
+    function connectorPositionExists(pos: PositionsState, conn: MyConnector) {
         return (
-            conn.node in $connector_positions &&
-            conn.type in $connector_positions[conn.node] &&
-            ![null, undefined].includes(
-                $connector_positions[conn.node][conn.type][conn.index]
-            )
+            conn.node in pos &&
+            conn.type in pos[conn.node] &&
+            ![null, undefined].includes(pos[conn.node][conn.type][conn.index])
         );
     }
 </script>
@@ -26,8 +25,9 @@ import { DRAG_KEY } from "./constants";
     class="w-full h-full bg-gray-200 p-0 m-0"
     bind:clientHeight={height}
     bind:clientWidth={width}
-    on:mousedown={e =>
-        e.button === DRAG_KEY && dragstate.startDrag({
+    on:mousedown|preventDefault|stopPropagation={e =>
+        e.button === DRAG_KEY &&
+        dragstate.startDrag({
             drag_type: "stage",
             drag_name: "",
             drag_offset: [e.offsetX, e.offsetY],
@@ -35,13 +35,12 @@ import { DRAG_KEY } from "./constants";
         })}
 >
     <svg
-        class="w-full h-full p-0 m-0"
+        viewBox={`${$viewport.position[0]} ${$viewport.position[1]} ${width} ${height}`}
         xmlns="http://www.w3.org/2000/svg"
-        {width}
-        {height}
     >
+        <Background />
         {#each $nodegraph.edges as edge}
-            {#if connectorPositionExists(edge.src) && connectorPositionExists(edge.dst)}
+            {#if connectorPositionExists($connector_positions, edge.src) && connectorPositionExists($connector_positions, edge.dst)}
                 <Edge
                     src={$connector_positions[edge.src.node][edge.src.type][
                         edge.src.index
@@ -52,6 +51,14 @@ import { DRAG_KEY } from "./constants";
                 />
             {/if}
         {/each}
+        {#if $dragstate.drag_type === "connector"}
+            <Edge
+                src={$connector_positions[$dragstate.drag_name.node][
+                    $dragstate.drag_name.type
+                ][$dragstate.drag_name.index]}
+                dst={$dragstate.drag_offset}
+            />
+        {/if}
     </svg>
     {#each Object.values($nodegraph.nodes) as node (node.id)}
         <Node id={node.id} />

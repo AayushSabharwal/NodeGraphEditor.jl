@@ -9,7 +9,10 @@ export function getViewportStore() {
 
     function dragViewport(target: number[]) {
         if (target.length != 2) return;
-        update(old => ({ ...old, position: [old.position[0] - target[0], old.position[1] - target[1]] }));
+        update(old => ({
+            ...old,
+            position: [old.position[0] - target[0], old.position[1] - target[1]],
+        }));
     }
 
     return { subscribe, dragViewport };

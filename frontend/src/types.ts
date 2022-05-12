@@ -29,7 +29,7 @@ export type DragType = "node" | "connector" | "stage";
 
 export type DragState = {
     drag_type: DragType | null;
-    drag_name: number | string;
+    drag_name: any;
     drag_offset: number[];
     drag_callback: (e: MouseEvent) => void | undefined;
 };

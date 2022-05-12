@@ -38,7 +38,7 @@
     $: if (left_container !== null) {
         left_conns.map((conn, i) => {
             if (conn === null) return;
-
+            
             connector_positions.setConnectorPosition(
                 { node: curr.id, type: "input", index: i },
                 [
@@ -54,7 +54,7 @@
             );
         });
     }
-    
+
     $: if (right_container !== null) {
         right_conns.map((conn, i) => {
             if (conn === null) return;
@@ -82,18 +82,30 @@
         curr.position[1] - $viewport.position[1]
     }px;`}
 >
-    <div class="h-20 w-4 my-2 -left-2 absolute" bind:this={left_container}>
+    <div
+        class="h-20 w-4 my-2 -left-2 absolute flex flex-col justify-center gap-2"
+        bind:this={left_container}
+    >
         {#each Array(curr.inputs).fill(0) as _, key (key)}
-            <Connector bind:ref={left_conns[key]} name={`${curr.name}_i_${key + 1}`} />
-        {/each}
-    </div>
-    <div class="h-20 w-4 my-2 -right-2 absolute" bind:this={right_container}>
-        {#each Array(curr.outputs).fill(0) as _, key (key)}
-            <Connector bind:ref={right_conns[key]} name={`${curr.name}_o_${key + 1}`} />
+            <Connector
+                bind:ref={left_conns[key]}
+                id={{ node: curr.id, type: "input", index: key }}
+            />
         {/each}
     </div>
     <div
-        class="bg-gray-400 rounded-md shadow-sm p-2 min-h-full min-w-full text-center"
+        class="h-20 w-4 my-2 -right-2 absolute flex flex-col justify-center gap-2"
+        bind:this={right_container}
+    >
+        {#each Array(curr.outputs).fill(0) as _, key (key)}
+            <Connector
+                bind:ref={right_conns[key]}
+                id={{ node: curr.id, type: "output", index: key }}
+            />
+        {/each}
+    </div>
+    <div
+        class="bg-gray-400/75 rounded-md shadow-sm p-2 min-h-full min-w-full text-center"
         on:mousedown|preventDefault|stopPropagation={startDrag}
     >
         <span class="text-gray-900 font-sans text-base">{curr.name}</span>
