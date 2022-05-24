@@ -9,7 +9,7 @@
     import { viewport } from "./stores/viewport_store";
     import type { MyConnector, PositionsState } from "./types";
 
-    let height = 0,
+    export let height = 0,
         width = 0;
 
     function connectorPositionExists(pos: PositionsState, conn: MyConnector) {
