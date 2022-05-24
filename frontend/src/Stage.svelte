@@ -1,6 +1,6 @@
 <script lang="ts">
     import Background from "./Background.svelte";
-    import { DRAG_KEY } from "./constants";
+    import { DRAG_KEY, ZOOM_STEP } from "./constants";
     import Edge from "./Edge.svelte";
     import Node from "./Node.svelte";
     import { dragstate } from "./stores/drag_store";
@@ -31,11 +31,19 @@
             drag_type: "stage",
             drag_name: "",
             drag_offset: [e.offsetX, e.offsetY],
-            drag_callback: e => viewport.dragViewport([e.movementX, e.movementY]),
+            drag_callback: e =>
+                viewport.dragViewport([
+                    e.movementX / $viewport.zoom,
+                    e.movementY / $viewport.zoom,
+                ]),
         })}
+    on:wheel|preventDefault|stopPropagation={e =>
+        viewport.zoom((e.deltaY > 0 ? -1 : 1) * ZOOM_STEP, [e.pageX, e.pageY])}
 >
     <svg
-        viewBox={`${$viewport.position[0]} ${$viewport.position[1]} ${width} ${height}`}
+        viewBox={`${$viewport.position[0]} ${$viewport.position[1]} ${
+            width / $viewport.zoom
+        } ${height / $viewport.zoom}`}
         xmlns="http://www.w3.org/2000/svg"
     >
         <Background />

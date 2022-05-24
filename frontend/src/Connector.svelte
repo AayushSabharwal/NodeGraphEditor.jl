@@ -17,13 +17,13 @@
                 drag_type: "connector",
                 drag_name: id,
                 drag_offset: [
-                    e.pageX + $viewport.position[0],
-                    e.pageY + $viewport.position[1],
+                    e.pageX / $viewport.zoom + $viewport.position[0],
+                    e.pageY / $viewport.zoom + $viewport.position[1],
                 ],
                 drag_callback: e =>
                 dragstate.dragConnector([
-                    e.pageX + $viewport.position[0],
-                    e.pageY + $viewport.position[1],
+                    e.pageX / $viewport.zoom + $viewport.position[0],
+                    e.pageY / $viewport.zoom + $viewport.position[1],
                 ]),
             });
     }}

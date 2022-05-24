@@ -30,10 +30,10 @@
 </defs>
 {#each tile_positions as pos, i (i)}
     <rect
-        width={pattern_size[0]}
-        height={pattern_size[1]}
-        x={pos[0] * pattern_size[0]}
-        y={pos[1] * pattern_size[1]}
+        width={pattern_size[0] / $viewport.zoom}
+        height={pattern_size[1] / $viewport.zoom}
+        x={pos[0] * pattern_size[0] / $viewport.zoom}
+        y={pos[1] * pattern_size[1] / $viewport.zoom}
         fill="url(#grid)"
     />
 {/each}

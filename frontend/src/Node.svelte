@@ -18,8 +18,8 @@
             drag_callback: e =>
                 typeof $dragstate.drag_name === "number" &&
                 nodegraph.dragNodeTo($dragstate.drag_name, [
-                    e.pageX - $dragstate.drag_offset[0] + $viewport.position[0],
-                    e.pageY - $dragstate.drag_offset[1] + $viewport.position[1],
+                    e.pageX / $viewport.zoom - $dragstate.drag_offset[0] + $viewport.position[0],
+                    e.pageY / $viewport.zoom - $dragstate.drag_offset[1] + $viewport.position[1],
                 ]),
         });
     }
@@ -38,7 +38,7 @@
     $: if (left_container !== null) {
         left_conns.map((conn, i) => {
             if (conn === null) return;
-            
+
             connector_positions.setConnectorPosition(
                 { node: curr.id, type: "input", index: i },
                 [
@@ -77,13 +77,12 @@
 </script>
 
 <div
-    class="h-24 w-40 absolute"
-    style={`left:${curr.position[0] - $viewport.position[0]}px; top:${
-        curr.position[1] - $viewport.position[1]
-    }px;`}
+    class="h-24 w-20 absolute origin-top-left"
+    style={`left:${(curr.position[0] - $viewport.position[0]) * $viewport.zoom}px; top:${
+        (curr.position[1] - $viewport.position[1]) * $viewport.zoom}px; transform: scale(${$viewport.zoom}, ${$viewport.zoom})`}
 >
     <div
-        class="h-20 w-4 my-2 -left-2 absolute flex flex-col justify-center gap-2"
+        class="h-20 w-4 -left-2 my-2 absolute flex flex-col justify-center gap-2"
         bind:this={left_container}
     >
         {#each Array(curr.inputs).fill(0) as _, key (key)}
@@ -94,7 +93,7 @@
         {/each}
     </div>
     <div
-        class="h-20 w-4 my-2 -right-2 absolute flex flex-col justify-center gap-2"
+        class="h-20 w-4 -right-2 my-2 absolute flex flex-col justify-center gap-2"
         bind:this={right_container}
     >
         {#each Array(curr.outputs).fill(0) as _, key (key)}
