@@ -48,6 +48,8 @@
                     dst={$connector_positions[edge.dst.node][edge.dst.type][
                         edge.dst.index
                     ]}
+                    src_side={edge.src.type}
+                    dst_side={edge.dst.type}
                 />
             {/if}
         {/each}
@@ -57,6 +59,8 @@
                     $dragstate.drag_name.type
                 ][$dragstate.drag_name.index]}
                 dst={$dragstate.drag_offset}
+                src_side={$dragstate.drag_name.type}
+                dst_side="input"
             />
         {/if}
     </svg>

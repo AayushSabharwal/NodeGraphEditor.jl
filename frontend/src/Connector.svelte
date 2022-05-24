@@ -21,10 +21,10 @@
                     e.pageY + $viewport.position[1],
                 ],
                 drag_callback: e =>
-                    dragstate.dragConnector([
-                        e.pageX + $viewport.position[0],
-                        e.pageY + $viewport.position[1],
-                    ]),
+                dragstate.dragConnector([
+                    e.pageX + $viewport.position[0],
+                    e.pageY + $viewport.position[1],
+                ]),
             });
     }}
     on:mouseup={e => {
